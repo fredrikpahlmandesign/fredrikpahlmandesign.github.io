@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bubble Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#000;--panel:#0d0d0f;--border:rgba(255,255,255,0.06);
+  --text:rgba(255,255,255,0.70);--muted:rgba(255,255,255,0.26);
+  --accent:rgba(150,110,255,0.85);--track:rgba(255,255,255,0.07);--thumb:rgba(255,255,255,0.30);
+}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font-size:11px;overflow:hidden}
+#app{display:flex;width:100%;height:100%}
+#stage{flex:1;display:flex;align-items:center;justify-content:center;position:relative;background:var(--bg);overflow:hidden}
+canvas{display:block}
+#c{cursor:zoom-in;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#label{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:11px;color:var(--muted);letter-spacing:0.18em;white-space:nowrap;pointer-events:none}
+
+/* ── Panel ── */
+#panel{
+  width:236px;min-width:236px;height:100%;
+  background:var(--panel);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow:hidden; /* children handle scroll */
+}
+#panel-header{padding:15px 16px 11px;border-bottom:1px solid var(--border);flex-shrink:0}
+#panel-header h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:15px;letter-spacing:0.06em;color:rgba(255,255,255,0.88);line-height:1;margin-bottom:3px}
+#panel-header p{color:var(--muted);font-size:7.5px;letter-spacing:0.12em;text-transform:uppercase}
+
+/* Scrollable body — touch-action:pan-y so dragging it scrolls not warps */
+#panel-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  touch-action:pan-y;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.07) transparent;
+}
+
+/* ── Collapsible sections ── */
+.section{border-bottom:1px solid var(--border)}
+
+/* Header row: tap to toggle. drag-handle icon on right */
+.sec-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;cursor:pointer;user-select:none;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  /* min 44px tall for finger tap */
+  min-height:40px;
+}
+.sec-head:active{background:rgba(255,255,255,0.03)}
+.sec-title{font-size:7.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted)}
+.sec-arrow{font-size:9px;color:var(--muted);transition:transform .22s;flex-shrink:0;margin-left:8px}
+.section.closed .sec-arrow{transform:rotate(-90deg)}
+
+.sec-body{overflow:hidden;transition:max-height .25s ease,opacity .2s ease;max-height:600px;opacity:1}
+.section.closed .sec-body{max-height:0;opacity:0}
+
+.sec-inner{padding:4px 16px 14px}
+
+/* ── Controls ── */
+.ctrl{margin-bottom:11px}.ctrl:last-child{margin-bottom:0}
+.ctrl-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.ctrl-label{color:rgba(255,255,255,0.48);font-size:9px;letter-spacing:0.02em}
+.ctrl-val{color:var(--accent);font-size:9px;min-width:36px;text-align:right}
+
+/* Sliders — touch-action:none so touch moves the thumb, not scroll */
+input[type=range]{
+  -webkit-appearance:none;width:100%;height:2px;
+  background:var(--track);border-radius:2px;outline:none;cursor:pointer;
+  touch-action:none; /* ← key: lets JS capture the drag */
+}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:var(--thumb);border:1px solid rgba(255,255,255,0.38);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:11px;height:11px;border-radius:50%;background:var(--thumb);border:1px solid rgba(255,255,255,0.38);cursor:pointer}
+
+.color-row{display:flex;gap:7px;align-items:center}
+input[type=color]{-webkit-appearance:none;width:22px;height:22px;border:1px solid var(--border);border-radius:3px;background:none;padding:1px;cursor:pointer}
+input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+input[type=color]::-webkit-color-swatch{border:none;border-radius:2px}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.toggle{position:relative;width:28px;height:14px}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--track);border-radius:14px;cursor:pointer;transition:background .2s}
+.toggle-slider::before{content:'';position:absolute;width:10px;height:10px;left:2px;top:2px;background:var(--muted);border-radius:50%;transition:transform .2s,background .2s}
+.toggle input:checked+.toggle-slider{background:rgba(150,110,255,0.25)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(14px);background:var(--accent)}
+
+/* ── Footer ── */
+#panel-footer{flex-shrink:0;padding:11px 16px 15px;display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--border)}
+button{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--text);font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.13em;text-transform:uppercase;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button:active{background:rgba(255,255,255,0.07)}
+.btn-row{display:flex;gap:5px}.btn-row button{flex:1}
+.btn-purple{border-color:rgba(150,110,255,0.4);color:rgba(190,160,255,0.9)}
+.btn-purple:active{background:rgba(150,110,255,0.12)}
+.btn-red{border-color:rgba(255,80,80,0.4);color:rgba(255,150,150,0.9)}
+.btn-red.recording{background:rgba(255,50,50,0.14);border-color:rgba(255,80,80,0.8);color:rgba(255,180,180,1);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.42}}
+select{background:rgba(255,255,255,0.03);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:7.5px;padding:5px 4px;border-radius:4px;outline:none;cursor:pointer;flex:1}
+select option{background:#1a1a1e}
+.row2{display:flex;gap:5px}
+.status-line{font-size:7px;color:var(--muted);letter-spacing:0.1em;text-align:center;min-height:10px}
+
+/* ── Overlay ── */
+#overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.95);flex-direction:column;align-items:center;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#overlay.open{display:flex}
+#ov-bar{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.07);flex-shrink:0}
+#ov-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:rgba(255,255,255,0.6);letter-spacing:0.12em}
+#ov-close{width:44px;height:44px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.7);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;flex-shrink:0}
+#ov-close:active{background:rgba(255,255,255,0.18)}
+#ov-body{width:100%;display:flex;flex-direction:column;align-items:center;padding:16px;gap:14px}
+#ov-hint{font-size:8px;color:rgba(255,255,255,0.36);letter-spacing:0.08em;text-align:center;line-height:1.9}
+#ov-save-link{display:none;padding:11px 28px;border:1px solid rgba(150,110,255,0.5);border-radius:6px;background:rgba(150,110,255,0.12);color:rgba(200,175,255,0.95);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;touch-action:manipulation}
+#ov-save-link:active{background:rgba(150,110,255,0.26)}
+#ov-media img,#ov-media video{max-width:100%;max-height:55vh;border-radius:6px;display:block}
+#ov-prog-wrap{width:90%;height:2px;background:rgba(255,255,255,0.08);border-radius:2px;display:none}
+#ov-prog-bar{height:100%;width:0%;background:rgba(150,110,255,0.7);border-radius:2px;transition:width .08s}
+#ov-prog-label{font-size:7.5px;color:rgba(255,255,255,0.32);letter-spacing:0.1em}
+
+/* ── Fullscreen preview ── */
+#fs-overlay{
+  display:none;position:fixed;inset:0;z-index:400;
+  background:#000;cursor:zoom-out;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+}
+#fs-overlay.open{display:block}
+#fs-canvas{
+  width:100%;height:100%;display:block;
+  object-fit:contain;
+}
+#fs-hint{
+  position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;
+  font-size:12px;color:rgba(255,255,255,0.22);letter-spacing:0.18em;
+  white-space:nowrap;pointer-events:none;
+  animation:fadeHint 3s ease forwards;
+}
+@keyframes fadeHint{0%{opacity:1}60%{opacity:1}100%{opacity:0}}
+
+/* Preset modal */
+#preset-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:300;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:10px}
+#preset-modal.open{display:flex}
+#preset-modal h2{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:14px;color:rgba(255,255,255,0.8)}
+#preset-modal p{font-size:8px;color:var(--muted);text-align:center;line-height:1.7}
+#preset-ta{width:100%;max-width:420px;height:180px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:4px;color:rgba(255,255,255,0.7);font-family:'DM Mono',monospace;font-size:8px;padding:10px;resize:none;outline:none;line-height:1.5}
+.modal-btns{display:flex;gap:8px}
+.modal-btns button{padding:9px 20px;width:auto;font-size:8px;border-radius:6px}
+</style>
+</head>
+<body>
+
+<div id="fs-overlay">
+  <canvas id="fs-canvas"></canvas>
+  <div id="fs-hint">tap to close</div>
+</div>
+
+<div id="overlay">
+  <div id="ov-bar"><span id="ov-title">export</span><div id="ov-close" role="button" tabindex="0">✕</div></div>
+  <div id="ov-body">
+    <div id="ov-hint"></div>
+    <div id="ov-prog-wrap"><div id="ov-prog-bar"></div></div>
+    <div id="ov-prog-label"></div>
+    <div id="ov-media"></div>
+    <a id="ov-save-link" href="#" download="bubble.png">⬇ Save to device</a>
+  </div>
+</div>
+
+<div id="preset-modal">
+  <h2>Preset</h2><p id="pm-hint"></p>
+  <textarea id="preset-ta" spellcheck="false"></textarea>
+  <div class="modal-btns">
+    <button id="pm-apply" style="border-color:rgba(150,110,255,0.4);color:rgba(190,160,255,0.9)">Apply</button>
+    <button id="pm-cancel">Cancel</button>
+  </div>
+</div>
+
+<div id="app">
+  <div id="stage">
+    <canvas id="c"></canvas>
+    <div id="label">iridescent bubble — asset generator</div>
+  </div>
+
+  <div id="panel">
+    <div id="panel-header">
+      <h1>Bubble Studio</h1>
+      <p>WebGL · Liquid Glass</p>
+    </div>
+
+    <div id="panel-scroll">
+
+      <!-- BUBBLES -->
+      <div class="section" id="sec-bubbles">
+        <div class="sec-head" data-sec="bubbles"><span class="sec-title">Bubbles</span><span class="sec-arrow">▾</span></div>
+        <div class="sec-body"><div class="sec-inner">
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Count</span><span class="ctrl-val" id="val-count">2</span></div><input type="range" id="sl-count" min="1" max="6" step="1" value="2"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Separation</span><span class="ctrl-val" id="val-sep">1.20</span></div><input type="range" id="sl-sep" min="0" max="3.0" step="0.05" value="1.2"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Size variance</span><span class="ctrl-val" id="val-sizevar">0.40</span></div><input type="range" id="sl-sizevar" min="0" max="1.0" step="0.01" value="0.40"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Merge softness</span><span class="ctrl-val" id="val-merge">0.18</span></div><input type="range" id="sl-merge" min="0.02" max="0.8" step="0.01" value="0.18"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Contact glow</span><span class="ctrl-val" id="val-neckg">1.20</span></div><input type="range" id="sl-neckg" min="0" max="3.0" step="0.05" value="1.2"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Collapse threshold</span><span class="ctrl-val" id="val-collapse">0.20</span></div><input type="range" id="sl-collapse" min="0.05" max="0.6" step="0.01" value="0.20"></div>
+        </div></div>
+      </div>
+
+      <!-- SHAPE -->
+      <div class="section" id="sec-shape">
+        <div class="sec-head" data-sec="shape"><span class="sec-title">Shape</span><span class="sec-arrow">▾</span></div>
+        <div class="sec-body"><div class="sec-inner">
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Base radius</span><span class="ctrl-val" id="val-radius">0.34</span></div><input type="range" id="sl-radius" min="0.1" max="0.65" step="0.01" value="0.34"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Sag (gravity)</span><span class="ctrl-val" id="val-sag">0.70</span></div><input type="range" id="sl-sag" min="0" max="0.8" step="0.01" value="0.70"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Wobble amount</span><span class="ctrl-val" id="val-wobble">0.55</span></div><input type="range" id="sl-wobble" min="0" max="1.5" step="0.01" value="0.55"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Wobble speed</span><span class="ctrl-val" id="val-wbspeed">0.28</span></div><input type="range" id="sl-wbspeed" min="0" max="1.5" step="0.01" value="0.28"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Wobble modes</span><span class="ctrl-val" id="val-wbmodes">3</span></div><input type="range" id="sl-wbmodes" min="1" max="5" step="1" value="3"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Breathe</span><span class="ctrl-val" id="val-breathe">0.01</span></div><input type="range" id="sl-breathe" min="0" max="0.14" step="0.005" value="0.01"></div>
+        </div></div>
+      </div>
+
+      <!-- COLOR FLOW -->
+      <div class="section" id="sec-flow">
+        <div class="sec-head" data-sec="flow"><span class="sec-title">Color Flow</span><span class="sec-arrow">▾</span></div>
+        <div class="sec-body"><div class="sec-inner">
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Film thickness</span><span class="ctrl-val" id="val-thickness">0.65</span></div><input type="range" id="sl-thickness" min="0.1" max="4.0" step="0.05" value="0.65"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Thickness gradient</span><span class="ctrl-val" id="val-tgrad">1.10</span></div><input type="range" id="sl-tgrad" min="0" max="3.0" step="0.05" value="1.10"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Flow speed</span><span class="ctrl-val" id="val-flowspeed">0.14</span></div><input type="range" id="sl-flowspeed" min="0" max="1.0" step="0.01" value="0.14"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Flow scale</span><span class="ctrl-val" id="val-flowscale">1.80</span></div><input type="range" id="sl-flowscale" min="0.2" max="5.0" step="0.05" value="1.80"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Vortex strength</span><span class="ctrl-val" id="val-vortex">0.65</span></div><input type="range" id="sl-vortex" min="0" max="2.0" step="0.05" value="0.65"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Iridescence</span><span class="ctrl-val" id="val-iridescence">1.95</span></div><input type="range" id="sl-iridescence" min="0" max="3.0" step="0.05" value="1.95"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Saturation</span><span class="ctrl-val" id="val-sat">1.10</span></div><input type="range" id="sl-sat" min="0" max="4.0" step="0.05" value="1.10"></div>
+        </div></div>
+      </div>
+
+      <!-- SURFACE -->
+      <div class="section" id="sec-surface">
+        <div class="sec-head" data-sec="surface"><span class="sec-title">Surface</span><span class="sec-arrow">▾</span></div>
+        <div class="sec-body"><div class="sec-inner">
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Fresnel power</span><span class="ctrl-val" id="val-fresnel">7.60</span></div><input type="range" id="sl-fresnel" min="0.5" max="10.0" step="0.1" value="7.6"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Fresnel strength</span><span class="ctrl-val" id="val-fstr">2.20</span></div><input type="range" id="sl-fstr" min="0" max="4.0" step="0.05" value="2.2"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Transparency</span><span class="ctrl-val" id="val-alpha">0.60</span></div><input type="range" id="sl-alpha" min="0" max="1.0" step="0.01" value="0.60"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Centre opacity</span><span class="ctrl-val" id="val-centreop">0.01</span></div><input type="range" id="sl-centreop" min="0" max="1.0" step="0.01" value="0.01"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Specular</span><span class="ctrl-val" id="val-spec">1.80</span></div><input type="range" id="sl-spec" min="0" max="3.0" step="0.05" value="1.8"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Spec sharpness</span><span class="ctrl-val" id="val-specexp">144</span></div><input type="range" id="sl-specexp" min="8" max="512" step="4" value="144"></div>
+        </div></div>
+      </div>
+
+      <!-- ANIMATION -->
+      <div class="section" id="sec-anim">
+        <div class="sec-head" data-sec="anim"><span class="sec-title">Animation</span><span class="sec-arrow">▾</span></div>
+        <div class="sec-body"><div class="sec-inner">
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Speed</span><span class="ctrl-val" id="val-speed">0.40</span></div><input type="range" id="sl-speed" min="0" max="2.0" step="0.01" value="0.40"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Turbulence</span><span class="ctrl-val" id="val-turb">0.40</span></div><input type="range" id="sl-turb" min="0" max="2.0" step="0.05" value="0.4"></div>
+          <div class="toggle-row"><span class="ctrl-label">Auto-rotate light</span><label class="toggle"><input type="checkbox" id="tog-rotlight"><span class="toggle-slider"></span></label></div>
+        </div></div>
+      </div>
+
+      <!-- BACKGROUND -->
+      <div class="section" id="sec-bg">
+        <div class="sec-head" data-sec="bg"><span class="sec-title">Background</span><span class="sec-arrow">▾</span></div>
+        <div class="sec-body"><div class="sec-inner">
+          <div class="ctrl"><div class="color-row"><input type="color" id="col-bg" value="#000000"><span class="color-label" style="color:rgba(255,255,255,0.48);font-size:9px">Background color</span></div></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Vignette</span><span class="ctrl-val" id="val-vig">0.70</span></div><input type="range" id="sl-vig" min="0" max="2.5" step="0.05" value="0.7"></div>
+          <div class="ctrl"><div class="ctrl-row"><span class="ctrl-label">Preview size</span><span class="ctrl-val" id="val-size">480</span></div><input type="range" id="sl-size" min="256" max="700" step="32" value="480"></div>
+        </div></div>
+      </div>
+
+    </div><!-- end panel-scroll -->
+
+    <div id="panel-footer">
+      <button id="btn-pause">⏸ Pause</button>
+      <div class="btn-row">
+        <button id="btn-save-preset">↑ Save preset</button>
+        <button id="btn-load-preset">↓ Load preset</button>
+      </div>
+      <button id="btn-reset">↺ Reset defaults</button>
+      <div class="status-line" id="settings-status"></div>
+      <div class="row2"><select id="sel-expsize"><option value="1024" selected>1024 px</option><option value="1440">1440 px</option><option value="2048">2048 px</option></select></div>
+      <button class="btn-purple" id="btn-export-png">⬡ Export PNG</button>
+      <div class="row2">
+        <select id="sel-dur"><option value="3">3 s</option><option value="5" selected>5 s</option><option value="10">10 s</option></select>
+        <select id="sel-fps"><option value="24">24 fps</option><option value="30" selected>30 fps</option></select>
+        <select id="sel-vidsize"><option value="512">512 px</option><option value="1024" selected>1024 px</option></select>
+      </div>
+      <button class="btn-red" id="btn-record">⏺ Record Video</button>
+      <div class="status-line" id="rec-status"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// GLSL
+// ═══════════════════════════════════════════════
+const VERT=`#version 300 es
+precision highp float;
+in vec2 a_pos;out vec2 v_uv;
+void main(){v_uv=a_pos*.5+.5;gl_Position=vec4(a_pos,0,1);}`;
+
+const FRAG=`#version 300 es
+precision highp float;
+in vec2 v_uv;out vec4 fragColor;
+
+uniform float u_time;
+uniform vec2  u_res;
+// bubbles
+uniform int   u_count;
+uniform vec4  u_bubbles[6];
+uniform float u_mergeK,u_neckGlow;
+// shape (surface-tension wobble replaces fBm warp)
+uniform float u_sag,u_wobble,u_wbspeed,u_wbmodes,u_breathe,u_turb;
+// color flow
+uniform float u_thickness,u_tgrad,u_iridescence,u_sat;
+uniform float u_flowSpeed,u_flowScale,u_vortex;
+// surface
+uniform float u_fresnelPow,u_fresnelStr,u_alpha,u_centreop,u_spec,u_specexp;
+// anim / render
+uniform float u_speed,u_rotlight,u_vig;
+uniform vec3  u_bgColor;
+
+// ── helpers ────────────────────────────────────
+float hash(float n){return fract(sin(n)*43758.5453);}
+float hash2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+
+// 2-D value noise (used for color flow)
+float vnoise2(vec2 p){
+  vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(hash2(i),hash2(i+vec2(1,0)),f.x),
+             mix(hash2(i+vec2(0,1)),hash2(i+vec2(1,1)),f.x),f.y);}
+
+// ── Surface-tension wobble ─────────────────────
+// Decompose point on sphere into spherical coords, apply
+// low-order harmonic-like sinusoidal deformations.
+// These produce the smooth oblate/prolate/lobing modes of
+// a real soap film instead of bumpy noise.
+float surfaceTensionWarp(vec3 dir, float t, float idx){
+  // dir = unit vector from bubble centre
+  float ph=atan(dir.y,dir.x);   // azimuth
+  float th=acos(clamp(dir.z,-1.,1.)); // polar
+
+  float w=0.;
+  float amp=u_wobble*0.12;
+  float spd=u_wbspeed*(1.+idx*0.18);
+  int   modes=int(u_wbmodes+.5);
+
+  // Mode 1: gentle oblate/prolate breathing (l=2,m=0)
+  if(modes>=1) w+=amp*sin(th*2.+t*spd*0.71+idx*1.3)*cos(t*spd*0.53);
+  // Mode 2: tilted equatorial bulge (l=2,m=2)
+  if(modes>=2) w+=amp*.65*sin(th)*cos(ph*2.+t*spd*0.61+idx*2.1)*sin(t*spd*0.44);
+  // Mode 3: gentle three-lobe (l=3,m=1)
+  if(modes>=3) w+=amp*.45*sin(th*3.)*cos(ph+t*spd*0.37+idx*0.9);
+  // Mode 4: slow four-lobe equatorial (l=4,m=4)
+  if(modes>=4) w+=amp*.30*pow(sin(th),2.)*cos(ph*4.+t*spd*0.29+idx*3.2);
+  // Mode 5: asymmetric drift (l=3,m=2)
+  if(modes>=5) w+=amp*.25*sin(th*2.+ph+t*spd*0.51+idx*1.7);
+
+  return w;
+}
+
+float bubbleSDF(vec3 pos,vec3 center,float radius,float t,float idx){
+  vec3 p=pos-center;
+  float r=length(p);
+  if(r<0.001)return -radius;
+  vec3 dir=p/r;
+
+  float br=sin(t*.63+idx*2.1)*u_breathe+sin(t*1.07+idx*1.5)*u_breathe*.35;
+  // Light centre drift (slow positional wobble, much less than shape warp)
+  vec3 drift=vec3(
+    sin(t*.19+idx*1.1)*0.05,
+    cos(t*.15+idx*0.9)*0.04,0.)*u_turb;
+  vec3 dirD=normalize(p-drift);
+
+  float stW=surfaceTensionWarp(dirD,t,idx);
+  float sag=(p.y-.04)*u_sag*.45;
+  return r-(radius+br+stW-sag);
+}
+
+// smooth-min full
+vec3 sminFull(float a,float b,float k){
+  float h=clamp(.5+.5*(b-a)/k,0.,1.);
+  float d=mix(b,a,h)-k*h*(1.-h);
+  float neck=1.-abs(h*2.-1.);
+  return vec3(d,h,neck);
+}
+
+vec3 sceneFull(vec3 pos,float t){
+  float d0=bubbleSDF(pos,u_bubbles[0].xyz,u_bubbles[0].w,t,0.);
+  float dom=0.,neck=0.,dF=d0;
+  for(int i=1;i<6;i++){
+    if(i>=u_count)break;
+    float di=bubbleSDF(pos,u_bubbles[i].xyz,u_bubbles[i].w,t,float(i));
+    vec3 sm=sminFull(dF,di,u_mergeK);
+    dom=mix(dom,float(i),sm.y);
+    float prox=1.-smoothstep(0.,u_mergeK*2.,abs(dF-di));
+    neck=max(neck,sm.z*prox);
+    dF=sm.x;
+  }
+  return vec3(dF,dom,neck);
+}
+float sceneDist(vec3 p,float t){return sceneFull(p,t).x;}
+
+vec3 sceneNormal(vec3 p,float t){
+  float e=.0038;
+  return normalize(vec3(
+    sceneDist(p+vec3(e,0,0),t)-sceneDist(p-vec3(e,0,0),t),
+    sceneDist(p+vec3(0,e,0),t)-sceneDist(p-vec3(0,e,0),t),
+    sceneDist(p+vec3(0,0,e),t)-sceneDist(p-vec3(0,0,e),t)));
+}
+
+// ── Color flow ─────────────────────────────────
+// Animated 2-D curl-like advection on the sphere surface.
+// We project onto the local tangent plane, apply a rotating
+// noise field, and use the result as an offset into the
+// film thickness lookup.
+vec2 flowField(vec2 uv,float t){
+  float ft=t*u_flowSpeed;
+  // Two noise layers at different scales — curl-approximate
+  float n1=vnoise2(uv*u_flowScale           +ft*.7)*2.-1.;
+  float n2=vnoise2(uv*u_flowScale*1.7+vec2(5.3,2.8)-ft*.5)*2.-1.;
+  // Vortex rotation component
+  vec2 centre=uv-.5;
+  float ang=atan(centre.y,centre.x)+ft*u_vortex*.4;
+  float rad=length(centre);
+  vec2 vort=vec2(cos(ang),sin(ang))*rad*u_vortex;
+  return vec2(n1,n2)*0.35+vort*0.3;
+}
+
+// ── Thin-film ──────────────────────────────────
+vec3 film(float c,float d){
+  float n=1.34,c2=sqrt(max(0.,1.-(1.-c*c)/(n*n))),opd=2.*n*d*c2,P=6.28318;
+  return vec3(.5+.5*cos(P*opd/650.),.5+.5*cos(P*opd/540.),.5+.5*cos(P*opd/460.));}
+vec3 sat3(vec3 c,float s){return mix(vec3(dot(c,vec3(.2126,.7152,.0722))),c,s);}
+
+// ── Main ───────────────────────────────────────
+void main(){
+  vec2 uv=(v_uv-.5)*2.;float asp=u_res.x/u_res.y;uv.x*=asp;
+  float t=u_time*u_speed;
+  vec3 ro=vec3(0.,.04,2.8),rd=normalize(vec3(uv,-1.6));
+  float la=u_rotlight>.5?t*.35+.5:.5;
+  vec3 lp1=vec3(sin(la)*1.8,-.5,cos(la)*1.6+.8);
+  vec3 lp2=vec3(-1.6,1.4,1.4);
+  vec3 lc1=vec3(1.,.97,.92),lc2=vec3(.55,.68,1.);
+
+  float dist=0.;bool hit=false;
+  for(int i=0;i<128;i++){
+    vec3 p=ro+rd*dist;
+    float d=sceneDist(p,t);
+    if(d<.0014){hit=true;break;}
+    if(dist>8.)break;
+    dist+=d*.78;
+  }
+
+  vec3 col=u_bgColor;
+  if(hit){
+    vec3 p=ro+rd*dist;
+    vec3 info=sceneFull(p,t);
+    float neckW=info.z;
+
+    vec3 n=sceneNormal(p,t),v=-rd;
+    vec3 l1=normalize(lp1-p),l2=normalize(lp2-p);
+    vec3 h1=normalize(l1+v),h2=normalize(l2+v);
+    float cosV=max(0.,dot(n,v));
+    float fresnel=u_fresnelStr*pow(clamp(1.-cosV,0.,1.),u_fresnelPow);
+
+    // Dominant bubble for local coords
+    int bIdx=clamp(int(info.y+.5),0,5);
+    vec3 bCtr=u_bubbles[bIdx].xyz;
+    float bRad=u_bubbles[bIdx].w;
+    vec3 localP=p-bCtr;
+    float yN=clamp((-localP.y/bRad+1.)*.5,0.,1.);
+
+    // ── Color flow: build animated UV on sphere surface ──
+    // Project local point onto sphere and build 2-D coords
+    vec3 dirL=normalize(localP);
+    // Spherical UV
+    vec2 sphUV=vec2(atan(dirL.x,dirL.z)/(2.*3.14159)+.5,
+                    acos(clamp(dirL.y,-1.,1.))/3.14159);
+    // Apply animated flow field offset
+    vec2 flowOff=flowField(sphUV,t*u_speed);
+    vec2 warpedUV=sphUV+flowOff;
+
+    // Build film thickness from warped UV
+    float flowThin=vnoise2(warpedUV*u_flowScale*1.4+t*u_flowSpeed*.3)*.5+.5;
+    float fd = u_thickness*140.+80.
+             + yN*u_tgrad*220.
+             + flowThin*80.*u_vortex           // flow contribution
+             + vnoise2(sphUV*3.+t*u_flowSpeed*.15)*40.; // fine detail
+    float fd2= u_thickness*98.+40.*flowThin
+             + yN*u_tgrad*110.;
+
+    vec3 fc=sat3(mix(film(cosV,fd),sat3(film(max(0.,dot(n,l1)),fd2),u_sat*.8),.35),u_sat);
+
+    vec3 diff=fc*(max(0.,dot(n,l1))*.15*lc1+max(0.,dot(n,l2))*.08*lc2);
+    vec3 spec=lc1*pow(max(0.,dot(n,h1)),u_specexp)*u_spec
+             +lc2*pow(max(0.,dot(n,h2)),u_specexp*.4)*u_spec*.2;
+    float em=clamp(fresnel+smoothstep(.6,0.,cosV)*.3,0.,1.);
+
+    col=mix(
+      mix(u_bgColor,fc*.4+u_bgColor,u_centreop),
+      u_bgColor+fc*u_iridescence*u_alpha+fc*fresnel*.5+diff+spec,
+      em);
+
+    // Contact membrane glow
+    col+=mix(fc*1.5,vec3(1.,.97,.9),.55)*pow(neckW,2.5)*u_neckGlow;
+  }
+
+  float vig=1.-u_vig*.45*dot(uv*vec2(1./asp,1.),uv*vec2(1./asp,1.));
+  col*=clamp(vig,0.,1.);
+  col=col*(1.+col*.12)/(col+.55)*1.35;
+  col=pow(max(col,0.),vec3(1./2.2));
+  fragColor=vec4(clamp(col,0.,1.),1.);
+}`;
+
+// ═══════════════════════════════════════════════
+// GL factory
+// ═══════════════════════════════════════════════
+function buildGL(cvs){
+  const gl=cvs.getContext('webgl2',{preserveDrawingBuffer:true,antialias:false});
+  if(!gl)return null;
+  function cs(src,type){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))console.error(gl.getShaderInfoLog(s));return s;}
+  const prog=gl.createProgram();
+  gl.attachShader(prog,cs(VERT,gl.VERTEX_SHADER));gl.attachShader(prog,cs(FRAG,gl.FRAGMENT_SHADER));gl.linkProgram(prog);gl.useProgram(prog);
+  const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const ap=gl.getAttribLocation(prog,'a_pos');gl.enableVertexAttribArray(ap);gl.vertexAttribPointer(ap,2,gl.FLOAT,false,0,0);
+  const U={};
+  ['u_time','u_res','u_count','u_bubbles','u_mergeK','u_neckGlow',
+   'u_sag','u_wobble','u_wbspeed','u_wbmodes','u_breathe','u_turb',
+   'u_thickness','u_tgrad','u_iridescence','u_sat',
+   'u_flowSpeed','u_flowScale','u_vortex',
+   'u_fresnelPow','u_fresnelStr','u_alpha','u_centreop','u_spec','u_specexp',
+   'u_speed','u_rotlight','u_vig','u_bgColor'
+  ].forEach(n=>U[n]=gl.getUniformLocation(prog,n));
+  return{gl,U};
+}
+
+function drawFrame(ctx,p,bubs,t,w,h){
+  const{gl,U}=ctx;
+  gl.viewport(0,0,w,h);
+  gl.uniform1f(U.u_time,t);gl.uniform2f(U.u_res,w,h);
+  gl.uniform1i(U.u_count,Math.min(bubs.length,6));
+  const flat=new Float32Array(24);
+  for(let i=0;i<6;i++){const b=bubs[i]||{x:0,y:0,z:0,r:.001};flat[i*4]=b.x;flat[i*4+1]=b.y;flat[i*4+2]=b.z;flat[i*4+3]=b.r;}
+  gl.uniform4fv(U.u_bubbles,flat);
+  gl.uniform1f(U.u_mergeK,p.merge);gl.uniform1f(U.u_neckGlow,p.neckGlow);
+  gl.uniform1f(U.u_sag,p.sag);gl.uniform1f(U.u_wobble,p.wobble);
+  gl.uniform1f(U.u_wbspeed,p.wbspeed);gl.uniform1f(U.u_wbmodes,p.wbmodes);
+  gl.uniform1f(U.u_breathe,p.breathe);gl.uniform1f(U.u_turb,p.turb);
+  gl.uniform1f(U.u_thickness,p.thickness);gl.uniform1f(U.u_tgrad,p.tgrad);
+  gl.uniform1f(U.u_iridescence,p.iridescence);gl.uniform1f(U.u_sat,p.sat);
+  gl.uniform1f(U.u_flowSpeed,p.flowSpeed);gl.uniform1f(U.u_flowScale,p.flowScale);gl.uniform1f(U.u_vortex,p.vortex);
+  gl.uniform1f(U.u_fresnelPow,p.fresnelPow);gl.uniform1f(U.u_fresnelStr,p.fresnelStr);
+  gl.uniform1f(U.u_alpha,p.alpha);gl.uniform1f(U.u_centreop,p.centreop);
+  gl.uniform1f(U.u_spec,p.spec);gl.uniform1f(U.u_specexp,p.specexp);
+  gl.uniform1f(U.u_speed,p.speed);gl.uniform1f(U.u_rotlight,p.rotlight);
+  gl.uniform1f(U.u_vig,p.vig);gl.uniform3fv(U.u_bgColor,p.bgColor);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+}
+
+// ═══════════════════════════════════════════════
+// Physics
+// ═══════════════════════════════════════════════
+function bubbleRadii(count,base,variance){
+  const seed=[0.72,1.18,0.88,1.35,0.60,1.05];
+  return Array.from({length:count},(_,i)=>Math.max(0.08,base*(1+(seed[i%6]-0.9)*variance*1.4)));
+}
+class BubbleSim{
+  constructor(){this.bubbles=[];this.radii=[];}
+  reset(count,base,sep,variance){
+    this.radii=bubbleRadii(count,base,variance);
+    this.bubbles=Array.from({length:count},(_,i)=>{
+      const a=i*(Math.PI*2/count)-(Math.PI/2);
+      const ringR=count===1?0:base*1.6*sep;
+      return{x:count===1?0:Math.cos(a)*ringR,y:count===1?0:Math.sin(a)*ringR*.5,z:0,vx:(Math.random()-.5)*.003,vy:(Math.random()-.5)*.003,phase:Math.random()*Math.PI*2};
+    });
+  }
+  step(dt,base,sep,collapseT,variance){
+    const bs=this.bubbles,N=bs.length,now=performance.now()*.001;
+    this.radii=bubbleRadii(N,base,variance);
+    for(let i=0;i<N;i++){
+      bs[i].vx+=-bs[i].x*.004*dt*60;bs[i].vy+=-bs[i].y*.003*dt*60;
+      bs[i].vx+=(Math.sin(bs[i].phase*1.3+now*.29)*.0012)*dt*60;
+      bs[i].vy+=(Math.cos(bs[i].phase*0.9+now*.21)*.0010)*dt*60;
+      for(let j=i+1;j<N;j++){
+        const dx=bs[j].x-bs[i].x,dy=bs[j].y-bs[i].y;
+        const dist=Math.sqrt(dx*dx+dy*dy)||.0001;
+        const sumR=this.radii[i]+this.radii[j];
+        const overlap=dist-sumR;
+        if(overlap<-collapseT*sumR){
+          const f=.10*dt*60;bs[i].vx+=dx/dist*f;bs[i].vy+=dy/dist*f;bs[j].vx-=dx/dist*f;bs[j].vy-=dy/dist*f;
+        } else {
+          const delta=dist-sumR*sep;
+          const str=delta<0?delta*.06*dt*60:delta*.007*dt*60;
+          bs[i].vx+=dx/dist*str;bs[i].vy+=dy/dist*str;bs[j].vx-=dx/dist*str;bs[j].vy-=dy/dist*str;
+        }
+      }
+      bs[i].vx*=.97;bs[i].vy*=.97;bs[i].x+=bs[i].vx;bs[i].y+=bs[i].vy;
+      if(Math.abs(bs[i].x)>.82){bs[i].vx*=-.4;bs[i].x=Math.sign(bs[i].x)*.82;}
+      if(Math.abs(bs[i].y)>.55){bs[i].vy*=-.4;bs[i].y=Math.sign(bs[i].y)*.55;}
+    }
+  }
+  getData(){return this.bubbles.map((b,i)=>({x:b.x,y:b.y,z:0,r:this.radii[i]||.1}));}
+}
+const sim=new BubbleSim();
+
+// ═══════════════════════════════════════════════
+// Canvases
+// ═══════════════════════════════════════════════
+const pCvs=document.getElementById('c');
+const pCtx=buildGL(pCvs);
+const oCvs=document.createElement('canvas');
+const oCtx=buildGL(oCvs);
+// Fullscreen hi-res canvas
+const fsCvs=document.getElementById('fs-canvas');
+const fsCtx=buildGL(fsCvs);
+let fsOpen=false;
+
+function openFullscreen(){
+  // Size to physical pixels, capped at 2048 on each side
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const W=Math.min(Math.round(window.screen.width*dpr),2048);
+  const H=Math.min(Math.round(window.screen.height*dpr),2048);
+  fsCvs.width=W;fsCvs.height=H;
+  // CSS fills the screen; GL viewport matches physical pixels
+  document.getElementById('fs-overlay').classList.add('open');
+  fsOpen=true;
+  // Re-inject fade hint each open
+  const hint=document.getElementById('fs-hint');
+  hint.style.animation='none';
+  void hint.offsetWidth; // reflow
+  hint.style.animation='fadeHint 3s ease forwards';
+}
+function closeFullscreen(){
+  document.getElementById('fs-overlay').classList.remove('open');
+  fsOpen=false;
+}
+
+// Tap preview canvas → open
+pCvs.addEventListener('click',()=>openFullscreen());
+pCvs.addEventListener('touchend',e=>{e.preventDefault();openFullscreen();},{passive:false});
+
+// Tap fullscreen canvas → close
+['click','touchend'].forEach(ev=>{
+  document.getElementById('fs-overlay').addEventListener(ev,e=>{
+    e.preventDefault();e.stopPropagation();closeFullscreen();
+  },{passive:false});
+});
+// Escape key
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&fsOpen)closeFullscreen();});
+
+// ═══════════════════════════════════════════════
+// Defaults
+// ═══════════════════════════════════════════════
+const DEFAULTS={
+  count:2,sep:1.20,sizevar:.40,merge:.18,neckGlow:1.20,collapse:.20,
+  radius:.34,sag:.70,wobble:.55,wbspeed:.28,wbmodes:3,breathe:.01,
+  thickness:.65,tgrad:1.10,flowSpeed:.14,flowScale:1.80,vortex:.65,
+  iridescence:1.95,sat:1.10,
+  fresnelPow:7.60,fresnelStr:2.20,alpha:.60,centreop:.01,spec:1.80,specexp:144,
+  speed:.40,turb:.40,rotlight:0,
+  bgColor:[0,0,0],bgHex:'#000000',vig:.70,size:480
+};
+let params=JSON.parse(JSON.stringify(DEFAULTS));
+let paused=false,t0=performance.now(),pausedAt=0,totalPaused=0,lastT=0;
+
+function resizePreview(){
+  const s=params.size;pCvs.width=s;pCvs.height=s;
+  const d=Math.min(s,window.innerHeight-40);
+  pCvs.style.width=d+'px';pCvs.style.height=d+'px';
+}
+resizePreview();
+
+// ═══════════════════════════════════════════════
+// Render loop
+// ═══════════════════════════════════════════════
+let lastPhysT=performance.now();
+function loop(ts){
+  if(!paused){
+    lastT=(ts-t0-totalPaused)/1000;
+    const dt=Math.min((ts-lastPhysT)/1000,.05);lastPhysT=ts;
+    sim.step(dt,params.radius,params.sep,params.collapse,params.sizevar);
+    const bubs=sim.getData();
+    drawFrame(pCtx,params,bubs,lastT,params.size,params.size);
+    if(fsOpen&&fsCtx){
+      drawFrame(fsCtx,params,bubs,lastT,fsCvs.width,fsCvs.height);
+    }
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+// ═══════════════════════════════════════════════
+// Controls
+// ═══════════════════════════════════════════════
+function wire(id,key,fmt,cb){
+  const el=document.getElementById(id);
+  const vl=document.getElementById('val-'+id.replace('sl-',''));
+  el.addEventListener('input',()=>{
+    const v=parseFloat(el.value);params[key]=v;
+    if(vl)vl.textContent=fmt?fmt(v):v.toFixed(2);
+    if(cb)cb(v);
+  });
+}
+wire('sl-count','count',v=>parseInt(v),v=>sim.reset(Math.round(v),params.radius,params.sep,params.sizevar));
+wire('sl-sep','sep');wire('sl-sizevar','sizevar',null,v=>sim.reset(Math.round(params.count),params.radius,params.sep,v));
+wire('sl-merge','merge');wire('sl-neckg','neckGlow');wire('sl-collapse','collapse');
+wire('sl-radius','radius');wire('sl-sag','sag');
+wire('sl-wobble','wobble');wire('sl-wbspeed','wbspeed');wire('sl-wbmodes','wbmodes',v=>parseInt(v));wire('sl-breathe','breathe');
+wire('sl-thickness','thickness');wire('sl-tgrad','tgrad');
+wire('sl-flowspeed','flowSpeed');wire('sl-flowscale','flowScale');wire('sl-vortex','vortex');
+wire('sl-iridescence','iridescence');wire('sl-sat','sat');
+wire('sl-fresnel','fresnelPow');wire('sl-fstr','fresnelStr');
+wire('sl-alpha','alpha');wire('sl-centreop','centreop');
+wire('sl-spec','spec');wire('sl-specexp','specexp',v=>parseInt(v));
+wire('sl-speed','speed');wire('sl-turb','turb');wire('sl-vig','vig');
+document.getElementById('sl-size').addEventListener('input',e=>{params.size=parseInt(e.target.value);document.getElementById('val-size').textContent=params.size;resizePreview();});
+document.getElementById('tog-rotlight').addEventListener('change',e=>{params.rotlight=e.target.checked?1:0;});
+document.getElementById('col-bg').addEventListener('input',e=>{
+  const h=e.target.value;params.bgHex=h;
+  params.bgColor=[parseInt(h.slice(1,3),16)/255,parseInt(h.slice(3,5),16)/255,parseInt(h.slice(5,7),16)/255];
+  document.documentElement.style.setProperty('--bg',h);document.getElementById('stage').style.background=h;
+});
+
+const btnPause=document.getElementById('btn-pause');
+btnPause.addEventListener('click',()=>{
+  paused=!paused;
+  if(paused){pausedAt=performance.now();btnPause.textContent='▶ Resume';}
+  else{totalPaused+=performance.now()-pausedAt;btnPause.textContent='⏸ Pause';}
+});
+
+function applyToDOM(){
+  function s(id,val,fmt){
+    const el=document.getElementById(id);if(el)el.value=val;
+    const vl=document.getElementById('val-'+id.replace('sl-',''));
+    if(vl)vl.textContent=fmt?fmt(val):parseFloat(val).toFixed(2);
+  }
+  s('sl-count',params.count,v=>parseInt(v));s('sl-sep',params.sep);
+  s('sl-sizevar',params.sizevar);s('sl-merge',params.merge);s('sl-neckg',params.neckGlow);s('sl-collapse',params.collapse);
+  s('sl-radius',params.radius);s('sl-sag',params.sag);
+  s('sl-wobble',params.wobble);s('sl-wbspeed',params.wbspeed);s('sl-wbmodes',params.wbmodes,v=>parseInt(v));s('sl-breathe',params.breathe);
+  s('sl-thickness',params.thickness);s('sl-tgrad',params.tgrad);
+  s('sl-flowspeed',params.flowSpeed);s('sl-flowscale',params.flowScale);s('sl-vortex',params.vortex);
+  s('sl-iridescence',params.iridescence);s('sl-sat',params.sat);
+  s('sl-fresnel',params.fresnelPow);s('sl-fstr',params.fresnelStr);
+  s('sl-alpha',params.alpha);s('sl-centreop',params.centreop);
+  s('sl-spec',params.spec);s('sl-specexp',params.specexp,v=>parseInt(v));
+  s('sl-speed',params.speed);s('sl-turb',params.turb);s('sl-vig',params.vig);s('sl-size',params.size,v=>parseInt(v));
+  document.getElementById('tog-rotlight').checked=params.rotlight>0.5;
+  const h=params.bgHex||'#000000';document.getElementById('col-bg').value=h;
+  document.documentElement.style.setProperty('--bg',h);document.getElementById('stage').style.background=h;
+  sim.reset(Math.round(params.count),params.radius,params.sep,params.sizevar);
+  resizePreview();
+}
+applyToDOM();
+
+// ═══════════════════════════════════════════════
+// Collapsible sections
+// ═══════════════════════════════════════════════
+document.querySelectorAll('.sec-head').forEach(head=>{
+  head.addEventListener('click',()=>{
+    head.closest('.section').classList.toggle('closed');
+  });
+});
+
+// ═══════════════════════════════════════════════
+// Settings
+// ═══════════════════════════════════════════════
+const SK='bubble_v7';
+function flash(msg,c='rgba(150,200,150,0.75)'){
+  const el=document.getElementById('settings-status');el.style.color=c;el.textContent=msg;
+  setTimeout(()=>el.textContent='',2200);
+}
+try{const sv=localStorage.getItem(SK);if(sv){Object.assign(params,JSON.parse(sv));applyToDOM();}}catch(e){}
+
+document.getElementById('btn-save-preset').addEventListener('click',()=>{
+  const json=JSON.stringify(params,null,2);
+  try{localStorage.setItem(SK,json);}catch(e){}
+  document.getElementById('pm-hint').textContent='Copy and save this JSON. Paste it back to restore.';
+  document.getElementById('preset-ta').value=json;
+  try{navigator.clipboard.writeText(json).then(()=>flash('Copied ✓')).catch(()=>{});}catch(e){}
+  document.getElementById('preset-modal').classList.add('open');
+});
+document.getElementById('btn-load-preset').addEventListener('click',()=>{
+  document.getElementById('pm-hint').textContent='Paste your saved preset JSON, then tap Apply.';
+  document.getElementById('preset-ta').value='';
+  document.getElementById('preset-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('preset-ta').focus(),100);
+});
+document.getElementById('pm-apply').addEventListener('click',()=>{
+  try{Object.assign(params,JSON.parse(document.getElementById('preset-ta').value));applyToDOM();document.getElementById('preset-modal').classList.remove('open');flash('Applied ✓');}
+  catch(e){flash('Invalid JSON','rgba(255,120,120,0.75)');}
+});
+document.getElementById('pm-cancel').addEventListener('click',()=>document.getElementById('preset-modal').classList.remove('open'));
+document.getElementById('btn-reset').addEventListener('click',()=>{params=JSON.parse(JSON.stringify(DEFAULTS));applyToDOM();flash('Reset ✓');});
+
+// ═══════════════════════════════════════════════
+// Overlay
+// ═══════════════════════════════════════════════
+const overlay=document.getElementById('overlay');
+const ovTitle=document.getElementById('ov-title');
+const ovHint=document.getElementById('ov-hint');
+const ovMedia=document.getElementById('ov-media');
+const ovSaveLink=document.getElementById('ov-save-link');
+const ovProgWrap=document.getElementById('ov-prog-wrap');
+const ovProgBar=document.getElementById('ov-prog-bar');
+const ovProgLbl=document.getElementById('ov-prog-label');
+let recAbort=false;
+
+function closeOverlay(){
+  overlay.classList.remove('open');ovMedia.innerHTML='';ovSaveLink.style.display='none';
+  ovProgWrap.style.display='none';ovProgLbl.textContent='';ovTitle.textContent='export';ovHint.textContent='';
+  recAbort=true;
+}
+['click','touchend'].forEach(ev=>{
+  document.getElementById('ov-close').addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();closeOverlay();},{passive:false});
+});
+function openOverlay(title){
+  ovTitle.textContent=title;ovHint.textContent='';ovMedia.innerHTML='';ovSaveLink.style.display='none';
+  ovProgWrap.style.display='block';ovProgBar.style.width='0%';ovProgLbl.textContent='';overlay.classList.add('open');
+}
+function setProgress(pct,label){ovProgBar.style.width=pct+'%';if(label!==undefined)ovProgLbl.textContent=label;}
+function showSaveLink(href,fn,hint){
+  ovProgWrap.style.display='none';ovProgLbl.textContent='';ovHint.textContent=hint;
+  ovSaveLink.href=href;ovSaveLink.download=fn;ovSaveLink.style.display='inline-block';
+}
+
+document.getElementById('btn-export-png').addEventListener('click',()=>{
+  const size=parseInt(document.getElementById('sel-expsize').value);
+  openOverlay(`Rendering ${size}×${size}…`);setProgress(5);
+  setTimeout(()=>{
+    try{
+      oCvs.width=size;oCvs.height=size;
+      drawFrame(oCtx,params,sim.getData(),lastT,size,size);oCtx.gl.finish();setProgress(85);
+      const dataURL=oCvs.toDataURL('image/png');setProgress(100);
+      setTimeout(()=>{
+        ovTitle.textContent=`${size}×${size} PNG ready`;
+        const img=document.createElement('img');img.src=dataURL;
+        img.style.cssText='max-width:100%;max-height:50vh;border-radius:6px;display:block';
+        ovMedia.innerHTML='';ovMedia.appendChild(img);
+        showSaveLink(dataURL,`bubble_${size}_${Date.now()}.png`,'Tap ⬇ to save · or long-press the image');
+      },100);
+    }catch(e){closeOverlay();alert('Failed: '+e.message);}
+  },60);
+});
+
+const btnRec=document.getElementById('btn-record');
+btnRec.addEventListener('click',async()=>{
+  if(btnRec.classList.contains('recording')){recAbort=true;return;}
+  const fps=parseInt(document.getElementById('sel-fps').value);
+  const dur=parseInt(document.getElementById('sel-dur').value);
+  const size=parseInt(document.getElementById('sel-vidsize').value);
+  const total=fps*dur;
+  let mime=null;
+  if(typeof MediaRecorder!=='undefined')
+    for(const t of['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'])
+      if(MediaRecorder.isTypeSupported(t)){mime=t;break;}
+  if(!mime){document.getElementById('rec-status').textContent='Video unsupported';setTimeout(()=>document.getElementById('rec-status').textContent='',3e3);return;}
+  recAbort=false;btnRec.textContent='⏹ Stop';btnRec.classList.add('recording');openOverlay('Recording…');
+  oCvs.width=size;oCvs.height=size;
+  const stream=oCvs.captureStream(fps);const chunks=[];
+  const rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:10_000_000});
+  rec.ondataavailable=e=>{if(e.data&&e.data.size>0)chunks.push(e.data);};
+  const tStart=lastT;
+  const snap=JSON.parse(JSON.stringify({bubbles:sim.bubbles,radii:sim.radii}));
+  rec.start(150);
+  for(let i=0;i<total;i++){
+    if(recAbort)break;
+    sim.step(1/fps,params.radius,params.sep,params.collapse,params.sizevar);
+    drawFrame(oCtx,params,sim.getData(),tStart+i/fps,size,size);oCtx.gl.finish();
+    setProgress(Math.round(i/total*88),`Frame ${i+1}/${total}  —  ${Math.ceil((total-i)/fps)}s left`);
+    await new Promise(r=>setTimeout(r,0));
+  }
+  sim.bubbles=snap.bubbles;sim.radii=snap.radii;
+  rec.stop();setProgress(94,'Encoding…');await new Promise(r=>{rec.onstop=r;});
+  btnRec.textContent='⏺ Record Video';btnRec.classList.remove('recording');
+  if(recAbort){closeOverlay();return;}
+  setProgress(100,'');
+  const blob=new Blob(chunks,{type:mime});const url=URL.createObjectURL(blob);
+  ovTitle.textContent=`${size}px · ${fps}fps · ${dur}s`;
+  const vid=document.createElement('video');vid.src=url;vid.controls=true;vid.autoplay=true;vid.loop=true;
+  vid.style.cssText='max-width:100%;max-height:50vh;border-radius:6px;display:block';
+  ovMedia.innerHTML='';ovMedia.appendChild(vid);
+  showSaveLink(url,`bubble_${size}_${fps}fps_${Date.now()}.webm`,'Tap ⬇ to save · or long-press the video');
+});
+</script>
+</body>
+</html>

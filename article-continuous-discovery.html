@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kicking it off — Fredrik Påhlman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F5F0;
+      --bg-alt: #EDEAE3;
+      --ink: #1A1814;
+      --ink-mid: #6B6760;
+      --ink-light: #B0ADA7;
+      --accent: #C8562A;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+      --pad: clamp(1.5rem, 5vw, 4rem);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem var(--pad);
+      background: var(--bg);
+      border-bottom: 1px solid var(--bg-alt);
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1rem;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-links a.active { color: var(--ink); }
+
+    /* Article layout */
+    .article-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 8rem var(--pad) 6rem;
+    }
+
+    .article-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      margin-bottom: 3rem;
+      transition: color 0.2s;
+    }
+    .article-back:hover { color: var(--ink); }
+
+    .article-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+    }
+    .article-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .article-date {
+      font-size: 0.8125rem;
+      color: var(--ink-light);
+    }
+    .article-read {
+      font-size: 0.8125rem;
+      color: var(--ink-light);
+    }
+    .article-dot {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: var(--ink-light);
+    }
+
+    h1.article-title {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.6rem;
+    }
+    .article-subtitle {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      color: var(--ink-mid);
+      font-style: italic;
+      margin-bottom: 2rem;
+      line-height: 1.4;
+    }
+
+    .article-lede {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      font-weight: 300;
+      line-height: 1.65;
+      color: var(--ink-mid);
+      border-left: 2px solid var(--accent);
+      padding-left: 1.25rem;
+      margin-bottom: 3rem;
+    }
+
+    .article-divider {
+      border: none;
+      border-top: 1px solid var(--bg-alt);
+      margin: 3rem 0;
+    }
+
+    /* Prose */
+    .prose p {
+      font-size: 1.0625rem;
+      line-height: 1.85;
+      color: var(--ink);
+      margin-bottom: 1.75rem;
+    }
+    .prose h2 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1.5rem;
+      letter-spacing: -0.01em;
+      margin: 3rem 0 1rem;
+      line-height: 1.3;
+    }
+    .prose h3 {
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: 0.875rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      margin: 2.5rem 0 0.75rem;
+    }
+    .prose blockquote {
+      border-left: 2px solid var(--ink-light);
+      padding-left: 1.25rem;
+      margin: 2rem 0;
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.125rem;
+      color: var(--ink-mid);
+      line-height: 1.6;
+    }
+
+    /* Pull quote — prominent version for the key line */
+    .pull-quote {
+      border-left: none;
+      padding: 2rem 2.5rem;
+      margin: 3rem -2.5rem;
+      background: var(--bg-alt);
+      border-radius: 4px;
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+      font-weight: 300;
+      color: var(--ink);
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+    }
+    @media (max-width: 600px) {
+      .pull-quote { margin: 3rem 0; padding: 1.5rem; }
+    }
+
+    /* Author footer */
+    .article-author {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-top: 4rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--bg-alt);
+    }
+    .article-author-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--bg-alt);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--serif);
+      font-size: 1.125rem;
+      color: var(--ink-mid);
+      flex-shrink: 0;
+    }
+    .article-author-name {
+      font-weight: 500;
+      font-size: 0.9375rem;
+    }
+    .article-author-title {
+      font-size: 0.8125rem;
+      color: var(--ink-mid);
+      margin-top: 0.15rem;
+    }
+
+    footer {
+      padding: 3rem var(--pad);
+      border-top: 1px solid var(--bg-alt);
+    }
+    .footer-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-name {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--ink-mid);
+    }
+    .footer-links { display: flex; gap: 1.75rem; list-style: none; }
+    .footer-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Fredrik Påhlman</a>
+    <ul class="nav-links">
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="writing.html" class="active">Writing</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="mailto:fredrikande@gmail.com">Contact</a></li>
+    </ul>
+  </nav>
+
+  <article class="article-wrap">
+
+    <a href="writing.html" class="article-back">← All writing</a>
+
+    <div class="article-meta">
+      <span class="article-tag">Product Discovery</span>
+      <span class="article-dot"></span>
+      <span class="article-date">June 2026</span>
+      <span class="article-dot"></span>
+      <span class="article-read">5 min read</span>
+    </div>
+
+    <h1 class="article-title">Kicking it off</h1>
+    <p class="article-subtitle">How we got continuous discovery up and running at Sleep Cycle</p>
+
+    <p class="article-lede">
+      We went from sporadic, project-based research to weekly user sessions with every product team. Here's how it started, what we built around it, and the one rule that made it stick.
+    </p>
+
+    <hr class="article-divider" />
+
+    <div class="prose">
+
+      <p>
+        Every Wednesday, product designers in the Sleep Cycle office in Gothenburg have a very particular job to do. It's discovery day, and we all have user sessions lined up. Each of us have our own topics to cover, Figma prototypes to get tested, and assumptions about user behaviour to confirm or see crash hard against cruel reality. We aim for one or two interviews per product team each week, but it's often a game of chance whether the person on the other end will show up. We have struggled with a too-high no-show rate recently and it bugs me — it makes it harder to involve more people in the interviews, risking wasting their time if the user doesn't show up. Today I brought David with me, a newly hired Android developer on our Activation team. I want to make user contact a standing part of the onboarding routine at Sleep Cycle for every employee.
+      </p>
+
+      <p>
+        It wasn't always like this.
+      </p>
+
+      <p>
+        When I joined the company about two years ago, user contact was scarce and far between. That's not to say nobody cared — people cared a lot. But the research that was happening came in bursts. It was project-based, tied to specific initiatives, and when a project wrapped up, the contact with users wrapped up with it. In between, you had NPS surveys, app store reviews, and whatever you could piece together from analytics. Useful, all of it. But none of it told you <em>why</em>. None of it got you under the surface to the actual motivations and frustrations of the people using the product every night.
+      </p>
+
+      <p>
+        That bothered me. Sleep Cycle has roughly two million active users. They let the app sit on their nightstand, track their breathing, and decide when to wake them up. That is an intimate relationship. And we were mostly learning about it through star ratings.
+      </p>
+
+      <p>
+        So two weeks into the job — before I'd even fully figured out how to get access to the bike storage — we kicked off our first discovery session. It was me and Andrea, one of our staff product designers, on a call with a woman in New Zealand. The script was edited last minute. We were nervous. We stumbled over questions and stepped on each other's sentences. But then she started talking. Really talking — about her sleep, her anxiety, the specific moment she'd realised the app had changed something for her. And that was it. Everything clicked. You can read a thousand survey responses and never get what you get from twenty minutes with one real person.
+      </p>
+
+      <p>
+        We kept doing it. Week after week, we refined the process, tightened the script, got less nervous. Fairly quickly I set a bar for myself and the team:
+      </p>
+
+      <div class="pull-quote">
+        "Nobody at Sleep Cycle should have to wait more than seven days to get an idea validated with users."
+      </div>
+
+      <p>
+        That's the promise. It sounds simple but it shapes everything — the tooling you pick, the process you build around it, the habits you have to form.
+      </p>
+
+      <h2>The toolstack</h2>
+
+      <p>
+        The toolstack we landed on is deliberately unglamorous. We recruit through our CRM — first Leanplum, later Braze — sending users an in-app message or email asking if they'd share their experience in exchange for a year of premium. They pick a time slot in Google Calendar. Wednesdays became our standing interview day. Sessions happen on Google Meet, recorded and transcribed with Gemini. Figma for anything we want to test. Miro to map the opportunity solution tree and keep track of what we're learning. Notion as the database where everything gets stored. Slack to share the results with the rest of the company. That's it. Nothing exotic.
+      </p>
+
+      <p>
+        What held us back early on wasn't the tools. It was establishing the rhythm — making this feel like a standing practice rather than something we did when we had time. Having a fixed day helped. Having a shared recruiting process helped. What helped most was probably just doing it enough times that it stopped feeling optional.
+      </p>
+
+      <hr class="article-divider" />
+
+      <p>
+        Which brings me back to this Wednesday, and David sitting next to me. It takes a minute, but then a human face pops up on the screen, and we're off to a great conversation.
+      </p>
+
+    </div>
+
+    <div class="article-author">
+      <div class="article-author-avatar">FP</div>
+      <div>
+        <div class="article-author-name">Fredrik Påhlman</div>
+        <div class="article-author-title">Design &amp; Product</div>
+      </div>
+    </div>
+
+  </article>
+
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-name">Fredrik Påhlman — Design &amp; Product</span>
+      <ul class="footer-links">
+        <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">LinkedIn</a></li>
+        <li><a href="mailto:fredrikande@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </footer>
+
+</body>
+</html>

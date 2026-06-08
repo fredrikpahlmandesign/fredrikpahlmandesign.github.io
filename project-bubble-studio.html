@@ -135,6 +135,23 @@
       padding: 0.3rem 0.75rem;
       border-radius: 100px;
     }
+    .hero-launch {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: rgba(240,235,224,0.9);
+      text-decoration: none;
+      border: 1.5px solid rgba(240,235,224,0.3);
+      padding: 0.5rem 1.1rem;
+      border-radius: 100px;
+      transition: border-color 0.2s, color 0.2s;
+      margin-top: 0.75rem;
+    }
+    .hero-launch:hover { border-color: rgba(240,235,224,0.7); color: #fff; }
 
     /* CONTENT SECTIONS */
     .section {
@@ -374,11 +391,16 @@
     </div>
     <div class="hero-meta">
       <h1 class="hero-title">Bubble Studio<br><em>Asset Generator</em></h1>
-      <div class="hero-tags">
-        <span class="hero-tag">Personal Project</span>
-        <span class="hero-tag">WebGL</span>
-        <span class="hero-tag">AI-assisted</span>
-        <span class="hero-tag">2025</span>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.75rem;">
+        <div class="hero-tags">
+          <span class="hero-tag">Personal Project</span>
+          <span class="hero-tag">WebGL</span>
+          <span class="hero-tag">AI-assisted</span>
+          <span class="hero-tag">2025</span>
+        </div>
+        <a href="https://dazzling-yeot-1dac53.netlify.app/" target="_blank" rel="noopener" class="hero-launch">
+          Open live ↗
+        </a>
       </div>
     </div>
   </header>
@@ -403,6 +425,13 @@
           <div>
             <p class="meta-block-label">Role</p>
             <p class="meta-block-value">Design, code, concept</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Live</p>
+            <a href="https://dazzling-yeot-1dac53.netlify.app/" target="_blank" rel="noopener"
+               style="font-size:0.9375rem;color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ink-light);transition:text-decoration-color 0.2s;"
+               onmouseover="this.style.textDecorationColor='var(--accent)'"
+               onmouseout="this.style.textDecorationColor='var(--ink-light)'">Open Bubble Studio ↗</a>
           </div>
         </div>
         <div class="overview-text">
