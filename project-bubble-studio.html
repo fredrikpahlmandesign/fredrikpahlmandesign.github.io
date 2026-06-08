@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bubble Studio — Fredrik Påhlman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F5F0;
+      --bg-alt: #EDEAE3;
+      --ink: #1A1814;
+      --ink-mid: #6B6760;
+      --ink-light: #B0ADA7;
+      --accent: #C8562A;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+      --max: 1200px;
+      --pad: clamp(1.5rem, 5vw, 4rem);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem var(--pad);
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.4s;
+    }
+    nav.light {
+      background: var(--bg);
+      border-color: var(--bg-alt);
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1rem;
+      color: #F0EBE0;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    nav.light .nav-logo { color: var(--ink); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(240,235,224,0.6);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    nav.light .nav-links a { color: var(--ink-mid); }
+    .nav-links a:hover { color: #F0EBE0; }
+    nav.light .nav-links a:hover { color: var(--ink); }
+
+    /* HERO */
+    .hero {
+      background: #000;
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .hero-canvas-wrap {
+      position: relative;
+      width: min(72vw, 680px);
+      aspect-ratio: 1 / 1;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .hero-canvas-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    .hero-meta {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: clamp(2rem, 5vw, 4rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .hero-title {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: #F0EBE0;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: rgba(240,235,224,0.5);
+    }
+    .hero-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .hero-tag {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(240,235,224,0.45);
+      border: 1px solid rgba(240,235,224,0.15);
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+    }
+
+    /* CONTENT SECTIONS */
+    .section {
+      padding: 5rem var(--pad);
+    }
+    .section-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    /* OVERVIEW */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .overview-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .overview-meta { display: flex; flex-direction: column; gap: 1.75rem; }
+    .meta-block-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.4rem;
+    }
+    .meta-block-value {
+      font-size: 0.9375rem;
+      color: var(--ink-mid);
+    }
+    .overview-text {
+      font-family: var(--serif);
+      font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+      font-weight: 300;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+    .overview-text p + p { margin-top: 1.25em; }
+
+    /* DIVIDER */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--bg-alt);
+      margin: 0;
+    }
+
+    /* SECTION LABEL */
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 2.5rem;
+    }
+
+    /* BODY TEXT */
+    .body-text {
+      font-size: 1rem;
+      color: var(--ink-mid);
+      line-height: 1.75;
+      max-width: 62ch;
+    }
+    .body-text p + p { margin-top: 1.1em; }
+
+    /* ASSET GRID */
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-top: 2.5rem;
+    }
+    @media (max-width: 700px) { .asset-grid { grid-template-columns: repeat(2, 1fr); } }
+    .asset-grid img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 3px;
+      display: block;
+      background: #111;
+    }
+
+    /* VIDEO GRID */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-top: 2.5rem;
+    }
+    @media (max-width: 700px) { .video-grid { grid-template-columns: 1fr; } }
+    .video-grid video {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 3px;
+      display: block;
+      background: #000;
+    }
+
+    /* CONTENT + IMAGE SPLIT */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    @media (max-width: 700px) { .split { grid-template-columns: 1fr; gap: 2.5rem; } }
+    .split-media {
+      background: #000;
+      border-radius: 4px;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+    }
+    .split-media iframe {
+      width: 100%; height: 100%; border: none;
+    }
+
+    /* REFLECTION */
+    .reflection-section { background: var(--bg-alt); }
+    .reflection-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+      margin-top: 2.5rem;
+    }
+    @media (max-width: 700px) { .reflection-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .reflection-card-num {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--ink-light);
+      margin-bottom: 0.75rem;
+    }
+    .reflection-card-title {
+      font-weight: 500;
+      font-size: 0.9375rem;
+      margin-bottom: 0.5rem;
+    }
+    .reflection-card-text {
+      font-size: 0.875rem;
+      color: var(--ink-mid);
+      line-height: 1.7;
+    }
+
+    /* NAV PROJECTS */
+    .project-nav {
+      padding: 3rem var(--pad);
+      border-top: 1px solid var(--bg-alt);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .project-nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .project-nav a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .project-nav a:hover { color: var(--accent); }
+
+    /* FOOTER */
+    footer {
+      padding: 3rem var(--pad);
+      border-top: 1px solid var(--bg-alt);
+    }
+    .footer-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-name {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--ink-mid);
+    }
+    .footer-links { display: flex; gap: 1.75rem; list-style: none; }
+    .footer-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+
+    /* FADE IN */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="index.html" class="nav-logo">Fredrik Påhlman</a>
+    <ul class="nav-links">
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="index.html#personal">Personal</a></li>
+      <li><a href="writing.html">Writing</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="mailto:fredrikande@gmail.com">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero" id="hero">
+    <div class="hero-canvas-wrap">
+      <iframe
+        src="Portfolio Assets/Bubble Studio/bubble_embed_1780902418073.html"
+        title="Bubble Studio — live preview"
+        scrolling="no"
+        allowtransparency="false">
+      </iframe>
+    </div>
+    <div class="hero-meta">
+      <h1 class="hero-title">Bubble Studio<br><em>Asset Generator</em></h1>
+      <div class="hero-tags">
+        <span class="hero-tag">Personal Project</span>
+        <span class="hero-tag">WebGL</span>
+        <span class="hero-tag">AI-assisted</span>
+        <span class="hero-tag">2025</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- OVERVIEW -->
+  <section class="section" id="overview">
+    <div class="section-inner">
+      <div class="overview-grid fade-in">
+        <div class="overview-meta">
+          <div>
+            <p class="meta-block-label">Type</p>
+            <p class="meta-block-value">Personal project<br>Workflow experiment</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Year</p>
+            <p class="meta-block-value">2025</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Built with</p>
+            <p class="meta-block-value">WebGL / GLSL<br>Claude (shader development)<br>Vanilla JS</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Role</p>
+            <p class="meta-block-value">Design, code, concept</p>
+          </div>
+        </div>
+        <div class="overview-text">
+          <p>Bubble Studio is a generative asset generator — a tool for producing iridescent, physically-grounded soap bubble visuals, controllable through a parameter set and exportable as static images or video loops.</p>
+          <p>But the project is equally about how it was made. It started as a question: what happens when a designer with limited shader experience uses AI as a close collaborator to build something technically complex? The answer turned into a working tool I actually use.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- STATIC RENDERS -->
+  <section class="section">
+    <div class="section-inner">
+      <p class="section-label fade-in">Generated Assets</p>
+      <div class="body-text fade-in">
+        <p>Each render is produced from the same underlying system, with different parameter combinations controlling bubble count, thickness, iridescence, flow behaviour, and surface-tension wobble. The visual language is consistent but the outputs vary — more like a material than a fixed image.</p>
+      </div>
+      <div class="asset-grid fade-in">
+        <img src="Portfolio Assets/Bubble Studio/bubble_2048_1780781699977.png" alt="Bubble render 1" loading="lazy">
+        <img src="Portfolio Assets/Bubble Studio/bubble_2048_1780781715819.png" alt="Bubble render 2" loading="lazy">
+        <img src="Portfolio Assets/Bubble Studio/bubble_2048_1780781761506.png" alt="Bubble render 3" loading="lazy">
+        <img src="Portfolio Assets/Bubble Studio/bubble_2048_1780781782046.png" alt="Bubble render 4" loading="lazy">
+        <img src="Portfolio Assets/Bubble Studio/bubble_2048_1780781838809.png" alt="Bubble render 5" loading="lazy">
+        <img src="Portfolio Assets/Bubble Studio/bubble_2048_1780781843365.png" alt="Bubble render 6" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- VIDEO LOOPS -->
+  <section class="section">
+    <div class="section-inner">
+      <p class="section-label fade-in">Animated Loops</p>
+      <div class="body-text fade-in">
+        <p>The renderer runs in real-time at 30fps. Surface-tension wobble, thin-film colour flow, and bubble physics are all animated — making the exports feel alive without scripted choreography.</p>
+      </div>
+      <div class="video-grid fade-in">
+        <video src="Portfolio Assets/Bubble Studio/bubble_1024_30fps_1780781789029.webm"
+               autoplay muted loop playsinline></video>
+        <video src="Portfolio Assets/Bubble Studio/bubble_1024_30fps_1780781849730.webm"
+               autoplay muted loop playsinline></video>
+        <video src="Portfolio Assets/Bubble Studio/bubble_1024_30fps_1780781860081.webm"
+               autoplay muted loop playsinline></video>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- AI COLLABORATION PROCESS -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="split fade-in">
+        <div>
+          <p class="section-label">How it was made</p>
+          <div class="body-text">
+            <p>I don't have a background in GLSL or GPU programming. The shader that drives this — physically-based thin-film interference, surface-tension wobble modes, animated flow fields — is genuinely complex code I could not have written alone.</p>
+            <p>The experiment was treating Claude as a technical pair: I described the visual system I wanted, asked questions when I didn't understand what the code was doing, and iterated on the behaviour by specifying it in design terms rather than shader terms. Over time the boundary blurred — I started understanding more of the code, and the AI started anticipating the design directions I cared about.</p>
+            <p>Bubble Studio became a test of that workflow. The result is a tool I designed, a shader I can read and modify, and a method I've since carried into other projects.</p>
+          </div>
+        </div>
+        <div class="split-media">
+          <iframe
+            src="Portfolio Assets/Bubble Studio/bubble_embed_1780902418073.html"
+            title="Bubble Studio live"
+            scrolling="no">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REFLECTION -->
+  <section class="section reflection-section">
+    <div class="section-inner">
+      <p class="section-label fade-in">What I took from this</p>
+      <div class="reflection-grid">
+        <div class="fade-in">
+          <div class="reflection-card-num">01</div>
+          <div class="reflection-card-title">Designing the vocabulary matters more than the code</div>
+          <p class="reflection-card-text">The best sessions happened when I was precise about visual language — "more Plateau's law at the contact point", "the colour should feel like oil on water at 30° light" — rather than asking for code changes. Descriptive precision replaced technical fluency.</p>
+        </div>
+        <div class="fade-in">
+          <div class="reflection-card-num">02</div>
+          <div class="reflection-card-title">Tools you build yourself fit differently</div>
+          <p class="reflection-card-text">Because I specified every behaviour, I understand the parameter space in a way I wouldn't with off-the-shelf software. The tool is opinionated in the right directions for how I actually work. That's a side effect of building rather than buying.</p>
+        </div>
+        <div class="fade-in">
+          <div class="reflection-card-num">03</div>
+          <div class="reflection-card-title">A workflow experiment that became a repeating method</div>
+          <p class="reflection-card-text">I came into this asking whether the approach was viable. The answer was yes — and I've since used variants of the same method for other tooling, generative experiments, and design systems work. The experiment succeeded, and the habit stuck.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECT NAV -->
+  <div class="project-nav">
+    <div class="project-nav-inner">
+      <a href="index.html#work">← All work</a>
+      <a href="project-sleep.html">Sleep Cycle →</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-name">Fredrik Påhlman — Design &amp; Product</span>
+      <ul class="footer-links">
+        <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">LinkedIn</a></li>
+        <li><a href="mailto:fredrikande@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    // Nav style transitions as you scroll past the dark hero
+    const nav = document.getElementById('nav');
+    const hero = document.getElementById('hero');
+    function checkNav() {
+      const heroBottom = hero.getBoundingClientRect().bottom;
+      if (heroBottom <= 80) {
+        nav.classList.add('light');
+      } else {
+        nav.classList.remove('light');
+      }
+    }
+    window.addEventListener('scroll', checkNav, { passive: true });
+    checkNav();
+
+    // Fade-in on scroll
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      }),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

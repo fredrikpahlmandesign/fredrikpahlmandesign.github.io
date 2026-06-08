@@ -1,0 +1,7 @@
+.DS_Store
+Thumbs.db
+*.log
+
+# Files exceeding GitHub's 100MB limit — keep locally only
+Portfolio Assets/Sleep Cycle/Frame 1739329434_2.mov
+Portfolio Assets/Sleep Cycle/Onboarding AI video.mov

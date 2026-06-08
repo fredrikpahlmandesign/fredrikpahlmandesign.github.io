@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fredrik Påhlman — Design & Product</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F5F0;
+      --bg-alt: #EDEAE3;
+      --ink: #1A1814;
+      --ink-mid: #6B6760;
+      --ink-light: #B0ADA7;
+      --accent: #C8562A;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+      --max: 1200px;
+      --pad: clamp(1.5rem, 5vw, 4rem);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem var(--pad);
+      background: var(--bg);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+    nav.scrolled { border-color: var(--bg-alt); }
+    .nav-logo {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1rem;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: 0.01em;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* ── HERO ── */
+    .hero {
+      padding-top: 7rem;
+      padding-bottom: 3rem;
+      padding-left: var(--pad);
+      padding-right: var(--pad);
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+    .hero-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      margin-bottom: 1.5rem;
+    }
+    .hero-name {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(3.5rem, 10vw, 8.5rem);
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+    }
+    .hero-name em {
+      font-style: italic;
+      color: var(--ink-mid);
+    }
+    .hero-intro {
+      max-width: 500px;
+      font-size: 1.0625rem;
+      color: var(--ink-mid);
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1.5px solid var(--ink);
+      padding-bottom: 0.15rem;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .hero-cta:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      overflow: hidden;
+      border-top: 1px solid var(--bg-alt);
+      border-bottom: 1px solid var(--bg-alt);
+      padding: 0.9rem 0;
+      margin: 3rem 0;
+    }
+    .marquee-track {
+      display: flex;
+      white-space: nowrap;
+      animation: marquee 22s linear infinite;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    .marquee-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding-right: 3rem;
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      font-weight: 300;
+      color: var(--ink-mid);
+    }
+    .marquee-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── SECTION SHARED ── */
+    section {
+      padding: 5rem var(--pad);
+    }
+    .section-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      gap: 1rem;
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      letter-spacing: -0.01em;
+    }
+    .section-link {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--ink-light);
+      padding-bottom: 0.1rem;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .section-link:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* ── WORK GRID ── */
+    .work-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+    @media (max-width: 700px) { .work-grid { grid-template-columns: 1fr; } }
+
+    .work-card {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+      background: var(--bg-alt);
+    }
+    .work-card:first-child { grid-column: 1 / -1; }
+    .work-card-img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: var(--bg-alt);
+      overflow: hidden;
+    }
+    .work-card:first-child .work-card-img { aspect-ratio: 21/9; }
+    .work-card-img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .work-card:hover .work-card-img-placeholder { transform: scale(1.03); }
+    .work-card-body {
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1rem;
+    }
+    .work-card-title {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1.125rem;
+      line-height: 1.3;
+    }
+    .work-card-meta {
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      white-space: nowrap;
+    }
+
+    /* ── ABOUT ── */
+    .about-section { background: var(--bg-alt); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    @media (max-width: 800px) { .about-grid { grid-template-columns: 1fr; gap: 2.5rem; } }
+    .about-bio {
+      font-family: var(--serif);
+      font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+      font-weight: 300;
+      line-height: 1.55;
+      letter-spacing: -0.01em;
+    }
+    .about-bio strong { font-weight: 400; }
+    .about-details { display: flex; flex-direction: column; gap: 2.5rem; }
+    .about-detail-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.6rem;
+    }
+    .about-detail-value {
+      font-size: 0.9375rem;
+      color: var(--ink-mid);
+      line-height: 1.65;
+    }
+    .about-detail-value a {
+      color: var(--ink);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-color: var(--ink-light);
+      transition: text-decoration-color 0.2s;
+    }
+    .about-detail-value a:hover { text-decoration-color: var(--accent); }
+
+    /* ── WRITING ── */
+    .writing-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .writing-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 2rem;
+      padding: 1.75rem 0;
+      border-bottom: 1px solid var(--bg-alt);
+      text-decoration: none;
+      color: inherit;
+      transition: opacity 0.2s;
+    }
+    .writing-card:first-child { border-top: 1px solid var(--bg-alt); }
+    .writing-card:hover { opacity: 0.6; }
+    .writing-card-title {
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      font-weight: 400;
+      margin-bottom: 0.35rem;
+    }
+    .writing-card-desc {
+      font-size: 0.875rem;
+      color: var(--ink-mid);
+      max-width: 55ch;
+    }
+    .writing-card-date {
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      color: var(--ink-light);
+      white-space: nowrap;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 3rem var(--pad);
+      border-top: 1px solid var(--bg-alt);
+    }
+    .footer-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-name {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--ink-mid);
+    }
+    .footer-links {
+      display: flex;
+      gap: 1.75rem;
+      list-style: none;
+    }
+    .footer-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+
+    /* ── SCROLL FADE IN ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="index.html" class="nav-logo">Fredrik Påhlman</a>
+    <ul class="nav-links">
+      <li><a href="#work">Work</a></li>
+      <li><a href="writing.html">Writing</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="mailto:fredrikande@gmail.com">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <p class="hero-label">Design &amp; Product</p>
+    <h1 class="hero-name">Fredrik<br><em>Påhlman</em></h1>
+    <p class="hero-intro">
+      I design products and experiences that feel considered — from the big idea down to the detail that almost nobody notices, but everyone feels.
+    </p>
+    <a href="#work" class="hero-cta">View selected work ↓</a>
+  </header>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <!-- duplicated for seamless loop -->
+      <span class="marquee-item">Product Design <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Visual Systems <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Design Strategy <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Interaction Design <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Prototyping <span class="marquee-dot"></span></span>
+      <span class="marquee-item">User Research <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Design Systems <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Brand Identity <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Product Design <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Visual Systems <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Design Strategy <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Interaction Design <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Prototyping <span class="marquee-dot"></span></span>
+      <span class="marquee-item">User Research <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Design Systems <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Brand Identity <span class="marquee-dot"></span></span>
+    </div>
+  </div>
+
+  <!-- WORK -->
+  <section id="work">
+    <div class="section-inner">
+      <div class="section-header fade-in">
+        <h2 class="section-title">Selected Work</h2>
+        <a href="#work" class="section-link">All projects →</a>
+      </div>
+      <div class="work-grid">
+        <a href="#" class="work-card fade-in">
+          <div class="work-card-img">
+            <div class="work-card-img-placeholder">Project Image</div>
+          </div>
+          <div class="work-card-body">
+            <span class="work-card-title">Project Title One</span>
+            <span class="work-card-meta">Product Design · 2024</span>
+          </div>
+        </a>
+        <a href="#" class="work-card fade-in">
+          <div class="work-card-img">
+            <div class="work-card-img-placeholder">Project Image</div>
+          </div>
+          <div class="work-card-body">
+            <span class="work-card-title">Project Title Two</span>
+            <span class="work-card-meta">Branding · 2024</span>
+          </div>
+        </a>
+        <a href="#" class="work-card fade-in">
+          <div class="work-card-img">
+            <div class="work-card-img-placeholder">Project Image</div>
+          </div>
+          <div class="work-card-body">
+            <span class="work-card-title">Project Title Three</span>
+            <span class="work-card-meta">Design System · 2023</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about-section" id="about">
+    <div class="section-inner">
+      <div class="about-grid">
+        <div class="fade-in">
+          <p class="about-bio">
+            I've spent my career at the intersection of design and product — figuring out <strong>what to build</strong> as much as how to make it look and feel right. I care about craft, but I care more about whether the thing actually works for people.
+          </p>
+        </div>
+        <div class="about-details fade-in">
+          <div>
+            <p class="about-detail-label">Currently</p>
+            <p class="about-detail-value">Open to new opportunities</p>
+          </div>
+          <div>
+            <p class="about-detail-label">Based in</p>
+            <p class="about-detail-value">Sweden</p>
+          </div>
+          <div>
+            <p class="about-detail-label">Approach</p>
+            <p class="about-detail-value">Design that earns its place — every decision tied to a reason, every detail considered.</p>
+          </div>
+          <div>
+            <p class="about-detail-label">Outside of work</p>
+            <p class="about-detail-value">Reading, long walks, and probably thinking about design anyway.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WRITING -->
+  <section id="writing">
+    <div class="section-inner">
+      <div class="section-header fade-in">
+        <h2 class="section-title">Writing</h2>
+        <a href="writing.html" class="section-link">All articles →</a>
+      </div>
+      <div class="writing-list">
+        <a href="writing.html" class="writing-card fade-in">
+          <div>
+            <div class="writing-card-title">Article Title One</div>
+            <div class="writing-card-desc">A short description of what this piece is about — one or two sentences that give the reader a reason to click.</div>
+          </div>
+          <span class="writing-card-date">Jun 2025</span>
+        </a>
+        <a href="writing.html" class="writing-card fade-in">
+          <div>
+            <div class="writing-card-title">Article Title Two</div>
+            <div class="writing-card-desc">Another piece — a short description sitting here to show how this section flows with multiple entries.</div>
+          </div>
+          <span class="writing-card-date">Mar 2025</span>
+        </a>
+        <a href="writing.html" class="writing-card fade-in">
+          <div>
+            <div class="writing-card-title">Article Title Three</div>
+            <div class="writing-card-desc">A third article to round out the section and show the rhythm of the list layout.</div>
+          </div>
+          <span class="writing-card-date">Jan 2025</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-name">Fredrik Påhlman — Design &amp; Product</span>
+      <ul class="footer-links">
+        <li><a href="https://linkedin.com" target="_blank">LinkedIn</a></li>
+        <li><a href="https://read.cv" target="_blank">Read.cv</a></li>
+        <li><a href="mailto:fredrikande@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    // Nav border on scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 10);
+    });
+
+    // Fade-in on scroll
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

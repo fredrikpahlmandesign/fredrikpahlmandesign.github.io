@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F7F5F0;
+      --bg-alt: #EDEAE3;
+      --ink: #1A1814;
+      --ink-mid: #6B6760;
+      --ink-light: #B0ADA7;
+      --accent: #C8562A;
+      --green: #2E7D32;
+      --green-bg: #EAF3DE;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--bg);
+      border-bottom: 1px solid var(--bg-alt);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 1rem; }
+    .topbar-logo {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .topbar-sep { color: var(--ink-light); }
+    .topbar-title {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+    }
+    .topbar-actions { display: flex; gap: 0.75rem; align-items: center; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--sans);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding: 0.5rem 1.1rem;
+      border-radius: 3px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      text-decoration: none;
+    }
+    .btn:hover { opacity: 0.8; }
+    .btn-outline {
+      background: transparent;
+      color: var(--ink-mid);
+      border: 1.5px solid var(--bg-alt);
+    }
+    .btn-primary {
+      background: var(--ink);
+      color: var(--bg);
+    }
+    .btn-save {
+      background: var(--green);
+      color: #fff;
+    }
+
+    /* MAIN */
+    .main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+    .page-heading {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: 1.75rem;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
+    }
+    .page-sub {
+      font-size: 0.9rem;
+      color: var(--ink-mid);
+      margin-bottom: 2.5rem;
+    }
+
+    /* SECTION LABEL */
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 1rem;
+    }
+
+    /* PROJECT LIST */
+    #project-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .project-row {
+      background: #fff;
+      border: 1px solid var(--bg-alt);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.875rem 1.1rem;
+      transition: box-shadow 0.15s, opacity 0.2s;
+      cursor: default;
+      user-select: none;
+    }
+    .project-row.dragging {
+      opacity: 0.4;
+    }
+    .project-row.drag-over {
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+    .project-row.hidden-row {
+      opacity: 0.55;
+    }
+
+    .drag-handle {
+      cursor: grab;
+      color: var(--ink-light);
+      font-size: 1rem;
+      flex-shrink: 0;
+      padding: 0 0.25rem;
+      line-height: 1;
+    }
+    .drag-handle:active { cursor: grabbing; }
+
+    .project-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .project-info { flex: 1; min-width: 0; }
+    .project-name {
+      font-weight: 500;
+      font-size: 0.9375rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .project-meta {
+      font-size: 0.8rem;
+      color: var(--ink-mid);
+    }
+    .project-href {
+      font-size: 0.75rem;
+      color: var(--ink-light);
+      font-family: monospace;
+    }
+    .featured-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.15rem 0.5rem;
+      border-radius: 100px;
+      flex-shrink: 0;
+    }
+
+    /* TOGGLE SWITCH */
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+    .toggle-label {
+      font-size: 0.75rem;
+      color: var(--ink-mid);
+      min-width: 42px;
+      text-align: right;
+    }
+    .toggle {
+      position: relative;
+      width: 38px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-alt);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle input:checked + .toggle-track { background: var(--ink); }
+    .toggle-thumb {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 16px; height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      pointer-events: none;
+    }
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(16px); }
+
+    /* DIVIDER */
+    .divider { border: none; border-top: 1px solid var(--bg-alt); margin: 2.5rem 0; }
+
+    /* EXPORT BOX */
+    .export-box {
+      background: #fff;
+      border: 1px solid var(--bg-alt);
+      border-radius: 6px;
+      padding: 1.5rem;
+    }
+    .export-box h3 {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    .export-box p {
+      font-size: 0.875rem;
+      color: var(--ink-mid);
+      margin-bottom: 1.25rem;
+      line-height: 1.6;
+    }
+    .export-code {
+      background: var(--bg-alt);
+      border-radius: 4px;
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--ink-mid);
+      overflow-x: auto;
+      max-height: 220px;
+      overflow-y: auto;
+      white-space: pre;
+      margin-bottom: 1rem;
+    }
+    .export-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      background: var(--ink);
+      color: var(--bg);
+      padding: 0.75rem 1.25rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <a href="index.html" class="topbar-logo">Fredrik Påhlman</a>
+      <span class="topbar-sep">/</span>
+      <span class="topbar-title">Project Admin</span>
+    </div>
+    <div class="topbar-actions">
+      <a href="index.html" class="btn btn-outline" target="_blank">View site ↗</a>
+      <button class="btn btn-save" onclick="saveAndDownload()">↓ Download projects.js</button>
+    </div>
+  </div>
+
+  <main class="main">
+    <h1 class="page-heading">Work projects</h1>
+    <p class="page-sub">Drag to reorder. Toggle to show or hide on the home page. When done, download the updated <code>projects.js</code> and commit it.</p>
+
+    <p class="section-label">Projects</p>
+    <div id="project-list"></div>
+
+    <hr class="divider">
+
+    <div class="export-box">
+      <h3>Export config</h3>
+      <p>Preview the updated <code>projects.js</code> below, then download it and replace the file in your repository. Commit and push to deploy.</p>
+      <div class="export-code" id="export-preview"></div>
+      <div class="export-actions">
+        <button class="btn btn-primary" onclick="copyConfig()">Copy to clipboard</button>
+        <button class="btn btn-save" onclick="saveAndDownload()">↓ Download projects.js</button>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="projects.js"></script>
+  <script>
+    // ── State ──────────────────────────────────────
+    let projects = JSON.parse(JSON.stringify(PROJECTS));
+    let dragSrc = null;
+
+    // ── Render list ────────────────────────────────
+    function render() {
+      projects.sort((a, b) => a.order - b.order);
+      const list = document.getElementById('project-list');
+      list.innerHTML = '';
+      projects.forEach((p, i) => {
+        const row = document.createElement('div');
+        row.className = 'project-row' + (p.visible ? '' : ' hidden-row');
+        row.setAttribute('draggable', 'true');
+        row.dataset.id = p.id;
+
+        row.innerHTML = `
+          <span class="drag-handle" title="Drag to reorder">⠿</span>
+          <div class="project-swatch" style="background:${p.bg};"></div>
+          <div class="project-info">
+            <div class="project-name">${p.title}</div>
+            <div class="project-meta">${p.meta}</div>
+            <div class="project-href">${p.href}</div>
+          </div>
+          ${p.featured ? '<span class="featured-badge">Featured</span>' : ''}
+          <label class="toggle" title="${p.visible ? 'Visible — click to hide' : 'Hidden — click to show'}">
+            <input type="checkbox" ${p.visible ? 'checked' : ''} onchange="toggleVisible('${p.id}', this.checked)">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+          <span class="toggle-label" style="font-size:0.7rem;color:var(--ink-mid);min-width:40px;">${p.visible ? 'Visible' : 'Hidden'}</span>
+        `;
+
+        // Drag events
+        row.addEventListener('dragstart', e => {
+          dragSrc = p.id;
+          row.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        });
+        row.addEventListener('dragend', () => row.classList.remove('dragging'));
+        row.addEventListener('dragover', e => { e.preventDefault(); row.classList.add('drag-over'); });
+        row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+        row.addEventListener('drop', e => {
+          e.preventDefault();
+          row.classList.remove('drag-over');
+          if (dragSrc && dragSrc !== p.id) {
+            const srcIdx = projects.findIndex(x => x.id === dragSrc);
+            const dstIdx = projects.findIndex(x => x.id === p.id);
+            // Swap orders
+            const tmp = projects[srcIdx].order;
+            projects[srcIdx].order = projects[dstIdx].order;
+            projects[dstIdx].order = tmp;
+            render();
+          }
+        });
+
+        list.appendChild(row);
+      });
+      updatePreview();
+    }
+
+    function toggleVisible(id, checked) {
+      const p = projects.find(x => x.id === id);
+      if (p) p.visible = checked;
+      render();
+    }
+
+    // ── Config generation ──────────────────────────
+    function generateConfig() {
+      const sorted = [...projects].sort((a, b) => a.order - b.order);
+      // Reassign clean sequential order numbers
+      sorted.forEach((p, i) => p.order = i);
+      const lines = [
+        '// ── Portfolio project config ──────────────────────────────────────────────',
+        '// Edit here or use admin.html to manage projects without touching code.',
+        '//',
+        '// Fields:',
+        '//   id         – unique slug (no spaces)',
+        '//   title      – card title',
+        '//   meta       – small label below title',
+        '//   href       – project page URL',
+        '//   visible    – true/false — hidden projects don\'t appear on the home page',
+        '//   featured   – true = full-width card (first position); only one at a time',
+        '//   bg         – card background color',
+        '//   bodyBg     – card footer/body background',
+        '//   textColor  – title text color',
+        '//   mediaSrc   – path to cover image or video',
+        '//   mediaType  – \'video\' or \'image\'',
+        '//   order      – lower numbers appear first',
+        '',
+        `const PROJECTS = ${JSON.stringify(sorted, null, 2)};`
+      ];
+      return lines.join('\n');
+    }
+
+    function updatePreview() {
+      document.getElementById('export-preview').textContent = generateConfig();
+    }
+
+    // ── Actions ────────────────────────────────────
+    function copyConfig() {
+      navigator.clipboard.writeText(generateConfig()).then(() => showToast('Copied to clipboard'));
+    }
+
+    function saveAndDownload() {
+      const content = generateConfig();
+      const blob = new Blob([content], { type: 'text/javascript' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'projects.js';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      showToast('projects.js downloaded — replace the file and commit');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ── Init ───────────────────────────────────────
+    render();
+  </script>
+
+</body>
+</html>

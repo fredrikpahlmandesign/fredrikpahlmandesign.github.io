@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sleep Cycle — Fredrik Påhlman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F5F0;
+      --bg-alt: #EDEAE3;
+      --ink: #1A1814;
+      --ink-mid: #6B6760;
+      --ink-light: #B0ADA7;
+      --accent: #C8562A;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+      --max: 1200px;
+      --pad: clamp(1.5rem, 5vw, 4rem);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem var(--pad);
+      background: rgba(11, 12, 16, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.4s, border-color 0.4s;
+    }
+    nav.light {
+      background: var(--bg);
+      border-color: var(--bg-alt);
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1rem;
+      color: #E8E3DA;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    nav.light .nav-logo { color: var(--ink); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(232, 227, 218, 0.55);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    nav.light .nav-links a { color: var(--ink-mid); }
+    .nav-links a:hover { color: #E8E3DA; }
+    nav.light .nav-links a:hover { color: var(--ink); }
+
+    /* HERO */
+    .hero {
+      background: #0B0C10;
+      position: relative;
+      height: 100vh;
+      min-height: 600px;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+    }
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.7;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(11,12,16,0.85) 0%, rgba(11,12,16,0.2) 55%, transparent 100%);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: var(--pad);
+      padding-bottom: clamp(2.5rem, 6vw, 5rem);
+      max-width: var(--max);
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .hero-title {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: #E8E3DA;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: rgba(232,227,218,0.5);
+    }
+    .hero-right {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: flex-end;
+      padding-bottom: 0.35rem;
+    }
+    .hero-tag {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(232,227,218,0.4);
+      border: 1px solid rgba(232,227,218,0.12);
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+    }
+
+    /* SECTIONS */
+    .section { padding: 5rem var(--pad); }
+    .section-inner { max-width: var(--max); margin: 0 auto; }
+
+    /* SECTION LABEL */
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 2rem;
+    }
+
+    /* OVERVIEW */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .overview-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .overview-meta { display: flex; flex-direction: column; gap: 1.75rem; }
+    .meta-block-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.4rem;
+    }
+    .meta-block-value {
+      font-size: 0.9375rem;
+      color: var(--ink-mid);
+      line-height: 1.6;
+    }
+    .overview-text {
+      font-family: var(--serif);
+      font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+      font-weight: 300;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+    .overview-text p + p { margin-top: 1.25em; }
+
+    /* DIVIDER */
+    .divider { border: none; border-top: 1px solid var(--bg-alt); }
+
+    /* BODY TEXT */
+    .body-text {
+      font-size: 1rem;
+      color: var(--ink-mid);
+      line-height: 1.8;
+      max-width: 62ch;
+    }
+    .body-text p + p { margin-top: 1.1em; }
+
+    /* CHAPTER MARKER */
+    .chapter {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+    .chapter-num {
+      font-family: var(--serif);
+      font-size: 3.5rem;
+      font-weight: 300;
+      color: var(--bg-alt);
+      line-height: 1;
+    }
+    .chapter-text {}
+    .chapter-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.35rem;
+    }
+    .chapter-title {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    /* SPLIT */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    @media (max-width: 800px) { .split { grid-template-columns: 1fr; gap: 2.5rem; } }
+    .split-media {
+      border-radius: 4px;
+      overflow: hidden;
+      background: var(--bg-alt);
+    }
+    .split-media img, .split-media video {
+      width: 100%; height: auto; display: block;
+    }
+    .split-media.dark { background: #0B0C10; }
+    .split-media video { width: 100%; display: block; }
+
+    /* MOCKUP ROW */
+    .mockup-row {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .mockup-row::-webkit-scrollbar { display: none; }
+    .mockup-row img {
+      flex-shrink: 0;
+      height: 480px;
+      width: auto;
+      border-radius: 3px;
+      display: block;
+      background: var(--bg-alt);
+    }
+
+    /* IMAGE FULL */
+    .img-full {
+      width: 100%; border-radius: 4px; display: block;
+      background: var(--bg-alt);
+    }
+
+    /* VIDEO PAIR */
+    .video-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 2.5rem;
+    }
+    @media (max-width: 700px) { .video-pair { grid-template-columns: 1fr; } }
+    .video-pair video {
+      width: 100%; display: block;
+      border-radius: 4px;
+      background: #0B0C10;
+    }
+
+    /* VIDEO TRIO */
+    .video-trio {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-top: 2rem;
+    }
+    @media (max-width: 700px) { .video-trio { grid-template-columns: 1fr; } }
+    .video-trio video {
+      width: 100%; display: block;
+      border-radius: 4px;
+      background: #0B0C10;
+    }
+
+    /* INSIGHT CARDS */
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+    @media (max-width: 700px) { .insight-grid { grid-template-columns: 1fr; } }
+    .insight-card {
+      padding: 1.75rem;
+      background: var(--bg-alt);
+      border-radius: 4px;
+    }
+    .insight-card-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.75rem;
+    }
+    .insight-card-text {
+      font-family: var(--serif);
+      font-size: 1.0625rem;
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    /* STAT ROW */
+    .stat-row {
+      display: flex;
+      gap: 3rem;
+      flex-wrap: wrap;
+      margin-top: 2.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--bg-alt);
+    }
+    .stat { flex: 1; min-width: 120px; }
+    .stat-num {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .stat-label {
+      font-size: 0.8125rem;
+      color: var(--ink-mid);
+    }
+
+    /* DARK SECTION */
+    .section-dark {
+      background: #0B0C10;
+      color: #E8E3DA;
+    }
+    .section-dark .section-label { color: rgba(232,227,218,0.3); }
+    .section-dark .body-text { color: rgba(232,227,218,0.6); }
+    .section-dark .chapter-num { color: rgba(232,227,218,0.07); }
+    .section-dark .chapter-label { color: rgba(232,227,218,0.3); }
+    .section-dark .chapter-title { color: #E8E3DA; }
+    .section-dark .stat-label { color: rgba(232,227,218,0.5); }
+    .section-dark .stat-num { color: #E8E3DA; }
+    .section-dark .divider { border-color: rgba(232,227,218,0.08); }
+    .section-dark hr.divider { border-color: rgba(232,227,218,0.08); }
+
+    /* PROJECT NAV */
+    .project-nav {
+      padding: 3rem var(--pad);
+      border-top: 1px solid var(--bg-alt);
+    }
+    .project-nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .project-nav a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .project-nav a:hover { color: var(--accent); }
+
+    /* FOOTER */
+    footer {
+      padding: 3rem var(--pad);
+      border-top: 1px solid var(--bg-alt);
+    }
+    .footer-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-name {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--ink-mid);
+    }
+    .footer-links { display: flex; gap: 1.75rem; list-style: none; }
+    .footer-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+
+    /* FADE IN */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="index.html" class="nav-logo">Fredrik Påhlman</a>
+    <ul class="nav-links">
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="index.html#personal">Personal</a></li>
+      <li><a href="writing.html">Writing</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="mailto:fredrikande@gmail.com">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero" id="hero">
+    <video class="hero-video"
+           src="Portfolio Assets/Sleep Cycle/Sequence 01_2.mp4"
+           autoplay muted loop playsinline></video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Sleep Cycle<br><em>&amp; Activation</em></h1>
+      <div class="hero-right">
+        <span class="hero-tag">Product Design</span>
+        <span class="hero-tag">Discovery</span>
+        <span class="hero-tag">2024 – Present</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- OVERVIEW -->
+  <section class="section" id="overview">
+    <div class="section-inner">
+      <div class="overview-grid fade-in">
+        <div class="overview-meta">
+          <div>
+            <p class="meta-block-label">Company</p>
+            <p class="meta-block-value">Sleep Cycle · Gothenburg<br>~40 people</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Role</p>
+            <p class="meta-block-value">Senior Product Designer<br>UX &amp; Discovery Lead</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Scope</p>
+            <p class="meta-block-value">Discovery practice<br>Activation &amp; monetisation<br>AI-assisted design generation</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Period</p>
+            <p class="meta-block-value">Oct 2024 – Present</p>
+          </div>
+        </div>
+        <div class="overview-text">
+          <p>Sleep Cycle is a sleep-tracking app used by millions worldwide. I joined as Senior Product Designer in the Activation team, working on converting free users to paid subscribers through better onboarding, paywalls, and feature design.</p>
+          <p>Alongside the design work, I took on the role of UX &amp; Discovery Lead — responsible for building a continuous discovery practice across four product teams from scratch. These two tracks fed each other in ways that changed how I think about both.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- CHAPTER 1: DISCOVERY -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="chapter fade-in">
+        <div class="chapter-num">01</div>
+        <div class="chapter-text">
+          <p class="chapter-label">Discovery Practice</p>
+          <h2 class="chapter-title">Building continuous discovery<br>from scratch</h2>
+        </div>
+      </div>
+
+      <div class="split fade-in">
+        <div class="body-text">
+          <p>When I joined, there was no structured discovery practice. User research happened sporadically, insights rarely made it into decisions, and each team was operating largely on assumptions.</p>
+          <p>I set up a weekly rhythm: every week, across all four teams, we ran user interviews. Not as a project, not tied to a launch — just a standing cadence. We've now maintained that without interruption for 18 months.</p>
+          <p>The harder part was what to do with everything we were learning. I built a JTBD-based insight system in Notion that made research findable and connectable — so designers and PMs could pull from a growing body of knowledge rather than starting from scratch each time.</p>
+          <p>Over time I brought AI into the synthesis process: using Claude to help identify patterns across interview transcripts, spot contradictions between weeks, and surface connections to existing insights. The goal was keeping the cadence sustainable without drowning in raw data.</p>
+        </div>
+        <div>
+          <div class="split-media">
+            <img src="Portfolio Assets/Sleep Cycle/OST apr 14.JPG"
+                 alt="Open Space session — discovery alignment across teams"
+                 loading="lazy">
+          </div>
+          <div class="stat-row">
+            <div class="stat">
+              <div class="stat-num">18 mo</div>
+              <div class="stat-label">Unbroken weekly cadence</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">4</div>
+              <div class="stat-label">Product teams</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">40+</div>
+              <div class="stat-label">People in the company</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="insight-grid fade-in">
+        <div class="insight-card">
+          <p class="insight-card-label">The cadence principle</p>
+          <p class="insight-card-text">Continuous discovery only works if it's not treated as a project. The weekly interviews had to become boring infrastructure — predictable, low-stakes, always on. When that clicks, the quality of decisions changes.</p>
+        </div>
+        <div class="insight-card">
+          <p class="insight-card-label">AI as synthesis partner</p>
+          <p class="insight-card-text">The bottleneck in discovery isn't gathering insight — it's making sense of it fast enough to be useful. AI-assisted synthesis didn't replace judgment, it meant we could keep up with the volume we were generating.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- CHAPTER 2: ACTIVATION DESIGN -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="chapter fade-in">
+        <div class="chapter-num">02</div>
+        <div class="chapter-text">
+          <p class="chapter-label">Design Craft</p>
+          <h2 class="chapter-title">Activation, paywalls,<br>and feature design</h2>
+        </div>
+      </div>
+
+      <div class="split fade-in">
+        <div class="body-text">
+          <p>As a designer in the Activation team, the brief was conversion — moving users from free to paid in a way that felt earned rather than coerced. That meant rethinking onboarding, paywalls, and the moments where the product's value becomes clear enough to justify paying.</p>
+          <p>A lot of the work was about sequencing: what do users need to experience before a paywall makes sense? What's the right gate to put on which features? When does a soft paywall actually convert better than a hard one?</p>
+          <p>Discovery fed directly into these questions. Running weekly interviews meant we were constantly updating our picture of where users were in their journey, what they found confusing, and what they valued enough to pay for.</p>
+        </div>
+        <div class="split-media dark">
+          <video src="Portfolio Assets/Sleep Cycle/Paywall golden sky.mov"
+                 autoplay muted loop playsinline></video>
+        </div>
+      </div>
+
+      <!-- MOCKUP SCROLL -->
+      <div class="mockup-row fade-in">
+        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture.png"    alt="Sleep Cycle design" loading="lazy">
+        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture 1.png"  alt="Sleep Cycle design" loading="lazy">
+        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture 7.png"  alt="Sleep Cycle design" loading="lazy">
+        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture 14.png" alt="Sleep Cycle design" loading="lazy">
+        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture paywall.png" alt="Sleep Cycle paywall" loading="lazy">
+      </div>
+
+      <!-- VIDEO PAIR: activation flows -->
+      <div class="video-pair fade-in">
+        <video src="Portfolio Assets/Sleep Cycle/Banner to paywall 7 day soft paywall.mov"
+               autoplay muted loop playsinline></video>
+        <video src="Portfolio Assets/Sleep Cycle/Reverse trial intro video.mov"
+               autoplay muted loop playsinline></video>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- CHAPTER 3: AI IN DESIGN GENERATION -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="chapter fade-in">
+        <div class="chapter-num">03</div>
+        <div class="chapter-text">
+          <p class="chapter-label">Workflow Experiment</p>
+          <h2 class="chapter-title">Using AI to generate<br>design assets and motion</h2>
+        </div>
+      </div>
+
+      <div class="split fade-in">
+        <div class="body-text">
+          <p>Working in a small design team at a product company meant the pace of execution mattered. I started experimenting with AI-assisted generation not as a replacement for design judgment, but as a way to collapse the gap between concept and testable asset.</p>
+          <p>For campaign and marketing work — onboarding animations, contextual ad creatives, paywall visuals — I explored using AI to generate imagery and motion in a way that matched the Sleep Cycle visual language without requiring a production cycle for each variant.</p>
+          <p>The experiments shifted how I think about the designer's role: less about making every pixel, more about specifying the right language precisely enough that generation produces something worth shipping, or something close enough to iterate quickly from.</p>
+        </div>
+        <div>
+          <div class="split-media dark" style="margin-bottom: 0.75rem;">
+            <video src="Portfolio Assets/Sleep Cycle/Sequence 03_2.mp4"
+                   autoplay muted loop playsinline></video>
+          </div>
+          <div class="split-media" style="background: #0d0f15;">
+            <img src="Portfolio Assets/Sleep Cycle/Assets exploration short.png"
+                 alt="Asset exploration" loading="lazy">
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURE VIDEOS -->
+      <div class="video-trio fade-in">
+        <video src="Portfolio Assets/Sleep Cycle/feature cards.mov"
+               autoplay muted loop playsinline></video>
+        <video src="Portfolio Assets/Sleep Cycle/apple health kit sync.mov"
+               autoplay muted loop playsinline></video>
+        <video src="Portfolio Assets/Sleep Cycle/back to school 4.mov"
+               autoplay muted loop playsinline></video>
+      </div>
+
+      <!-- CAMPAIGN IMAGERY -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem;" class="fade-in">
+        <img src="Portfolio Assets/Sleep Cycle/AE Campaign 5 toes.png"
+             alt="Campaign imagery" loading="lazy" class="img-full">
+        <img src="Portfolio Assets/Sleep Cycle/paywall starry sky.png"
+             alt="Paywall visual" loading="lazy" class="img-full">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem;" class="fade-in">
+        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture1.png"  alt="Sleep Cycle screen" loading="lazy" class="img-full">
+        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture2.png"  alt="Sleep Cycle screen" loading="lazy" class="img-full">
+        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture3.png"  alt="Sleep Cycle screen" loading="lazy" class="img-full">
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECT NAV -->
+  <div class="project-nav">
+    <div class="project-nav-inner">
+      <a href="project-bubble-studio.html">← Bubble Studio</a>
+      <a href="index.html#work">All work →</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-name">Fredrik Påhlman — Design &amp; Product</span>
+      <ul class="footer-links">
+        <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">LinkedIn</a></li>
+        <li><a href="mailto:fredrikande@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    const hero = document.getElementById('hero');
+    function checkNav() {
+      const heroBottom = hero.getBoundingClientRect().bottom;
+      if (heroBottom <= 80) {
+        nav.classList.add('light');
+      } else {
+        nav.classList.remove('light');
+      }
+    }
+    window.addEventListener('scroll', checkNav, { passive: true });
+    checkNav();
+
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      }),
+      { threshold: 0.08 }
+    );
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

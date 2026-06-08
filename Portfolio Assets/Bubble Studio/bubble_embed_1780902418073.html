@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bubble</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#000000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+canvas{display:block;max-width:min(100vw,100vh);max-height:min(100vw,100vh)}
+</style>
+</head>
+<body>
+<canvas id="b" width="1024" height="1024"></canvas>
+<script>
+// — Bubble Studio embed (auto-generated) —
+const P={"count":2,"sep":1.2,"sizevar":0.4,"merge":0.18,"neckGlow":1.2,"collapse":0.2,"radius":0.34,"sag":0.7,"wobble":0.55,"wbspeed":0.28,"wbmodes":3,"breathe":0.01,"thickness":0.65,"tgrad":1.1,"flowSpeed":0.14,"flowScale":1.8,"vortex":0.65,"iridescence":1.95,"sat":1.1,"fresnelPow":7.6,"fresnelStr":2.2,"alpha":0.6,"centreop":0.01,"spec":1.8,"specexp":144,"speed":0.4,"turb":0.4,"rotlight":0,"vig":0.7,"bgColor":[0,0,0]};
+
+const VERT=`#version 300 es
+precision highp float;
+in vec2 a_pos;out vec2 v_uv;
+void main(){v_uv=a_pos*.5+.5;gl_Position=vec4(a_pos,0,1);}`;
+const FRAG=`#version 300 es
+precision highp float;
+in vec2 v_uv;out vec4 fragColor;
+
+uniform float u_time;
+uniform vec2  u_res;
+// bubbles
+uniform int   u_count;
+uniform vec4  u_bubbles[6];
+uniform float u_mergeK,u_neckGlow;
+// shape (surface-tension wobble replaces fBm warp)
+uniform float u_sag,u_wobble,u_wbspeed,u_wbmodes,u_breathe,u_turb;
+// color flow
+uniform float u_thickness,u_tgrad,u_iridescence,u_sat;
+uniform float u_flowSpeed,u_flowScale,u_vortex;
+// surface
+uniform float u_fresnelPow,u_fresnelStr,u_alpha,u_centreop,u_spec,u_specexp;
+// anim / render
+uniform float u_speed,u_rotlight,u_vig;
+uniform vec3  u_bgColor;
+
+// ── helpers ────────────────────────────────────
+float hash(float n){return fract(sin(n)*43758.5453);}
+float hash2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+
+// 2-D value noise (used for color flow)
+float vnoise2(vec2 p){
+  vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(hash2(i),hash2(i+vec2(1,0)),f.x),
+             mix(hash2(i+vec2(0,1)),hash2(i+vec2(1,1)),f.x),f.y);}
+
+// ── Surface-tension wobble ─────────────────────
+// Decompose point on sphere into spherical coords, apply
+// low-order harmonic-like sinusoidal deformations.
+// These produce the smooth oblate/prolate/lobing modes of
+// a real soap film instead of bumpy noise.
+float surfaceTensionWarp(vec3 dir, float t, float idx){
+  // dir = unit vector from bubble centre
+  float ph=atan(dir.y,dir.x);   // azimuth
+  float th=acos(clamp(dir.z,-1.,1.)); // polar
+
+  float w=0.;
+  float amp=u_wobble*0.12;
+  float spd=u_wbspeed*(1.+idx*0.18);
+  int   modes=int(u_wbmodes+.5);
+
+  // Mode 1: gentle oblate/prolate breathing (l=2,m=0)
+  if(modes>=1) w+=amp*sin(th*2.+t*spd*0.71+idx*1.3)*cos(t*spd*0.53);
+  // Mode 2: tilted equatorial bulge (l=2,m=2)
+  if(modes>=2) w+=amp*.65*sin(th)*cos(ph*2.+t*spd*0.61+idx*2.1)*sin(t*spd*0.44);
+  // Mode 3: gentle three-lobe (l=3,m=1)
+  if(modes>=3) w+=amp*.45*sin(th*3.)*cos(ph+t*spd*0.37+idx*0.9);
+  // Mode 4: slow four-lobe equatorial (l=4,m=4)
+  if(modes>=4) w+=amp*.30*pow(sin(th),2.)*cos(ph*4.+t*spd*0.29+idx*3.2);
+  // Mode 5: asymmetric drift (l=3,m=2)
+  if(modes>=5) w+=amp*.25*sin(th*2.+ph+t*spd*0.51+idx*1.7);
+
+  return w;
+}
+
+float bubbleSDF(vec3 pos,vec3 center,float radius,float t,float idx){
+  vec3 p=pos-center;
+  float r=length(p);
+  if(r<0.001)return -radius;
+  vec3 dir=p/r;
+
+  float br=sin(t*.63+idx*2.1)*u_breathe+sin(t*1.07+idx*1.5)*u_breathe*.35;
+  // Light centre drift (slow positional wobble, much less than shape warp)
+  vec3 drift=vec3(
+    sin(t*.19+idx*1.1)*0.05,
+    cos(t*.15+idx*0.9)*0.04,0.)*u_turb;
+  vec3 dirD=normalize(p-drift);
+
+  float stW=surfaceTensionWarp(dirD,t,idx);
+  float sag=(p.y-.04)*u_sag*.45;
+  return r-(radius+br+stW-sag);
+}
+
+// smooth-min full
+vec3 sminFull(float a,float b,float k){
+  float h=clamp(.5+.5*(b-a)/k,0.,1.);
+  float d=mix(b,a,h)-k*h*(1.-h);
+  float neck=1.-abs(h*2.-1.);
+  return vec3(d,h,neck);
+}
+
+vec3 sceneFull(vec3 pos,float t){
+  float d0=bubbleSDF(pos,u_bubbles[0].xyz,u_bubbles[0].w,t,0.);
+  float dom=0.,neck=0.,dF=d0;
+  for(int i=1;i<6;i++){
+    if(i>=u_count)break;
+    float di=bubbleSDF(pos,u_bubbles[i].xyz,u_bubbles[i].w,t,float(i));
+    vec3 sm=sminFull(dF,di,u_mergeK);
+    dom=mix(dom,float(i),sm.y);
+    float prox=1.-smoothstep(0.,u_mergeK*2.,abs(dF-di));
+    neck=max(neck,sm.z*prox);
+    dF=sm.x;
+  }
+  return vec3(dF,dom,neck);
+}
+float sceneDist(vec3 p,float t){return sceneFull(p,t).x;}
+
+vec3 sceneNormal(vec3 p,float t){
+  float e=.0038;
+  return normalize(vec3(
+    sceneDist(p+vec3(e,0,0),t)-sceneDist(p-vec3(e,0,0),t),
+    sceneDist(p+vec3(0,e,0),t)-sceneDist(p-vec3(0,e,0),t),
+    sceneDist(p+vec3(0,0,e),t)-sceneDist(p-vec3(0,0,e),t)));
+}
+
+// ── Color flow ─────────────────────────────────
+// Animated 2-D curl-like advection on the sphere surface.
+// We project onto the local tangent plane, apply a rotating
+// noise field, and use the result as an offset into the
+// film thickness lookup.
+vec2 flowField(vec2 uv,float t){
+  float ft=t*u_flowSpeed;
+  // Two noise layers at different scales — curl-approximate
+  float n1=vnoise2(uv*u_flowScale           +ft*.7)*2.-1.;
+  float n2=vnoise2(uv*u_flowScale*1.7+vec2(5.3,2.8)-ft*.5)*2.-1.;
+  // Vortex rotation component
+  vec2 centre=uv-.5;
+  float ang=atan(centre.y,centre.x)+ft*u_vortex*.4;
+  float rad=length(centre);
+  vec2 vort=vec2(cos(ang),sin(ang))*rad*u_vortex;
+  return vec2(n1,n2)*0.35+vort*0.3;
+}
+
+// ── Thin-film ──────────────────────────────────
+vec3 film(float c,float d){
+  float n=1.34,c2=sqrt(max(0.,1.-(1.-c*c)/(n*n))),opd=2.*n*d*c2,P=6.28318;
+  return vec3(.5+.5*cos(P*opd/650.),.5+.5*cos(P*opd/540.),.5+.5*cos(P*opd/460.));}
+vec3 sat3(vec3 c,float s){return mix(vec3(dot(c,vec3(.2126,.7152,.0722))),c,s);}
+
+// ── Main ───────────────────────────────────────
+void main(){
+  vec2 uv=(v_uv-.5)*2.;float asp=u_res.x/u_res.y;uv.x*=asp;
+  float t=u_time*u_speed;
+  vec3 ro=vec3(0.,.04,2.8),rd=normalize(vec3(uv,-1.6));
+  float la=u_rotlight>.5?t*.35+.5:.5;
+  vec3 lp1=vec3(sin(la)*1.8,-.5,cos(la)*1.6+.8);
+  vec3 lp2=vec3(-1.6,1.4,1.4);
+  vec3 lc1=vec3(1.,.97,.92),lc2=vec3(.55,.68,1.);
+
+  float dist=0.;bool hit=false;
+  for(int i=0;i<128;i++){
+    vec3 p=ro+rd*dist;
+    float d=sceneDist(p,t);
+    if(d<.0014){hit=true;break;}
+    if(dist>8.)break;
+    dist+=d*.78;
+  }
+
+  vec3 col=u_bgColor;
+  if(hit){
+    vec3 p=ro+rd*dist;
+    vec3 info=sceneFull(p,t);
+    float neckW=info.z;
+
+    vec3 n=sceneNormal(p,t),v=-rd;
+    vec3 l1=normalize(lp1-p),l2=normalize(lp2-p);
+    vec3 h1=normalize(l1+v),h2=normalize(l2+v);
+    float cosV=max(0.,dot(n,v));
+    float fresnel=u_fresnelStr*pow(clamp(1.-cosV,0.,1.),u_fresnelPow);
+
+    // Dominant bubble for local coords
+    int bIdx=clamp(int(info.y+.5),0,5);
+    vec3 bCtr=u_bubbles[bIdx].xyz;
+    float bRad=u_bubbles[bIdx].w;
+    vec3 localP=p-bCtr;
+    float yN=clamp((-localP.y/bRad+1.)*.5,0.,1.);
+
+    // ── Color flow: build animated UV on sphere surface ──
+    // Project local point onto sphere and build 2-D coords
+    vec3 dirL=normalize(localP);
+    // Spherical UV
+    vec2 sphUV=vec2(atan(dirL.x,dirL.z)/(2.*3.14159)+.5,
+                    acos(clamp(dirL.y,-1.,1.))/3.14159);
+    // Apply animated flow field offset
+    vec2 flowOff=flowField(sphUV,t*u_speed);
+    vec2 warpedUV=sphUV+flowOff;
+
+    // Build film thickness from warped UV
+    float flowThin=vnoise2(warpedUV*u_flowScale*1.4+t*u_flowSpeed*.3)*.5+.5;
+    float fd = u_thickness*140.+80.
+             + yN*u_tgrad*220.
+             + flowThin*80.*u_vortex           // flow contribution
+             + vnoise2(sphUV*3.+t*u_flowSpeed*.15)*40.; // fine detail
+    float fd2= u_thickness*98.+40.*flowThin
+             + yN*u_tgrad*110.;
+
+    vec3 fc=sat3(mix(film(cosV,fd),sat3(film(max(0.,dot(n,l1)),fd2),u_sat*.8),.35),u_sat);
+
+    vec3 diff=fc*(max(0.,dot(n,l1))*.15*lc1+max(0.,dot(n,l2))*.08*lc2);
+    vec3 spec=lc1*pow(max(0.,dot(n,h1)),u_specexp)*u_spec
+             +lc2*pow(max(0.,dot(n,h2)),u_specexp*.4)*u_spec*.2;
+    float em=clamp(fresnel+smoothstep(.6,0.,cosV)*.3,0.,1.);
+
+    col=mix(
+      mix(u_bgColor,fc*.4+u_bgColor,u_centreop),
+      u_bgColor+fc*u_iridescence*u_alpha+fc*fresnel*.5+diff+spec,
+      em);
+
+    // Contact membrane glow
+    col+=mix(fc*1.5,vec3(1.,.97,.9),.55)*pow(neckW,2.5)*u_neckGlow;
+  }
+
+  float vig=1.-u_vig*.45*dot(uv*vec2(1./asp,1.),uv*vec2(1./asp,1.));
+  col*=clamp(vig,0.,1.);
+  col=col*(1.+col*.12)/(col+.55)*1.35;
+  col=pow(max(col,0.),vec3(1./2.2));
+  fragColor=vec4(clamp(col,0.,1.),1.);
+}`;
+
+function buildGL(cvs){
+  const gl=cvs.getContext('webgl2',{preserveDrawingBuffer:true,antialias:false});
+  if(!gl)return null;
+  function cs(src,type){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))console.error(gl.getShaderInfoLog(s));return s;}
+  const prog=gl.createProgram();
+  gl.attachShader(prog,cs(VERT,gl.VERTEX_SHADER));gl.attachShader(prog,cs(FRAG,gl.FRAGMENT_SHADER));gl.linkProgram(prog);gl.useProgram(prog);
+  const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const ap=gl.getAttribLocation(prog,'a_pos');gl.enableVertexAttribArray(ap);gl.vertexAttribPointer(ap,2,gl.FLOAT,false,0,0);
+  const U={};
+  ['u_time','u_res','u_count','u_bubbles','u_mergeK','u_neckGlow',
+   'u_sag','u_wobble','u_wbspeed','u_wbmodes','u_breathe','u_turb',
+   'u_thickness','u_tgrad','u_iridescence','u_sat',
+   'u_flowSpeed','u_flowScale','u_vortex',
+   'u_fresnelPow','u_fresnelStr','u_alpha','u_centreop','u_spec','u_specexp',
+   'u_speed','u_rotlight','u_vig','u_bgColor'
+  ].forEach(n=>U[n]=gl.getUniformLocation(prog,n));
+  return{gl,U};
+}
+function drawFrame(ctx,p,bubs,t,w,h){
+  const{gl,U}=ctx;
+  gl.viewport(0,0,w,h);
+  gl.uniform1f(U.u_time,t);gl.uniform2f(U.u_res,w,h);
+  gl.uniform1i(U.u_count,Math.min(bubs.length,6));
+  const flat=new Float32Array(24);
+  for(let i=0;i<6;i++){const b=bubs[i]||{x:0,y:0,z:0,r:.001};flat[i*4]=b.x;flat[i*4+1]=b.y;flat[i*4+2]=b.z;flat[i*4+3]=b.r;}
+  gl.uniform4fv(U.u_bubbles,flat);
+  gl.uniform1f(U.u_mergeK,p.merge);gl.uniform1f(U.u_neckGlow,p.neckGlow);
+  gl.uniform1f(U.u_sag,p.sag);gl.uniform1f(U.u_wobble,p.wobble);
+  gl.uniform1f(U.u_wbspeed,p.wbspeed);gl.uniform1f(U.u_wbmodes,p.wbmodes);
+  gl.uniform1f(U.u_breathe,p.breathe);gl.uniform1f(U.u_turb,p.turb);
+  gl.uniform1f(U.u_thickness,p.thickness);gl.uniform1f(U.u_tgrad,p.tgrad);
+  gl.uniform1f(U.u_iridescence,p.iridescence);gl.uniform1f(U.u_sat,p.sat);
+  gl.uniform1f(U.u_flowSpeed,p.flowSpeed);gl.uniform1f(U.u_flowScale,p.flowScale);gl.uniform1f(U.u_vortex,p.vortex);
+  gl.uniform1f(U.u_fresnelPow,p.fresnelPow);gl.uniform1f(U.u_fresnelStr,p.fresnelStr);
+  gl.uniform1f(U.u_alpha,p.alpha);gl.uniform1f(U.u_centreop,p.centreop);
+  gl.uniform1f(U.u_spec,p.spec);gl.uniform1f(U.u_specexp,p.specexp);
+  gl.uniform1f(U.u_speed,p.speed);gl.uniform1f(U.u_rotlight,p.rotlight);
+  gl.uniform1f(U.u_vig,p.vig);gl.uniform3fv(U.u_bgColor,p.bgColor);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+}
+function bubbleRadii(count,base,variance){
+  const seed=[0.72,1.18,0.88,1.35,0.60,1.05];
+  return Array.from({length:count},(_,i)=>Math.max(0.08,base*(1+(seed[i%6]-0.9)*variance*1.4)));
+}
+class BubbleSim{
+  constructor(){this.bubbles=[];this.radii=[];}
+  reset(count,base,sep,variance){
+    this.radii=bubbleRadii(count,base,variance);
+    this.bubbles=Array.from({length:count},(_,i)=>{
+      const a=i*(Math.PI*2/count)-(Math.PI/2);
+      const ringR=count===1?0:base*1.6*sep;
+      return{x:count===1?0:Math.cos(a)*ringR,y:count===1?0:Math.sin(a)*ringR*.5,z:0,vx:(Math.random()-.5)*.003,vy:(Math.random()-.5)*.003,phase:Math.random()*Math.PI*2};
+    });
+  }
+  step(dt,base,sep,collapseT,variance){
+    const bs=this.bubbles,N=bs.length,now=performance.now()*.001;
+    this.radii=bubbleRadii(N,base,variance);
+    for(let i=0;i<N;i++){
+      bs[i].vx+=-bs[i].x*.004*dt*60;bs[i].vy+=-bs[i].y*.003*dt*60;
+      bs[i].vx+=(Math.sin(bs[i].phase*1.3+now*.29)*.0012)*dt*60;
+      bs[i].vy+=(Math.cos(bs[i].phase*0.9+now*.21)*.0010)*dt*60;
+      for(let j=i+1;j<N;j++){
+        const dx=bs[j].x-bs[i].x,dy=bs[j].y-bs[i].y;
+        const dist=Math.sqrt(dx*dx+dy*dy)||.0001;
+        const sumR=this.radii[i]+this.radii[j];
+        const overlap=dist-sumR;
+        if(overlap<-collapseT*sumR){
+          const f=.10*dt*60;bs[i].vx+=dx/dist*f;bs[i].vy+=dy/dist*f;bs[j].vx-=dx/dist*f;bs[j].vy-=dy/dist*f;
+        } else {
+          const delta=dist-sumR*sep;
+          const str=delta<0?delta*.06*dt*60:delta*.007*dt*60;
+          bs[i].vx+=dx/dist*str;bs[i].vy+=dy/dist*str;bs[j].vx-=dx/dist*str;bs[j].vy-=dy/dist*str;
+        }
+      }
+      bs[i].vx*=.97;bs[i].vy*=.97;bs[i].x+=bs[i].vx;bs[i].y+=bs[i].vy;
+      if(Math.abs(bs[i].x)>.82){bs[i].vx*=-.4;bs[i].x=Math.sign(bs[i].x)*.82;}
+      if(Math.abs(bs[i].y)>.55){bs[i].vy*=-.4;bs[i].y=Math.sign(bs[i].y)*.55;}
+    }
+  }
+  getData(){return this.bubbles.map((b,i)=>({x:b.x,y:b.y,z:0,r:this.radii[i]||.1}));}
+}
+
+const cvs=document.getElementById('b');
+const ctx=buildGL(cvs);
+const sim=new BubbleSim();
+sim.reset(Math.round(P.count),P.radius,P.sep,P.sizevar);
+const t0=performance.now();let lastPhysT=performance.now();
+requestAnimationFrame(function loop(ts){
+  const t=(ts-t0)/1000,dt=Math.min((ts-lastPhysT)/1000,.05);lastPhysT=ts;
+  sim.step(dt,P.radius,P.sep,P.collapse,P.sizevar);
+  drawFrame(ctx,P,sim.getData(),t,1024,1024);
+  requestAnimationFrame(loop);
+});
+</script>
+</body>
+</html>

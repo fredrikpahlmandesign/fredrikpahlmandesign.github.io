@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume — Fredrik Påhlman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F5F0;
+      --bg-alt: #EDEAE3;
+      --ink: #1A1814;
+      --ink-mid: #6B6760;
+      --ink-light: #B0ADA7;
+      --accent: #C8562A;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+      --pad: clamp(1.5rem, 5vw, 4rem);
+      --max: 860px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem var(--pad);
+      background: var(--bg);
+      border-bottom: 1px solid var(--bg-alt);
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1rem;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-links a.active { color: var(--ink); }
+
+    .resume-wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 8rem var(--pad) 6rem;
+    }
+
+    /* Header */
+    .resume-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 2rem;
+      padding-bottom: 2.5rem;
+      border-bottom: 1px solid var(--ink);
+      margin-bottom: 3.5rem;
+    }
+    @media (max-width: 600px) { .resume-head { grid-template-columns: 1fr; } }
+    .resume-head-name {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(2.25rem, 6vw, 4rem);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .resume-head-title {
+      font-size: 1rem;
+      color: var(--ink-mid);
+      margin-top: 0.5rem;
+    }
+    .resume-head-contact {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    @media (max-width: 600px) { .resume-head-contact { text-align: left; } }
+    .resume-head-contact a,
+    .resume-head-contact span {
+      font-size: 0.875rem;
+      color: var(--ink-mid);
+      text-decoration: none;
+      display: block;
+      line-height: 1.5;
+    }
+    .resume-head-contact a:hover { color: var(--accent); }
+
+    /* Section */
+    .resume-section {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 0 3rem;
+      margin-bottom: 3rem;
+    }
+    @media (max-width: 640px) {
+      .resume-section { grid-template-columns: 1fr; gap: 1rem; }
+    }
+    .resume-section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      padding-top: 0.25rem;
+    }
+    .resume-entries { display: flex; flex-direction: column; gap: 0; }
+
+    /* Entry */
+    .resume-entry {
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--bg-alt);
+    }
+    .resume-entry:first-child { padding-top: 0; }
+    .resume-entry-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 0.25rem;
+    }
+    .resume-entry-role {
+      font-weight: 500;
+      font-size: 0.9375rem;
+    }
+    .resume-entry-period {
+      font-size: 0.8125rem;
+      color: var(--ink-light);
+      white-space: nowrap;
+    }
+    .resume-entry-company {
+      font-size: 0.875rem;
+      color: var(--ink-mid);
+      margin-bottom: 0.6rem;
+    }
+    .resume-entry-desc {
+      font-size: 0.9375rem;
+      color: var(--ink-mid);
+      line-height: 1.65;
+    }
+
+    /* Skills */
+    .skills-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .skills-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .skill-tag {
+      display: inline-block;
+      padding: 0.3rem 0.75rem;
+      background: var(--bg-alt);
+      border-radius: 100px;
+      font-size: 0.8125rem;
+      color: var(--ink-mid);
+    }
+
+    /* Download */
+    .resume-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ink);
+      text-decoration: none;
+      border: 1.5px solid var(--ink);
+      padding: 0.6rem 1.25rem;
+      border-radius: 3px;
+      margin-top: 3rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .resume-download:hover {
+      background: var(--ink);
+      color: var(--bg);
+    }
+
+    footer {
+      padding: 3rem var(--pad);
+      border-top: 1px solid var(--bg-alt);
+      margin-top: 2rem;
+    }
+    .footer-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-name {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--ink-mid);
+    }
+    .footer-links { display: flex; gap: 1.75rem; list-style: none; }
+    .footer-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Fredrik Påhlman</a>
+    <ul class="nav-links">
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="writing.html">Writing</a></li>
+      <li><a href="resume.html" class="active">Resume</a></li>
+      <li><a href="mailto:fredrikande@gmail.com">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="resume-wrap">
+
+    <div class="resume-head">
+      <div>
+        <h1 class="resume-head-name">Fredrik<br>Påhlman</h1>
+        <p class="resume-head-title">Design &amp; Product</p>
+      </div>
+      <div class="resume-head-contact">
+        <a href="mailto:fredrikande@gmail.com">fredrikande@gmail.com</a>
+        <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+        <a href="index.html">fredrikpahlman.com</a>
+        <span>Sweden</span>
+      </div>
+    </div>
+
+    <!-- EXPERIENCE -->
+    <div class="resume-section">
+      <div class="resume-section-label">Experience</div>
+      <div class="resume-entries">
+        <div class="resume-entry">
+          <div class="resume-entry-head">
+            <span class="resume-entry-role">Senior Product Designer</span>
+            <span class="resume-entry-period">2022 – Present</span>
+          </div>
+          <div class="resume-entry-company">Company Name · Location</div>
+          <div class="resume-entry-desc">Describe what you worked on, the scope of your impact, and what made this role meaningful. Two to three sentences is usually enough.</div>
+        </div>
+        <div class="resume-entry">
+          <div class="resume-entry-head">
+            <span class="resume-entry-role">Product Designer</span>
+            <span class="resume-entry-period">2019 – 2022</span>
+          </div>
+          <div class="resume-entry-company">Company Name · Location</div>
+          <div class="resume-entry-desc">Describe what you worked on and what you contributed. Focus on outcomes — what changed because you were there.</div>
+        </div>
+        <div class="resume-entry">
+          <div class="resume-entry-head">
+            <span class="resume-entry-role">UX Designer</span>
+            <span class="resume-entry-period">2017 – 2019</span>
+          </div>
+          <div class="resume-entry-company">Company Name · Location</div>
+          <div class="resume-entry-desc">Earlier role — how you started, what you learned, and what you built.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="resume-section">
+      <div class="resume-section-label">Education</div>
+      <div class="resume-entries">
+        <div class="resume-entry">
+          <div class="resume-entry-head">
+            <span class="resume-entry-role">Bachelor of Design</span>
+            <span class="resume-entry-period">2013 – 2017</span>
+          </div>
+          <div class="resume-entry-company">University Name</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILLS -->
+    <div class="resume-section">
+      <div class="resume-section-label">Skills</div>
+      <div class="skills-grid">
+        <div>
+          <div style="font-size:0.75rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-light);margin-bottom:0.6rem;">Design</div>
+          <div class="skills-row">
+            <span class="skill-tag">Product Design</span>
+            <span class="skill-tag">Interaction Design</span>
+            <span class="skill-tag">Visual Design</span>
+            <span class="skill-tag">Design Systems</span>
+            <span class="skill-tag">Prototyping</span>
+            <span class="skill-tag">Brand Identity</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:0.75rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-light);margin-bottom:0.6rem;">Tools</div>
+          <div class="skills-row">
+            <span class="skill-tag">Figma</span>
+            <span class="skill-tag">Framer</span>
+            <span class="skill-tag">Principle</span>
+            <span class="skill-tag">After Effects</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:0.75rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-light);margin-bottom:0.6rem;">Product</div>
+          <div class="skills-row">
+            <span class="skill-tag">User Research</span>
+            <span class="skill-tag">Product Strategy</span>
+            <span class="skill-tag">Roadmapping</span>
+            <span class="skill-tag">Stakeholder Management</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a href="#" class="resume-download">↓ Download PDF</a>
+
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-name">Fredrik Påhlman — Design &amp; Product</span>
+      <ul class="footer-links">
+        <li><a href="https://linkedin.com" target="_blank">LinkedIn</a></li>
+        <li><a href="https://read.cv" target="_blank">Read.cv</a></li>
+        <li><a href="mailto:fredrikande@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </footer>
+
+</body>
+</html>

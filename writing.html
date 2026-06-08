@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Writing — Fredrik Påhlman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com/">
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F5F0;
+      --bg-alt: #EDEAE3;
+      --ink: #1A1814;
+      --ink-mid: #6B6760;
+      --ink-light: #B0ADA7;
+      --accent: #C8562A;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+      --max: 1200px;
+      --pad: clamp(1.5rem, 5vw, 4rem);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem var(--pad);
+      background: var(--bg);
+      border-bottom: 1px solid var(--bg-alt);
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1rem;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-links a.active { color: var(--ink); }
+
+    .page-header {
+      padding-top: 7rem;
+      padding-bottom: 3rem;
+      padding-left: var(--pad);
+      padding-right: var(--pad);
+      max-width: var(--max);
+      margin: 0 auto;
+      border-bottom: 1px solid var(--bg-alt);
+    }
+    .page-header h1 {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .page-header p {
+      margin-top: 1rem;
+      font-size: 1rem;
+      color: var(--ink-mid);
+    }
+
+    .writing-index {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 var(--pad);
+    }
+
+    .writing-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--bg-alt);
+      text-decoration: none;
+      color: inherit;
+      transition: opacity 0.2s;
+    }
+    .writing-card:hover { opacity: 0.6; }
+    .writing-card-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .writing-card-title {
+      font-family: var(--serif);
+      font-size: 1.375rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+    .writing-card-desc {
+      font-size: 0.9375rem;
+      color: var(--ink-mid);
+      max-width: 60ch;
+      line-height: 1.6;
+    }
+    .writing-card-meta {
+      text-align: right;
+    }
+    .writing-card-date {
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      color: var(--ink-light);
+      display: block;
+      white-space: nowrap;
+    }
+    .writing-card-read {
+      font-size: 0.75rem;
+      color: var(--ink-light);
+      margin-top: 0.25rem;
+      display: block;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 640px) {
+      .writing-card { grid-template-columns: 1fr; }
+      .writing-card-meta { text-align: left; }
+    }
+
+    footer {
+      padding: 3rem var(--pad);
+      border-top: 1px solid var(--bg-alt);
+      margin-top: 4rem;
+    }
+    .footer-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-name {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--ink-mid);
+    }
+    .footer-links { display: flex; gap: 1.75rem; list-style: none; }
+    .footer-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Fredrik Påhlman</a>
+    <ul class="nav-links">
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="index.html#personal">Personal</a></li>
+      <li><a href="writing.html" class="active">Writing</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="mailto:fredrikande@gmail.com">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-header">
+    <h1>Writing</h1>
+    <p>Thoughts on design, product, and how things get made.</p>
+  </div>
+
+  <main class="writing-index">
+    <a href="article.html" class="writing-card">
+      <div>
+        <div class="writing-card-tag">Design</div>
+        <div class="writing-card-title">Article Title One</div>
+        <div class="writing-card-desc">A short description of what this piece is about — one or two sentences that give the reader a reason to click through and read the whole thing.</div>
+      </div>
+      <div class="writing-card-meta">
+        <span class="writing-card-date">Jun 2025</span>
+        <span class="writing-card-read">5 min read</span>
+      </div>
+    </a>
+    <a href="article.html" class="writing-card">
+      <div>
+        <div class="writing-card-tag">Product</div>
+        <div class="writing-card-title">Article Title Two</div>
+        <div class="writing-card-desc">Another piece — the description sits here to show how the list looks and flows with multiple entries stacked below each other.</div>
+      </div>
+      <div class="writing-card-meta">
+        <span class="writing-card-date">Mar 2025</span>
+        <span class="writing-card-read">7 min read</span>
+      </div>
+    </a>
+    <a href="article.html" class="writing-card">
+      <div>
+        <div class="writing-card-tag">Process</div>
+        <div class="writing-card-title">Article Title Three</div>
+        <div class="writing-card-desc">A third article to round out the section and show the rhythm of the list layout with varied content.</div>
+      </div>
+      <div class="writing-card-meta">
+        <span class="writing-card-date">Jan 2025</span>
+        <span class="writing-card-read">4 min read</span>
+      </div>
+    </a>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-name">Fredrik Påhlman — Design &amp; Product</span>
+      <ul class="footer-links">
+        <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">LinkedIn</a></li>
+        <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">Read.cv</a></li>
+        <li><a href="mailto:fredrikande@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </footer>
+
+
+
+</body></html>
