@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ascom — Fredrik Påhlman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F5F0;
+      --bg-alt: #EDEAE3;
+      --ink: #1A1814;
+      --ink-mid: #6B6760;
+      --ink-light: #B0ADA7;
+      --accent: #C8562A;
+      --slate: #3A4A5C;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+      --max: 1200px;
+      --pad: clamp(1.5rem, 5vw, 4rem);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem var(--pad);
+      background: rgba(28, 35, 44, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.4s, border-color 0.4s;
+    }
+    nav.light {
+      background: var(--bg);
+      border-color: var(--bg-alt);
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1rem;
+      color: #E8EDF2;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    nav.light .nav-logo { color: var(--ink); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(232,237,242,0.5);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    nav.light .nav-links a { color: var(--ink-mid); }
+    .nav-links a:hover { color: #E8EDF2; }
+    nav.light .nav-links a:hover { color: var(--ink); }
+
+    /* HERO */
+    .hero {
+      background: #1C232C;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: var(--pad);
+      padding-top: 7rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle noise texture effect */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 70% 40%, rgba(58,74,92,0.35) 0%, transparent 55%),
+        radial-gradient(circle at 20% 70%, rgba(58,74,92,0.2) 0%, transparent 45%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      max-width: var(--max);
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(2.5rem, 7vw, 5.5rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: #E8EDF2;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: rgba(232,237,242,0.35);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 3rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(232,237,242,0.07);
+      flex-wrap: wrap;
+    }
+    .hero-stat-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(200,86,42,0.85);
+      margin-bottom: 0.3rem;
+    }
+    .hero-stat-value {
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      font-weight: 300;
+      color: rgba(232,237,242,0.65);
+    }
+
+    .hero-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: flex-end;
+      padding-bottom: 0.2rem;
+    }
+    .hero-tag {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(232,237,242,0.38);
+      border: 1px solid rgba(232,237,242,0.1);
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+    }
+
+    /* CONTENT SECTIONS */
+    .section { padding: 5rem var(--pad); }
+    .section-inner { max-width: var(--max); margin: 0 auto; }
+    .divider { border: none; border-top: 1px solid var(--bg-alt); margin: 0; }
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 2.5rem;
+    }
+
+    /* OVERVIEW */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .overview-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .overview-meta { display: flex; flex-direction: column; gap: 1.75rem; }
+    .meta-block-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.4rem;
+    }
+    .meta-block-value {
+      font-size: 0.9375rem;
+      color: var(--ink-mid);
+      line-height: 1.6;
+    }
+    .overview-text {
+      font-family: var(--serif);
+      font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+      font-weight: 300;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+    .overview-text p + p { margin-top: 1.25em; }
+
+    /* BODY TEXT */
+    .body-text {
+      font-size: 1rem;
+      color: var(--ink-mid);
+      line-height: 1.8;
+      max-width: 66ch;
+    }
+    .body-text p + p { margin-top: 1.1em; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      border-left: 2px solid var(--slate);
+      padding-left: 1.5rem;
+      margin: 3rem 0;
+      max-width: 54ch;
+    }
+
+    /* PRODUCT DISPLAY — two-col with device card */
+    .product-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    @media (max-width: 800px) { .product-split { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+    .device-card {
+      background: linear-gradient(145deg, #2E3840 0%, #1C252E 100%);
+      border-radius: 12px;
+      aspect-ratio: 3/4;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .device-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 60% 30%, rgba(255,255,255,0.04) 0%, transparent 60%);
+    }
+    /* Simulated device screen */
+    .device-screen {
+      width: 100%;
+      max-width: 200px;
+      aspect-ratio: 9/16;
+      background: #1A1F2B;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .device-screen-header {
+      background: #263040;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.7);
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .device-screen-body {
+      padding: 1rem 0.75rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .device-room {
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+      aspect-ratio: 1/1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.04em;
+    }
+    .device-room.alert {
+      background: #D94040;
+      color: #fff;
+    }
+    .device-label {
+      margin-top: 1.5rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(232,237,242,0.3);
+      text-align: center;
+    }
+
+    /* PROCESS STEPS */
+    .process-steps {
+      display: flex;
+      flex-direction: column;
+      border-top: 1px solid var(--bg-alt);
+      margin-top: 2.5rem;
+    }
+    .process-step {
+      display: grid;
+      grid-template-columns: 3rem 1fr;
+      gap: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--bg-alt);
+      align-items: start;
+    }
+    .process-step-num {
+      font-family: var(--serif);
+      font-size: 1.75rem;
+      font-weight: 300;
+      color: var(--ink-light);
+      line-height: 1;
+      padding-top: 0.1rem;
+    }
+    .process-step-title {
+      font-weight: 500;
+      font-size: 1rem;
+      margin-bottom: 0.6rem;
+    }
+    .process-step-text {
+      font-size: 0.9375rem;
+      color: var(--ink-mid);
+      line-height: 1.75;
+      max-width: 60ch;
+    }
+
+    /* CONTEXT BAND */
+    .context-band {
+      background: var(--bg-alt);
+      padding: 5rem var(--pad);
+    }
+    .context-band-inner { max-width: var(--max); margin: 0 auto; }
+    .context-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      margin-top: 2.5rem;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .context-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .context-heading {
+      font-family: var(--serif);
+      font-size: clamp(1.2rem, 3vw, 1.75rem);
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      line-height: 1.4;
+      margin-bottom: 1.25rem;
+    }
+
+    /* OUTCOME BAND */
+    .outcome-band {
+      background: #1C232C;
+      padding: 5rem var(--pad);
+    }
+    .outcome-band-inner { max-width: var(--max); margin: 0 auto; }
+    .outcome-band .section-label { color: rgba(200,86,42,0.8); }
+    .outcome-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+      margin-top: 3rem;
+    }
+    @media (max-width: 700px) { .outcome-stat-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .outcome-stat-num {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 300;
+      color: #E8EDF2;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .outcome-stat-label {
+      font-size: 0.875rem;
+      color: rgba(232,237,242,0.4);
+      line-height: 1.6;
+    }
+
+    /* REFLECTION */
+    .reflection-section { background: var(--bg-alt); }
+    .reflection-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+      margin-top: 2.5rem;
+    }
+    @media (max-width: 700px) { .reflection-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .reflection-card-num {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--ink-light);
+      margin-bottom: 0.75rem;
+    }
+    .reflection-card-title {
+      font-weight: 500;
+      font-size: 0.9375rem;
+      margin-bottom: 0.5rem;
+    }
+    .reflection-card-text {
+      font-size: 0.875rem;
+      color: var(--ink-mid);
+      line-height: 1.7;
+    }
+
+    /* PROJECT NAV */
+    .project-nav { padding: 3rem var(--pad); border-top: 1px solid var(--bg-alt); }
+    .project-nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .project-nav a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .project-nav a:hover { color: var(--accent); }
+
+    /* FOOTER */
+    footer { padding: 3rem var(--pad); border-top: 1px solid var(--bg-alt); }
+    .footer-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-name { font-family: var(--serif); font-size: 1rem; font-weight: 300; color: var(--ink-mid); }
+    .footer-links { display: flex; gap: 1.75rem; list-style: none; }
+    .footer-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+
+    /* FADE IN */
+    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="index.html" class="nav-logo">Fredrik Påhlman</a>
+    <ul class="nav-links">
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="index.html#personal">Personal</a></li>
+      <li><a href="writing.html">Writing</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="mailto:fredrikande@gmail.com">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero" id="hero">
+    <div class="hero-inner">
+      <div>
+        <h1 class="hero-title">Ascom<br><em>/ Myco</em></h1>
+        <div class="hero-stats">
+          <div>
+            <p class="hero-stat-label">Role</p>
+            <p class="hero-stat-value">UX Lead</p>
+          </div>
+          <div>
+            <p class="hero-stat-label">Duration</p>
+            <p class="hero-stat-value">2 years</p>
+          </div>
+          <div>
+            <p class="hero-stat-label">Research in</p>
+            <p class="hero-stat-value">SE · DK</p>
+          </div>
+          <div>
+            <p class="hero-stat-label">Product type</p>
+            <p class="hero-stat-value">Medical device</p>
+          </div>
+        </div>
+      </div>
+      <div class="hero-tags">
+        <span class="hero-tag">Healthcare</span>
+        <span class="hero-tag">Hardware + Software</span>
+        <span class="hero-tag">Mission Critical</span>
+        <span class="hero-tag">2013–2015</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- OVERVIEW -->
+  <section class="section" id="overview">
+    <div class="section-inner">
+      <div class="overview-grid fade-in">
+        <div class="overview-meta">
+          <div>
+            <p class="meta-block-label">Company</p>
+            <p class="meta-block-value">Ascom<br>Gothenburg / Ericsson spin-off</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Product</p>
+            <p class="meta-block-value">Myco<br>Android medical handset</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Users</p>
+            <p class="meta-block-value">Nurses &amp; clinical staff</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Scope</p>
+            <p class="meta-block-value">Custom Android launcher<br>Patient alert apps<br>Hardware UX<br>Charging station UI</p>
+          </div>
+        </div>
+        <div class="overview-text">
+          <p>Ascom is a Gothenburg-based Ericsson spin-off serving healthcare and enterprise with mission-critical communication solutions, including medical device handsets. By the early 2010s they were feeling competitive pressure from smartphone-based alternatives and started developing a new generation of Android-based handsets — running on their own rugged hardware with a custom launcher and purpose-built apps.</p>
+          <p>As UX lead I worked with local and offshored development teams to build a product that lived up to the very high requirements of the medical industry, while genuinely innovating on the user experience for nurses. The Myco handset featured an integrated top display, charging station, barcode scanner, and a sturdy clip designed for the hospital environment.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- PRODUCT -->
+  <section class="section">
+    <div class="section-inner">
+      <p class="section-label fade-in">The product</p>
+      <div class="product-split fade-in">
+        <div class="device-card">
+          <div class="device-screen">
+            <div class="device-screen-header">My patients</div>
+            <div class="device-screen-body">
+              <div class="device-room alert">103</div>
+              <div class="device-room" style="font-size:0.55rem;color:rgba(255,255,255,0.35);">V Tach</div>
+              <div class="device-room">101A</div>
+              <div class="device-room">101B</div>
+              <div class="device-room">102B</div>
+              <div class="device-room">102A</div>
+            </div>
+          </div>
+          <p class="device-label">Myco — Patient alert view</p>
+        </div>
+        <div class="body-text">
+          <p>The core challenge was designing for a context where the stakes are genuinely high. Nurses on a ward are moving fast, often wearing gloves, responding to alerts under time pressure. The UI had to be immediately legible — large touch targets, clear alert hierarchy, no ambiguity.</p>
+          <p>The patient room view distilled the nurse's world into a single glanceable screen: which patients are assigned to them, and which need attention right now. Red for active alert, neutral for all clear. No unnecessary information, no chrome.</p>
+          <p>The hardware had its own UX requirements: the top display showed caller ID and alert status without unlocking the device; the clip position and grip angle were tested with nurses in the field; the charging station interface gave ward managers visibility across all devices at a glance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTEXT BAND -->
+  <div class="context-band">
+    <div class="context-band-inner">
+      <p class="section-label fade-in">The challenge</p>
+      <div class="context-grid fade-in">
+        <div>
+          <h2 class="context-heading">Designing for a world that wasn't built for design</h2>
+          <div class="body-text">
+            <p>Ascom's existing product line was built on decades of hardware engineering expertise. The shift to Android required rethinking the entire interaction model — but within a procurement and certification environment built for medical devices, not consumer software.</p>
+            <p>That meant navigating hardware supplier relationships, manufacturing tolerances, and regulatory constraints alongside the usual product design work. I worked directly with hardware suppliers on grip ergonomics, display positioning, and clip mechanics — physical prototyping alongside digital.</p>
+          </div>
+        </div>
+        <div>
+          <div class="pull-quote" style="margin-top:0;">
+            "Eventually I even jumped in as an actor for some of the graphic materials and videos for the launch."
+          </div>
+          <div class="body-text">
+            <p>I was embedded with the mobility team through to product launch — which meant being involved well beyond what a typical UX engagement covers. Research, prototyping, hardware iteration, launch materials. The product was considered a successful launch and has since been followed up with several more generations of the Myco.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- PROCESS -->
+  <section class="section">
+    <div class="section-inner">
+      <p class="section-label fade-in">How I worked</p>
+      <div class="process-steps fade-in">
+        <div class="process-step">
+          <span class="process-step-num">01</span>
+          <div>
+            <p class="process-step-title">On-site research in hospitals</p>
+            <p class="process-step-text">Over two years I conducted user research through on-site interviews, user tests, and contextual shadowing at hospitals in Sweden and Denmark. Watching nurses work — the actual environment, the pace, the gloves, the interruptions — shaped every decision. Abstract usability principles matter a lot less than watching someone try to read an alert while rushing down a corridor.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="process-step-num">02</span>
+          <div>
+            <p class="process-step-title">Iterative design across software and hardware</p>
+            <p class="process-step-text">I designed and prototyped solutions for both software and hardware in parallel iterations. This wasn't common in UX work at the time — crossing into hardware meant working with suppliers and manufacturing partners to get physical details right. Grip angle, button placement, clip attachment, top display reading distance — all tested and revised across multiple prototyping cycles.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="process-step-num">03</span>
+          <div>
+            <p class="process-step-title">Working across local and offshored teams</p>
+            <p class="process-step-text">The development team was distributed — local Gothenburg engineers alongside offshored development partners. As UX lead I was the bridge: ensuring design decisions translated cleanly across time zones and cultural contexts, and that the rationale behind UX choices was documented well enough to survive the distance.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUTCOME BAND -->
+  <div class="outcome-band">
+    <div class="outcome-band-inner">
+      <p class="section-label fade-in">Outcome</p>
+      <div class="outcome-stat-grid fade-in">
+        <div>
+          <p class="outcome-stat-num">✓</p>
+          <p class="outcome-stat-label">Successful product launch — considered a strong outcome internally and in the market</p>
+        </div>
+        <div>
+          <p class="outcome-stat-num">3+</p>
+          <p class="outcome-stat-label">Subsequent generations of the Myco product built on the foundation we established</p>
+        </div>
+        <div>
+          <p class="outcome-stat-num">HW+SW</p>
+          <p class="outcome-stat-label">End-to-end UX across hardware ergonomics, software UI, and charging station interface</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFLECTION -->
+  <section class="section reflection-section">
+    <div class="section-inner">
+      <p class="section-label fade-in">What I took from this</p>
+      <div class="reflection-grid">
+        <div class="fade-in">
+          <div class="reflection-card-num">01</div>
+          <div class="reflection-card-title">Real context changes everything</div>
+          <p class="reflection-card-text">No amount of persona work or scenario planning replaces watching a nurse manage a cardiac alert on a busy ward. The on-site research wasn't a box-tick — it was the design. The product decisions that held up best were the ones that came directly from what we saw in the field.</p>
+        </div>
+        <div class="fade-in">
+          <div class="reflection-card-num">02</div>
+          <div class="reflection-card-title">UX doesn't stop at the screen</div>
+          <p class="reflection-card-text">Working across software and hardware was unusual at the time but it forced a more complete view of the product. The grip, the weight, the clip angle, the top display — these were UX problems as much as engineering ones. Expanding the definition of what design covers made the product better.</p>
+        </div>
+        <div class="fade-in">
+          <div class="reflection-card-num">03</div>
+          <div class="reflection-card-title">Longevity as a quality signal</div>
+          <p class="reflection-card-text">The fact that Ascom continued building on the Myco platform for multiple product generations is a strong signal. Design decisions made early in a platform's life have compounding effects — getting the foundations right matters more than the surface-level executions that follow.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECT NAV -->
+  <div class="project-nav">
+    <div class="project-nav-inner">
+      <a href="index.html#work">← All work</a>
+      <a href="project-astrazeneca.html">AstraZeneca →</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-name">Fredrik Påhlman — Design &amp; Product</span>
+      <ul class="footer-links">
+        <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">LinkedIn</a></li>
+        <li><a href="mailto:fredrikande@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    const hero = document.getElementById('hero');
+    function checkNav() {
+      nav.classList.toggle('light', hero.getBoundingClientRect().bottom <= 80);
+    }
+    window.addEventListener('scroll', checkNav, { passive: true });
+    checkNav();
+
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      }),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

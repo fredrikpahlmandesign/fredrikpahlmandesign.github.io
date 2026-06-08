@@ -45,6 +45,34 @@ const PROJECTS = [
     order: 1
   },
   {
+    id: "astrazeneca",
+    title: "AstraZeneca — Turbu+",
+    meta: "UX Design Lead · Healthcare",
+    href: "project-astrazeneca.html",
+    visible: true,
+    featured: false,
+    bg: "#0A1626",
+    bodyBg: "#0A1626",
+    textColor: "#E8F0F5",
+    mediaSrc: "Portfolio Assets/Astra Zeneca turbu plus.png",
+    mediaType: "image",
+    order: 2
+  },
+  {
+    id: "ascom",
+    title: "Ascom — Myco Handset",
+    meta: "UX Lead · Medical Device",
+    href: "project-ascom.html",
+    visible: true,
+    featured: false,
+    bg: "#2C2E33",
+    bodyBg: "#2C2E33",
+    textColor: "#F0EBE0",
+    mediaSrc: "",
+    mediaType: "image",
+    order: 3
+  },
+  {
     id: "placeholder",
     title: "Project Title",
     meta: "Coming soon",
@@ -56,6 +84,6 @@ const PROJECTS = [
     textColor: "#1A1814",
     mediaSrc: "",
     mediaType: "image",
-    order: 2
+    order: 4
   }
 ];

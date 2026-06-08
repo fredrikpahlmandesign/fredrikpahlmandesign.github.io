@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AstraZeneca — Fredrik Påhlman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F5F0;
+      --bg-alt: #EDEAE3;
+      --ink: #1A1814;
+      --ink-mid: #6B6760;
+      --ink-light: #B0ADA7;
+      --accent: #C8562A;
+      --teal: #2E8FA0;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+      --max: 1200px;
+      --pad: clamp(1.5rem, 5vw, 4rem);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem var(--pad);
+      background: rgba(10, 22, 38, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.4s, border-color 0.4s;
+    }
+    nav.light {
+      background: var(--bg);
+      border-color: var(--bg-alt);
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1rem;
+      color: #E8F0F5;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    nav.light .nav-logo { color: var(--ink); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(232,240,245,0.55);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    nav.light .nav-links a { color: var(--ink-mid); }
+    .nav-links a:hover { color: #E8F0F5; }
+    nav.light .nav-links a:hover { color: var(--ink); }
+
+    /* HERO */
+    .hero {
+      background: #0A1626;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: var(--pad);
+      padding-top: 7rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle grid texture */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(46,143,160,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(46,143,160,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* Teal glow */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 30%; right: 10%;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(46,143,160,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      max-width: var(--max);
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(2.5rem, 7vw, 5.5rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: #E8F0F5;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: rgba(232,240,245,0.4);
+    }
+    .hero-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: flex-end;
+      padding-bottom: 0.2rem;
+    }
+    .hero-tag {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(232,240,245,0.4);
+      border: 1px solid rgba(232,240,245,0.12);
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+    }
+
+    /* Stat bar below title */
+    .hero-stats {
+      display: flex;
+      gap: 3rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(232,240,245,0.08);
+      flex-wrap: wrap;
+    }
+    .hero-stat-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(46,143,160,0.8);
+      margin-bottom: 0.3rem;
+    }
+    .hero-stat-value {
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      font-weight: 300;
+      color: rgba(232,240,245,0.7);
+    }
+
+    /* CONTENT SECTIONS */
+    .section {
+      padding: 5rem var(--pad);
+    }
+    .section-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid var(--bg-alt);
+      margin: 0;
+    }
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 2.5rem;
+    }
+
+    /* OVERVIEW */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .overview-grid { grid-template-columns: 1fr; gap: 2rem; } }
+
+    .overview-meta { display: flex; flex-direction: column; gap: 1.75rem; }
+    .meta-block-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.4rem;
+    }
+    .meta-block-value {
+      font-size: 0.9375rem;
+      color: var(--ink-mid);
+      line-height: 1.6;
+    }
+    .overview-text {
+      font-family: var(--serif);
+      font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+      font-weight: 300;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+    .overview-text p + p { margin-top: 1.25em; }
+
+    /* BODY TEXT */
+    .body-text {
+      font-size: 1rem;
+      color: var(--ink-mid);
+      line-height: 1.8;
+      max-width: 66ch;
+    }
+    .body-text p + p { margin-top: 1.1em; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      border-left: 2px solid var(--teal);
+      padding-left: 1.5rem;
+      margin: 3rem 0;
+      max-width: 54ch;
+    }
+
+    /* TWO-COL */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+    /* APP MOCKUP CARDS */
+    .mockup-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+    @media (max-width: 700px) { .mockup-row { grid-template-columns: 1fr; } }
+
+    .mockup-card {
+      border-radius: 8px;
+      overflow: hidden;
+      aspect-ratio: 9 / 16;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.25rem;
+      position: relative;
+    }
+    .mockup-card-adherence {
+      background: linear-gradient(160deg, #2A3B5C 0%, #1E2D48 100%);
+    }
+    .mockup-card-reminder {
+      background: linear-gradient(160deg, #C94F72 0%, #A33A5A 100%);
+    }
+    .mockup-card-portal {
+      background: linear-gradient(160deg, #1F8A9E 0%, #156A7B 100%);
+    }
+    .mockup-card-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 0.4rem;
+    }
+    .mockup-card-title {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 300;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.4;
+    }
+
+    /* Grid decorations inside mockup cards */
+    .mockup-lines {
+      position: absolute;
+      inset: 0;
+      opacity: 0.06;
+      background-image: repeating-linear-gradient(transparent, transparent 28px, rgba(255,255,255,0.5) 28px, rgba(255,255,255,0.5) 29px);
+    }
+
+    /* PROCESS STEPS */
+    .process-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 2.5rem;
+      border-top: 1px solid var(--bg-alt);
+    }
+    .process-step {
+      display: grid;
+      grid-template-columns: 3rem 1fr;
+      gap: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--bg-alt);
+      align-items: start;
+    }
+    .process-step-num {
+      font-family: var(--serif);
+      font-size: 1.75rem;
+      font-weight: 300;
+      color: var(--ink-light);
+      line-height: 1;
+      padding-top: 0.1rem;
+    }
+    .process-step-title {
+      font-weight: 500;
+      font-size: 1rem;
+      margin-bottom: 0.6rem;
+    }
+    .process-step-text {
+      font-size: 0.9375rem;
+      color: var(--ink-mid);
+      line-height: 1.75;
+      max-width: 60ch;
+    }
+
+    /* TOOLCHAIN */
+    .tool-chips {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+    .tool-chip {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--ink-mid);
+      background: var(--bg-alt);
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+    }
+
+    /* OUTCOME BAND */
+    .outcome-band {
+      background: #0A1626;
+      padding: 5rem var(--pad);
+    }
+    .outcome-band-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+    .outcome-band .section-label { color: rgba(46,143,160,0.8); }
+    .outcome-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+      margin-top: 3rem;
+    }
+    @media (max-width: 700px) { .outcome-stat-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .outcome-stat-num {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 300;
+      color: #E8F0F5;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .outcome-stat-label {
+      font-size: 0.875rem;
+      color: rgba(232,240,245,0.45);
+      line-height: 1.6;
+    }
+
+    /* REFLECTION */
+    .reflection-section { background: var(--bg-alt); }
+    .reflection-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+      margin-top: 2.5rem;
+    }
+    @media (max-width: 700px) { .reflection-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .reflection-card-num {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--ink-light);
+      margin-bottom: 0.75rem;
+    }
+    .reflection-card-title {
+      font-weight: 500;
+      font-size: 0.9375rem;
+      margin-bottom: 0.5rem;
+    }
+    .reflection-card-text {
+      font-size: 0.875rem;
+      color: var(--ink-mid);
+      line-height: 1.7;
+    }
+
+    /* PROJECT NAV */
+    .project-nav {
+      padding: 3rem var(--pad);
+      border-top: 1px solid var(--bg-alt);
+    }
+    .project-nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .project-nav a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .project-nav a:hover { color: var(--accent); }
+
+    /* FOOTER */
+    footer {
+      padding: 3rem var(--pad);
+      border-top: 1px solid var(--bg-alt);
+    }
+    .footer-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-name {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--ink-mid);
+    }
+    .footer-links { display: flex; gap: 1.75rem; list-style: none; }
+    .footer-links a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+
+    /* FADE IN */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="index.html" class="nav-logo">Fredrik Påhlman</a>
+    <ul class="nav-links">
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="index.html#personal">Personal</a></li>
+      <li><a href="writing.html">Writing</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="mailto:fredrikande@gmail.com">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero" id="hero">
+    <div class="hero-inner">
+      <div>
+        <h1 class="hero-title">AstraZeneca<br><em>/ inUse</em></h1>
+        <div class="hero-stats">
+          <div>
+            <p class="hero-stat-label">Role</p>
+            <p class="hero-stat-value">Design Lead</p>
+          </div>
+          <div>
+            <p class="hero-stat-label">Duration</p>
+            <p class="hero-stat-value">3 years</p>
+          </div>
+          <div>
+            <p class="hero-stat-label">Markets</p>
+            <p class="hero-stat-value">SE · UK · DE</p>
+          </div>
+          <div>
+            <p class="hero-stat-label">Deliverable</p>
+            <p class="hero-stat-value">Turbu+</p>
+          </div>
+        </div>
+      </div>
+      <div class="hero-tags">
+        <span class="hero-tag">Healthcare</span>
+        <span class="hero-tag">Mobile App</span>
+        <span class="hero-tag">Behaviour Design</span>
+        <span class="hero-tag">2015–2018</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- OVERVIEW -->
+  <section class="section" id="overview">
+    <div class="section-inner">
+      <div class="overview-grid fade-in">
+        <div class="overview-meta">
+          <div>
+            <p class="meta-block-label">Client</p>
+            <p class="meta-block-value">AstraZeneca</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Agency</p>
+            <p class="meta-block-value">inUse</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Product</p>
+            <p class="meta-block-value">Turbu+<br>Asthma &amp; COPD service</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Scope</p>
+            <p class="meta-block-value">Patient mobile app<br>Connected inhaler<br>HCP web portal</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Team</p>
+            <p class="meta-block-value">10 designers over 3 years<br>4 at peak</p>
+          </div>
+        </div>
+        <div class="overview-text">
+          <p>Turbu+ is an asthma and COPD service — a patient-facing mobile app paired with a connected inhaler and a Health Care Professional web portal for clinical follow-up. Designed, tested, and built from concept to launch on three markets.</p>
+          <p>A global pharma company exploring behaviour design as a way to strengthen their value proposition is impressive and it is a daunting task. A lot of my energy went towards work-shopping a large and diverse stakeholder group from across the organisation, maintaining the goal: to deliver a service that creates better patient outcomes than the drugs do on their own.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- PRODUCT -->
+  <section class="section">
+    <div class="section-inner">
+      <p class="section-label fade-in">The product</p>
+      <div class="fade-in" style="display:grid;grid-template-columns:2fr 1fr;gap:1rem;margin-top:1rem;align-items:start;">
+        <img src="Portfolio%20Assets/Astra%20Zeneca%20turbu%20plus.png"
+             alt="Turbu+ — adherence trends and Time to puff reminder screens"
+             style="width:100%;border-radius:4px;display:block;background:var(--bg-alt);">
+        <img src="Portfolio%20Assets/Astra%20Zeneca%20Turbu+.png"
+             alt="Turbu+ — dose scheduling timeline"
+             style="width:100%;border-radius:4px;display:block;background:var(--bg-alt);">
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- PROCESS -->
+  <section class="section">
+    <div class="section-inner">
+      <p class="section-label fade-in">Approach</p>
+
+      <div class="pull-quote fade-in">
+        "The idea that design can be something that ties in with business and project goals seemed new to many in the project."
+      </div>
+
+      <div class="process-steps fade-in">
+        <div class="process-step">
+          <span class="process-step-num">01</span>
+          <div>
+            <p class="process-step-title">Stakeholder alignment through Impact Mapping</p>
+            <p class="process-step-text">The stakeholder group was large, globally distributed, and diverse. I challenged the client to connect design decisions closely to project and business goals — so the team wouldn't get stuck in committee design and fights over personal taste. We worked with an Impact Map to track the connections between business goals, customer needs and behaviour, and design solutions. Running it in Miro made it possible to keep everyone on the same page across geographies.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="process-step-num">02</span>
+          <div>
+            <p class="process-step-title">Research and user testing across three markets</p>
+            <p class="process-step-text">I ran workshops, planned and performed research and user testing with the team. We worked mostly in Sweden but conducted workshops and research in the UK and Germany. As lead I was our main point of contact with the client and with our development partner — translating between business requirements, clinical constraints, and product decisions.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="process-step-num">03</span>
+          <div>
+            <p class="process-step-title">Design system for a regulated environment</p>
+            <p class="process-step-text">It was tough to keep up production speed in an environment optimised for pharmaceutical molecules rather than pixels. Heavy traditional design specs — wireframes and flowcharts — were required as part of the legal process for developing a medical device. We had to get a lot of output from a limited team while keeping developers unblocked.</p>
+            <div class="tool-chips">
+              <span class="tool-chip">Sketch + Component Libraries</span>
+              <span class="tool-chip">Abstract (version control)</span>
+              <span class="tool-chip">inVision (handoff)</span>
+              <span class="tool-chip">Miro (impact mapping)</span>
+            </div>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="process-step-num">04</span>
+          <div>
+            <p class="process-step-title">Team autonomy under constraints</p>
+            <p class="process-step-text">I had to keep the team involved enough in discussions so they could operate and make decisions autonomously, while still providing them uninterrupted time to do the value-adding work. Led the design concept and made sure it adapted as the complexity of the project unfolded — over three years and ten designers, maintaining coherence is a real challenge.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUTCOME BAND -->
+  <div class="outcome-band">
+    <div class="outcome-band-inner">
+      <p class="section-label fade-in">Outcome</p>
+      <div class="outcome-stat-grid fade-in">
+        <div>
+          <p class="outcome-stat-num">3</p>
+          <p class="outcome-stat-label">Markets launched — Sweden, United Kingdom, Germany</p>
+        </div>
+        <div>
+          <p class="outcome-stat-num">3 yrs</p>
+          <p class="outcome-stat-label">From first concept study to launch — full product lifecycle</p>
+        </div>
+        <div>
+          <p class="outcome-stat-num">↑</p>
+          <p class="outcome-stat-label">Early field results showing improved patient outcomes for those using the system</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFLECTION -->
+  <section class="section reflection-section">
+    <div class="section-inner">
+      <p class="section-label fade-in">What I took from this</p>
+      <div class="reflection-grid">
+        <div class="fade-in">
+          <div class="reflection-card-num">01</div>
+          <div class="reflection-card-title">Design leadership is mostly stakeholder work</div>
+          <p class="reflection-card-text">A project like this is won or lost in the room with the client, not in Figma. The biggest lever was getting PMs, market area managers, and software architects to discuss detailed design decisions in the context of patient needs — rather than personal preference. Once that shift happened, design reviews changed entirely.</p>
+        </div>
+        <div class="fade-in">
+          <div class="reflection-card-num">02</div>
+          <div class="reflection-card-title">Constraints can be a design tool</div>
+          <p class="reflection-card-text">The medical device regulatory process forced us to document in ways most digital product teams never would. It was slow, but it also meant every decision had a rationale. The discipline it imposed on the team's thinking wasn't entirely bad — it just needed to be redirected toward user needs rather than compliance paperwork.</p>
+        </div>
+        <div class="fade-in">
+          <div class="reflection-card-num">03</div>
+          <div class="reflection-card-title">Better patient outcomes are a different kind of KPI</div>
+          <p class="reflection-card-text">When the early field results came in showing improved outcomes for patients using the system, it reframed everything. Retention rates and engagement metrics are fine. Knowing the thing you designed is helping people manage a chronic lung condition better is something else. It made the difficult parts worth it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECT NAV -->
+  <div class="project-nav">
+    <div class="project-nav-inner">
+      <a href="index.html#work">← All work</a>
+      <a href="project-sleep.html">Sleep Cycle →</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-name">Fredrik Påhlman — Design &amp; Product</span>
+      <ul class="footer-links">
+        <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">LinkedIn</a></li>
+        <li><a href="mailto:fredrikande@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    const hero = document.getElementById('hero');
+    function checkNav() {
+      nav.classList.toggle('light', hero.getBoundingClientRect().bottom <= 80);
+    }
+    window.addEventListener('scroll', checkNav, { passive: true });
+    checkNav();
+
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      }),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
