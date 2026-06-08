@@ -89,15 +89,13 @@
       overflow: hidden;
     }
 
-    /* Subtle noise texture effect */
-    .hero::before {
-      content: '';
+    .hero-bg {
       position: absolute;
       inset: 0;
-      background-image:
-        radial-gradient(circle at 70% 40%, rgba(58,74,92,0.35) 0%, transparent 55%),
-        radial-gradient(circle at 20% 70%, rgba(58,74,92,0.2) 0%, transparent 45%);
-      pointer-events: none;
+      background-image: url('Portfolio%20Assets/Ascom%20Myco.png');
+      background-size: cover;
+      background-position: center 30%;
+      opacity: 0.35;
     }
 
     .hero-inner {
@@ -494,6 +492,7 @@
 
   <!-- HERO -->
   <header class="hero" id="hero">
+    <div class="hero-bg"></div>
     <div class="hero-inner">
       <div>
         <h1 class="hero-title">Ascom<br><em>/ Myco</em></h1>
@@ -562,19 +561,13 @@
     <div class="section-inner">
       <p class="section-label fade-in">The product</p>
       <div class="product-split fade-in">
-        <div class="device-card">
-          <div class="device-screen">
-            <div class="device-screen-header">My patients</div>
-            <div class="device-screen-body">
-              <div class="device-room alert">103</div>
-              <div class="device-room" style="font-size:0.55rem;color:rgba(255,255,255,0.35);">V Tach</div>
-              <div class="device-room">101A</div>
-              <div class="device-room">101B</div>
-              <div class="device-room">102B</div>
-              <div class="device-room">102A</div>
-            </div>
-          </div>
-          <p class="device-label">Myco — Patient alert view</p>
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+          <img src="Portfolio%20Assets/Ascom%20Myco.png"
+               alt="Ascom Myco handset — patient alert view"
+               style="width:100%;border-radius:6px;display:block;object-fit:cover;background:#1C232C;">
+          <img src="Portfolio%20Assets/Ascom%20Myco%20charging%20stand.png"
+               alt="Ascom Myco charging station"
+               style="width:100%;border-radius:6px;display:block;object-fit:cover;background:#1C232C;">
         </div>
         <div class="body-text">
           <p>The core challenge was designing for a context where the stakes are genuinely high. Nurses on a ward are moving fast, often wearing gloves, responding to alerts under time pressure. The UI had to be immediately legible — large touch targets, clear alert hierarchy, no ambiguity.</p>
@@ -616,11 +609,16 @@
     <div class="section-inner">
       <p class="section-label fade-in">How I worked</p>
       <div class="process-steps fade-in">
-        <div class="process-step">
+        <div class="process-step" style="align-items:start;">
           <span class="process-step-num">01</span>
-          <div>
-            <p class="process-step-title">On-site research in hospitals</p>
-            <p class="process-step-text">Over two years I conducted user research through on-site interviews, user tests, and contextual shadowing at hospitals in Sweden and Denmark. Watching nurses work — the actual environment, the pace, the gloves, the interruptions — shaped every decision. Abstract usability principles matter a lot less than watching someone try to read an alert while rushing down a corridor.</p>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:start;">
+            <div>
+              <p class="process-step-title">On-site research in hospitals</p>
+              <p class="process-step-text">Over two years I conducted user research through on-site interviews, user tests, and contextual shadowing at hospitals in Sweden and Denmark. Watching nurses work — the actual environment, the pace, the gloves, the interruptions — shaped every decision. Abstract usability principles matter a lot less than watching someone try to read an alert while rushing down a corridor.</p>
+            </div>
+            <img src="Portfolio%20Assets/Bubble%20Studio/Ascom%20Myco%20user%20research.png"
+                 alt="Fredrik doing field research with early Myco prototype"
+                 style="width:180px;border-radius:6px;display:block;object-fit:cover;flex-shrink:0;">
           </div>
         </div>
         <div class="process-step">

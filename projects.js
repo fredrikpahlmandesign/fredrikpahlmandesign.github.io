@@ -68,7 +68,7 @@ const PROJECTS = [
     bg: "#2C2E33",
     bodyBg: "#2C2E33",
     textColor: "#F0EBE0",
-    mediaSrc: "",
+    mediaSrc: "Portfolio Assets/Ascom Myco.png",
     mediaType: "image",
     order: 3
   },
