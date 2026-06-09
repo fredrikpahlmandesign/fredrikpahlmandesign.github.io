@@ -225,6 +225,26 @@
       transition: background 0.2s, color 0.2s;
     }
     .resume-download:hover { background: var(--ink); color: var(--bg); }
+    .resume-download:active { transform: scale(0.98); }
+
+    /* ── PRINT ── */
+    @media print {
+      nav, footer, .resume-download, .variant-banner { display: none !important; }
+      body { background: #fff; font-size: 11pt; }
+      .resume-wrap {
+        padding: 1.5cm 1.8cm;
+        max-width: none;
+      }
+      .resume-head {
+        padding-bottom: 1.25rem;
+        margin-bottom: 2rem;
+      }
+      .resume-head-name { font-size: 2.25rem; }
+      .resume-section { margin-bottom: 1.75rem; }
+      .resume-entry { padding: 1rem 0; }
+      .resume-entry-desc { font-size: 0.875rem; }
+      a { color: inherit; text-decoration: none; }
+    }
 
     footer {
       padding: 3rem var(--pad);
@@ -304,7 +324,7 @@
       <div class="skills-grid" id="skills-grid"></div>
     </div>
 
-    <a href="#" class="resume-download" id="download-link">↓ Download PDF</a>
+    <button onclick="window.print()" class="resume-download" id="download-link">↓ Download as PDF</button>
 
   </div>
 

@@ -73,6 +73,20 @@ const PROJECTS = [
     order: 3
   },
   {
+    id: "carboncloud",
+    title: "CarbonCloud — Head of Product",
+    meta: "Product & UX Lead · Climate Tech",
+    href: "project-carboncloud.html",
+    visible: true,
+    featured: false,
+    bg: "#0F1C12",
+    bodyBg: "#0F1C12",
+    textColor: "#D8EBD8",
+    mediaSrc: "Portfolio Assets/CarbonCloud/platform-demo.html",
+    mediaType: "iframe",
+    order: 4
+  },
+  {
     id: "placeholder",
     title: "Project Title",
     meta: "Coming soon",
