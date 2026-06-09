@@ -141,6 +141,53 @@
       border-radius: 100px;
     }
 
+    /* CASE STORY CALLOUT */
+    .case-story {
+      margin-top: 3.5rem;
+      border-left: 3px solid var(--accent);
+      padding: 2rem 2.5rem;
+      background: var(--bg-alt);
+      border-radius: 0 8px 8px 0;
+    }
+    .case-story-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .case-story-title {
+      font-family: var(--serif);
+      font-size: clamp(1.1rem, 2vw, 1.35rem);
+      font-weight: 300;
+      line-height: 1.45;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+    }
+    .case-story .body-text { color: var(--ink-mid); }
+    .case-story-outcome {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-top: 1.75rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--bg-alt);
+      border-top-color: rgba(0,0,0,0.08);
+    }
+    .case-story-outcome-num {
+      font-family: var(--serif);
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .case-story-outcome-desc {
+      font-size: 0.875rem;
+      color: var(--ink-mid);
+      line-height: 1.5;
+    }
+
     /* SECTIONS */
     .section { padding: 5rem var(--pad); }
     .section-inner { max-width: var(--max); margin: 0 auto; }
@@ -588,6 +635,21 @@
                autoplay muted loop playsinline></video>
         <video src="Portfolio Assets/Sleep Cycle/Reverse trial intro video.mov"
                autoplay muted loop playsinline></video>
+      </div>
+
+      <!-- CASE STORY: Onboarding video experiment -->
+      <div class="case-story fade-in">
+        <p class="case-story-label">Discovery → Experiment → Outcome</p>
+        <p class="case-story-title">Users didn't know what Sleep Cycle did for them — so they weren't ready to pay for it.</p>
+        <div class="body-text">
+          <p>In weekly discovery sessions we kept hearing the same thing: users hitting the paywall didn't understand what they'd actually get from a subscription. The onboarding had walked them through setup, but hadn't shown them the product in action. They arrived at the paywall curious but unpersuaded.</p>
+          <p>The hypothesis was simple: if we showed them what the product did before asking them to pay, more would be ready to say yes. We added a short UI reel — a few seconds of the core experience — directly into the onboarding flow, right before the paywall.</p>
+          <p>We ran it as an A/B test. The result was a 6.7% increase in subscriptions.</p>
+        </div>
+        <div class="case-story-outcome">
+          <span class="case-story-outcome-num">+6.7%</span>
+          <span class="case-story-outcome-desc">subscription uplift<br>A/B test · Onboarding UI reel</span>
+        </div>
       </div>
     </div>
   </section>
