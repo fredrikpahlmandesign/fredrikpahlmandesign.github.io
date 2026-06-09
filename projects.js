@@ -82,8 +82,8 @@ const PROJECTS = [
     bg: "#0F1C12",
     bodyBg: "#0F1C12",
     textColor: "#D8EBD8",
-    mediaSrc: "Portfolio Assets/CarbonCloud/platform-demo.html",
-    mediaType: "iframe",
+    mediaSrc: "Portfolio Assets/CarbonCloud/Product-page-Portfolio-.webp",
+    mediaType: "image",
     order: 4
   },
   {
