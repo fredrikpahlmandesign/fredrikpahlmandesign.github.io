@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio — Layout Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Caveat:wght@400;600;700&family=Architects+Daughter&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f1ea;
+    --ink:#2b2b2b;
+    --soft:#7c766b;
+    --line:#cfc8ba;
+    --box:#ffffff;
+    --accent:#c2603d;          /* warm terracotta */
+    --accent-soft:#ecd8cd;
+    --note:#d23b3b;            /* marker red */
+    --note-bg:#fff4f0;
+    --hand:'Gaegu', cursive;
+    --marker:'Caveat', cursive;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--hand);
+    font-size:17px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* paper grid texture */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:linear-gradient(#00000008 1px,transparent 1px),linear-gradient(90deg,#00000008 1px,transparent 1px);
+    background-size:26px 26px;
+  }
+
+  /* ---------- top control bar ---------- */
+  .toolbar{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    padding:12px 22px;
+    background:rgba(244,241,234,.92);
+    backdrop-filter:blur(6px);
+    border-bottom:2px solid var(--ink);
+  }
+  .toolbar .brand{font-weight:700;font-size:20px;letter-spacing:.5px;}
+  .toolbar .brand small{font-family:var(--marker);font-size:18px;color:var(--soft);font-weight:600;margin-left:6px;}
+  .tabs{display:flex;gap:8px;}
+  .tab{
+    font-family:var(--hand);font-weight:700;font-size:16px;
+    padding:6px 16px;cursor:pointer;background:var(--box);
+    border:2px solid var(--ink);border-radius:14px 11px 13px 10px/10px 13px 11px 14px;
+    transition:transform .12s ease, background .12s ease;
+  }
+  .tab:hover{transform:translateY(-1px) rotate(-.6deg);}
+  .tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .tab span{display:block;font-family:var(--marker);font-weight:600;font-size:13px;opacity:.85;}
+  .spacer{flex:1;}
+  .toggle{display:flex;align-items:center;gap:8px;font-family:var(--marker);font-size:18px;color:var(--soft);cursor:pointer;user-select:none;}
+  .toggle input{width:18px;height:18px;accent-color:var(--note);}
+
+  /* ---------- stage ---------- */
+  .stage{position:relative;z-index:1;max-width:1140px;margin:0 auto;padding:34px 20px 90px;}
+  .frame{display:none;}
+  .frame.active{display:block;animation:pop .25s ease;}
+  @keyframes pop{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  .dir-head{display:flex;align-items:baseline;gap:14px;margin:4px 4px 18px;flex-wrap:wrap;}
+  .dir-head h2{font-size:30px;margin:0;font-weight:700;}
+  .dir-head .tagline{font-family:var(--marker);font-size:22px;color:var(--accent);font-weight:600;}
+
+  /* browser chrome around the mock */
+  .browser{
+    border:2.5px solid var(--ink);border-radius:16px;overflow:hidden;background:var(--box);
+    box-shadow:7px 9px 0 #00000012;
+  }
+  .chrome{display:flex;align-items:center;gap:7px;padding:9px 14px;border-bottom:2px solid var(--ink);background:#efe9df;}
+  .chrome i{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--ink);display:inline-block;}
+  .chrome .url{margin-left:12px;font-family:var(--marker);font-size:15px;color:var(--soft);}
+  .page{padding:0;}
+
+  /* ---------- wireframe primitives ---------- */
+  .sketch{border:2px solid var(--ink);border-radius:14px 11px 13px 10px/10px 13px 11px 14px;}
+  .ph{
+    background:repeating-linear-gradient(45deg,#eceae3,#eceae3 7px,#f6f4ee 7px,#f6f4ee 14px);
+    border:1.6px solid var(--line);border-radius:8px;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    color:#9a9387;font-family:'Architects Daughter',monospace;font-size:12px;letter-spacing:.3px;
+    padding:8px;min-height:60px;
+  }
+  .line{height:9px;border-radius:5px;background:#e2ddd2;margin:7px 0;}
+  .line.dark{background:#cfc8ba;}
+  .chip{display:inline-block;font-family:var(--marker);font-size:15px;color:var(--soft);
+    border:1.6px solid var(--line);border-radius:20px;padding:1px 12px;margin:3px 4px 0 0;background:#faf8f3;}
+  .eyebrow{font-family:var(--marker);font-size:18px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px;}
+  .lbl{font-family:'Architects Daughter',monospace;font-size:11px;color:#9a9387;letter-spacing:.5px;text-transform:uppercase;}
+
+  .pagepad{padding:30px 36px;}
+  .sec{padding:30px 36px;border-top:1.6px dashed var(--line);}
+  .sec:first-child{border-top:none;}
+  .sec-h{display:flex;align-items:baseline;gap:10px;margin-bottom:18px;}
+  .sec-h .t{font-size:24px;font-weight:700;}
+  .sec-h .n{font-family:'Architects Daughter',monospace;font-size:13px;color:var(--soft);}
+
+  /* mock nav */
+  .mnav{display:flex;align-items:center;justify-content:space-between;padding:16px 36px;border-bottom:1.6px solid var(--line);}
+  .mnav .mono{width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-weight:700;}
+  .mnav ul{display:flex;gap:18px;list-style:none;margin:0;padding:0;font-size:16px;color:var(--soft);}
+  .mnav ul li.on{color:var(--ink);font-weight:700;border-bottom:2px solid var(--accent);}
+
+  /* hero bits */
+  .bigname{font-size:74px;line-height:.95;font-weight:700;margin:14px 0 8px;letter-spacing:-1px;}
+  .bigname em{font-style:normal;color:var(--accent);}
+  .lead{max-width:560px;color:#46443f;font-size:19px;}
+  .cta{display:inline-block;margin-top:14px;font-weight:700;border:2px solid var(--ink);border-radius:30px;padding:7px 20px;background:#faf8f3;}
+  .marquee{margin-top:22px;border-top:1.6px solid var(--line);border-bottom:1.6px solid var(--line);padding:9px 0;overflow:hidden;white-space:nowrap;color:var(--soft);font-size:15px;}
+
+  /* grids */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+
+  /* project card */
+  .pcard{background:#fcfaf5;padding:12px;display:flex;flex-direction:column;gap:9px;transition:transform .14s ease;}
+  .pcard:hover{transform:translateY(-2px) rotate(-.4deg);}
+  .pcard .thumb{aspect-ratio:16/10;}
+  .pcard .ptitle{font-size:21px;font-weight:700;}
+  .pcard .meta{display:flex;justify-content:space-between;font-size:14px;color:var(--soft);}
+  .pcard .out{color:#46443f;font-size:15px;}
+  .pcard .more{font-family:var(--marker);font-size:17px;color:var(--accent);font-weight:600;}
+
+  /* list rows */
+  .lrow{display:grid;grid-template-columns:34px 1.4fr 1fr .5fr 26px;gap:14px;align-items:center;
+    padding:14px 10px;border-bottom:1.6px solid var(--line);transition:background .12s ease;}
+  .lrow:hover{background:#faf3ee;}
+  .lrow .idx{font-family:'Architects Daughter',monospace;color:var(--soft);}
+  .lrow .rt{font-size:20px;font-weight:700;}
+  .lrow .rr{color:var(--soft);font-size:15px;}
+  .lrow .ry{color:var(--soft);font-size:15px;}
+  .lrow .ra{font-size:20px;color:var(--accent);text-align:right;}
+
+  /* personality modules */
+  .mod{background:#fcfaf5;padding:14px;}
+  .mod .ch{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .mod .ch .cn{font-size:18px;font-weight:700;}
+  .mod .ch .han{font-family:var(--marker);color:var(--accent);font-size:20px;font-weight:700;}
+
+  /* viewtoggle */
+  .vtoggle{display:inline-flex;border:2px solid var(--ink);border-radius:12px;overflow:hidden;font-size:15px;}
+  .vtoggle b{padding:4px 14px;font-weight:700;cursor:pointer;}
+  .vtoggle b.on{background:var(--accent);color:#fff;}
+  .vtoggle b+b{border-left:2px solid var(--ink);}
+
+  /* footer mock */
+  .mfoot{padding:30px 36px;border-top:2px solid var(--ink);background:#efe9df;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:18px;}
+  .mfoot .fbig{font-size:30px;font-weight:700;}
+
+  /* ---------- annotations ---------- */
+  .note{
+    position:relative;
+    font-family:var(--marker);font-size:18px;line-height:1.25;color:var(--note);
+    background:var(--note-bg);border:2px solid var(--note);border-radius:16px 9px 15px 10px/9px 15px 10px 16px;
+    padding:9px 13px;margin:14px 0;
+    transition:opacity .2s ease, transform .2s ease;
+  }
+  .note b{font-weight:700;}
+  .note::before{content:"✱ ";font-weight:700;}
+  .note.float{position:absolute;max-width:230px;z-index:5;box-shadow:4px 5px 0 #d23b3b22;}
+  .anno-wrap{position:relative;}
+  body.notes-off .note{display:none;}
+
+  .legend{font-family:var(--marker);font-size:17px;color:var(--soft);margin:0 6px 20px;}
+  .legend b{color:var(--note);}
+
+  @media(max-width:860px){
+    .grid2,.grid3,.grid4{grid-template-columns:1fr 1fr;}
+    .bigname{font-size:52px;}
+    .note.float{position:static;max-width:none;}
+    .lrow{grid-template-columns:26px 1fr 26px;}
+    .lrow .rr,.lrow .ry{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="brand">Portfolio wireframes <small>fredrikpahlman · 3 directions</small></div>
+  <div class="spacer"></div>
+  <div class="tabs">
+    <button class="tab active" data-dir="a">A<span>Editorial Index</span></button>
+    <button class="tab" data-dir="b">B<span>Living Index</span></button>
+    <button class="tab" data-dir="c">C<span>Personal Scroll</span></button>
+  </div>
+  <label class="toggle"><input type="checkbox" id="notesChk" checked> notes</label>
+</div>
+
+<div class="stage">
+
+<p class="legend">Low-fi wireframes — structure &amp; flow, not final visuals. <b>Red notes</b> explain each proposed improvement. Toggle them off to read the layout clean. Imagery shown as striped placeholders.</p>
+
+<!-- ============================================================ DIRECTION A -->
+<section class="frame active" data-dir="a">
+  <div class="dir-head">
+    <h2>A — Editorial Index</h2>
+    <span class="tagline">refine what you have · senior, warm, scannable</span>
+  </div>
+
+  <div class="browser">
+    <div class="chrome"><i></i><i></i><i></i><span class="url">fredrikpahlman.design</span></div>
+    <div class="page">
+
+      <!-- nav -->
+      <nav class="mnav">
+        <div class="mono">FP</div>
+        <ul><li class="on">Work</li><li>Personal</li><li>Writing</li><li>Résumé</li><li>Contact</li></ul>
+      </nav>
+
+      <!-- hero -->
+      <div class="pagepad anno-wrap">
+        <div class="eyebrow">Design &amp; Product</div>
+        <div class="bigname">Fredrik <em>Påhlman</em></div>
+        <p class="lead">Working at the intersection of product, design, and organisational change — figuring out what to build and the conditions that make good work possible.</p>
+        <span class="cta">View selected work ↓</span>
+        <div class="marquee">Product Discovery · Design Leadership · Product Strategy · AI Workflows · Org Transformation · Systems Thinking · User Research ·</div>
+        <div class="note float" style="top:14px;right:-6px;">Keep the big name + skill marquee — but anchor it with <b>one quiet portrait or signature graphic</b> so the hero isn't all text.</div>
+      </div>
+
+      <!-- work -->
+      <div class="sec anno-wrap">
+        <div class="sec-h"><span class="t">Selected Work</span><span class="n">(06)</span></div>
+        <div class="note">Your <b>biggest gap</b>: this section currently renders empty. Give every project a real card — thumbnail, role, year, and a one-line <b>outcome</b> recruiters can scan.</div>
+        <div class="grid2">
+          <div class="pcard sketch">
+            <div class="ph thumb">project hero / cover image</div>
+            <div class="ptitle">Continuous Discovery @ Sleep Cycle</div>
+            <div class="meta"><span>Design &amp; Discovery Lead</span><span>2023–25</span></div>
+            <div class="out">From sporadic research to weekly user sessions across every product team.</div>
+            <div><span class="chip">Research ops</span><span class="chip">Org change</span></div>
+            <div class="more">Read case study →</div>
+          </div>
+          <div class="pcard sketch">
+            <div class="ph thumb">project hero / cover image</div>
+            <div class="ptitle">[ Project Two ]</div>
+            <div class="meta"><span>Role / scope</span><span>Year</span></div>
+            <div class="out">One-line outcome — the measurable result, not the task.</div>
+            <div><span class="chip">Tag</span><span class="chip">Tag</span></div>
+            <div class="more">Read case study →</div>
+          </div>
+          <div class="pcard sketch">
+            <div class="ph thumb">project hero / cover image</div>
+            <div class="ptitle">[ Project Three ]</div>
+            <div class="meta"><span>Role / scope</span><span>Year</span></div>
+            <div class="out">One-line outcome — the measurable result, not the task.</div>
+            <div><span class="chip">Tag</span><span class="chip">Tag</span></div>
+            <div class="more">Read case study →</div>
+          </div>
+          <div class="pcard sketch">
+            <div class="ph thumb">project hero / cover image</div>
+            <div class="ptitle">[ Project Four ]</div>
+            <div class="meta"><span>Role / scope</span><span>Year</span></div>
+            <div class="out">One-line outcome — the measurable result, not the task.</div>
+            <div><span class="chip">Tag</span><span class="chip">Tag</span></div>
+            <div class="more">Read case study →</div>
+          </div>
+        </div>
+        <div class="note">On hover, the card lifts &amp; "Read case study →" appears — borrows Bill Chien's <b>little motion details</b> without the noise.</div>
+      </div>
+
+      <!-- personal condensed -->
+      <div class="sec anno-wrap">
+        <div class="sec-h"><span class="t">Personal — Wood carving</span><span class="n">a single quiet row</span></div>
+        <div class="grid4">
+          <div class="ph" style="aspect-ratio:1;">burl bowl</div>
+          <div class="ph" style="aspect-ratio:1;">kuksa</div>
+          <div class="ph" style="aspect-ratio:1;">figure (wip)</div>
+          <div class="ph" style="aspect-ratio:1;">gouge work</div>
+        </div>
+        <div class="note">Kept but <b>shrunk to one row</b> — supports the story, doesn't compete with Work. "See all →" links out.</div>
+      </div>
+
+      <!-- about strip -->
+      <div class="sec">
+        <div class="grid3">
+          <div><div class="lbl">Currently</div><div class="line dark" style="width:90%"></div><div class="line" style="width:70%"></div></div>
+          <div><div class="lbl">Based in</div><div class="line dark" style="width:60%"></div></div>
+          <div><div class="lbl">Approach</div><div class="line dark" style="width:95%"></div><div class="line" style="width:80%"></div></div>
+        </div>
+      </div>
+
+      <!-- writing -->
+      <div class="sec anno-wrap">
+        <div class="sec-h"><span class="t">Writing</span><span class="n">All articles →</span></div>
+        <div class="lrow"><span class="idx">01</span><span class="rt">Kicking it off</span><span class="rr">Continuous discovery at Sleep Cycle</span><span class="ry">Jun 26</span><span class="ra">→</span></div>
+        <div class="lrow"><span class="idx">02</span><span class="rt">[ Article two ]</span><span class="rr">Short description sits here</span><span class="ry">Mar 25</span><span class="ra">→</span></div>
+        <div class="lrow"><span class="idx">03</span><span class="rt">[ Article three ]</span><span class="rr">Short description sits here</span><span class="ry">Jan 25</span><span class="ra">→</span></div>
+        <div class="note">Fix the placeholder titles ("Article Title Two") that are <b>live on the site right now</b>.</div>
+      </div>
+
+      <!-- footer -->
+      <div class="mfoot">
+        <div class="fbig">Let's talk →</div>
+        <div><span class="chip">LinkedIn</span><span class="chip">Read.cv</span><span class="chip">Email</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ DIRECTION B -->
+<section class="frame" data-dir="b">
+  <div class="dir-head">
+    <h2>B — Living Index</h2>
+    <span class="tagline">grid ⇄ list toggle · interactive, recruiter-friendly</span>
+  </div>
+
+  <div class="browser">
+    <div class="chrome"><i></i><i></i><i></i><span class="url">fredrikpahlman.design</span></div>
+    <div class="page">
+
+      <nav class="mnav">
+        <div class="mono">FP</div>
+        <ul><li class="on">Index</li><li>About</li><li>Writing</li><li>Résumé</li><li>Contact</li></ul>
+      </nav>
+
+      <!-- split hero -->
+      <div class="pagepad anno-wrap" style="display:grid;grid-template-columns:1.3fr .7fr;gap:26px;align-items:center;">
+        <div>
+          <div class="eyebrow">Product · Design · Org change</div>
+          <div class="bigname">Fredrik <em>Påhlman</em></div>
+          <p class="lead">I figure out <b>what to build</b> — and build the conditions that make good work possible.</p>
+        </div>
+        <div class="ph sketch" style="aspect-ratio:3/4;">portrait / signature<br>generative graphic</div>
+        <div class="note float" style="bottom:-6px;left:30px;">Split hero gives the <b>expressive type</b> a visual anchor on the right — Bill-Chien scale, but balanced.</div>
+      </div>
+
+      <!-- work index with toggle -->
+      <div class="sec anno-wrap">
+        <div class="sec-h" style="justify-content:space-between;width:100%;">
+          <div style="display:flex;align-items:baseline;gap:10px;"><span class="t">Selected Work</span><span class="n">(06)</span></div>
+          <div class="vtoggle"><b>Grid</b><b class="on">List</b></div>
+        </div>
+        <div class="note">The headline borrow from Bill Chien: a <b>grid ⇄ list toggle</b>. List = fast scan for recruiters; grid = visual browse. Same data, two moods.</div>
+
+        <!-- list view -->
+        <div class="lrow"><span class="idx">01</span><span class="rt">Continuous Discovery @ Sleep Cycle</span><span class="rr">Design &amp; Discovery Lead</span><span class="ry">2023–25</span><span class="ra">→</span></div>
+        <div class="lrow"><span class="idx">02</span><span class="rt">[ Project Two ]</span><span class="rr">Role / scope</span><span class="ry">Year</span><span class="ra">→</span></div>
+        <div class="lrow"><span class="idx">03</span><span class="rt">[ Project Three ]</span><span class="rr">Role / scope</span><span class="ry">Year</span><span class="ra">→</span></div>
+        <div class="lrow"><span class="idx">04</span><span class="rt">[ Project Four ]</span><span class="rr">Role / scope</span><span class="ry">Year</span><span class="ra">→</span></div>
+
+        <div class="note">Hovering a row could <b>peek a thumbnail</b> on the side — motion detail that rewards exploring.</div>
+
+        <!-- mini grid preview -->
+        <div class="lbl" style="margin-top:18px;">↓ same set, "Grid" view</div>
+        <div class="grid3" style="margin-top:8px;">
+          <div class="pcard sketch"><div class="ph thumb">cover</div><div class="ptitle" style="font-size:17px;">Sleep Cycle</div></div>
+          <div class="pcard sketch"><div class="ph thumb">cover</div><div class="ptitle" style="font-size:17px;">Project Two</div></div>
+          <div class="pcard sketch"><div class="ph thumb">cover</div><div class="ptitle" style="font-size:17px;">Project Three</div></div>
+        </div>
+      </div>
+
+      <!-- personality modules -->
+      <div class="sec anno-wrap">
+        <div class="sec-h"><span class="t">Beyond the work</span><span class="n">who I am</span></div>
+        <div class="note">Adapt Bill Chien's <b>personality modules</b> (he has shows / music / games). Yours, in your voice: carving, reading, tinkering.</div>
+        <div class="grid4">
+          <div class="mod sketch"><div class="ch"><span class="cn">Currently</span></div><div class="line dark" style="width:90%"></div><div class="line" style="width:60%"></div></div>
+          <div class="mod sketch"><div class="ch"><span class="cn">Making</span><span class="han">träsnide</span></div><div class="ph" style="aspect-ratio:4/3;">carving</div></div>
+          <div class="mod sketch"><div class="ch"><span class="cn">Reading</span></div><div class="line dark" style="width:85%"></div><div class="line" style="width:70%"></div></div>
+          <div class="mod sketch"><div class="ch"><span class="cn">Tinkering</span></div><div class="line dark" style="width:80%"></div><div class="line" style="width:55%"></div></div>
+        </div>
+      </div>
+
+      <!-- writing compact -->
+      <div class="sec">
+        <div class="sec-h"><span class="t">Writing</span><span class="n">All →</span></div>
+        <div class="grid3">
+          <div><div class="lbl">Jun 26</div><div class="rt" style="font-size:18px;">Kicking it off</div><div class="line" style="width:90%"></div></div>
+          <div><div class="lbl">Mar 25</div><div class="rt" style="font-size:18px;">[ Article two ]</div><div class="line" style="width:80%"></div></div>
+          <div><div class="lbl">Jan 25</div><div class="rt" style="font-size:18px;">[ Article three ]</div><div class="line" style="width:85%"></div></div>
+        </div>
+      </div>
+
+      <div class="mfoot">
+        <div class="fbig">Open to senior product &amp; design leadership →</div>
+        <div><span class="chip">LinkedIn</span><span class="chip">Read.cv</span><span class="chip">Email ⧉</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ DIRECTION C -->
+<section class="frame" data-dir="c">
+  <div class="dir-head">
+    <h2>C — Personal Scroll</h2>
+    <span class="tagline">most Bill-Chien · dense, expressive, full of you</span>
+  </div>
+
+  <div class="browser">
+    <div class="chrome"><i></i><i></i><i></i><span class="url">fredrikpahlman.design</span></div>
+    <div class="page">
+
+      <nav class="mnav">
+        <div class="mono">FP</div>
+        <ul><li>Work</li><li>Life</li><li>Writing</li><li>Contact</li></ul>
+      </nav>
+
+      <!-- oversized statement hero -->
+      <div class="pagepad anno-wrap" style="padding-top:48px;padding-bottom:40px;">
+        <div class="bigname" style="font-size:88px;">Fredrik</div>
+        <div class="bigname" style="font-size:88px;margin-top:-10px;"><em>Påhlman</em></div>
+        <p class="lead" style="font-size:24px;max-width:680px;margin-top:18px;">Designing products &amp; the organisations that make them — easing, clarifying, and earning their place.</p>
+        <div style="margin-top:14px;"><span class="cta">Case studies</span> <span class="cta">More works</span></div>
+        <div class="note float" style="top:30px;right:0;">Full Bill-Chien energy: <b>huge type, a bold statement, two clear doors in.</b> Warmest, most personal of the three.</div>
+      </div>
+
+      <!-- work with depth -->
+      <div class="sec anno-wrap" style="background:#faf6f0;">
+        <div class="sec-h"><span class="t">Work</span><span class="n">expand for depth</span></div>
+        <div class="note">Cards open inline to a <b>full case study</b> — context, role, process, outcome — matching the case-study depth you liked.</div>
+        <div class="grid2">
+          <div class="pcard sketch" style="grid-column:1 / -1;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="ph thumb" style="aspect-ratio:16/11;">expanded case study — hero</div>
+              <div>
+                <div class="ptitle">Continuous Discovery @ Sleep Cycle</div>
+                <div class="meta"><span>Design &amp; Discovery Lead</span><span>2023–25</span></div>
+                <div class="line dark" style="width:95%"></div><div class="line" style="width:88%"></div><div class="line" style="width:80%"></div>
+                <div style="margin-top:8px;"><span class="chip">Problem</span><span class="chip">Process</span><span class="chip">Outcome</span></div>
+                <div class="more">Collapse ↑</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard sketch"><div class="ph thumb">cover</div><div class="ptitle">[ Project Two ]</div><div class="meta"><span>Role</span><span>Year</span></div><div class="more">Expand ↓</div></div>
+          <div class="pcard sketch"><div class="ph thumb">cover</div><div class="ptitle">[ Project Three ]</div><div class="meta"><span>Role</span><span>Year</span></div><div class="more">Expand ↓</div></div>
+        </div>
+      </div>
+
+      <!-- rich personality zone -->
+      <div class="sec anno-wrap">
+        <div class="sec-h"><span class="t">A bit more of me</span><span class="n">the Bill-Chien zone</span></div>
+        <div class="note">This is where his site sings. Your version, three honest modules: <b>making, reading, a short Q&amp;A.</b></div>
+
+        <div class="mod sketch" style="margin-bottom:16px;">
+          <div class="ch"><span class="cn">What I'm making</span><span class="han">träsnideri</span></div>
+          <div class="grid4">
+            <div class="ph" style="aspect-ratio:1;">burl bowl</div>
+            <div class="ph" style="aspect-ratio:1;">kuksa</div>
+            <div class="ph" style="aspect-ratio:1;">figure</div>
+            <div class="ph" style="aspect-ratio:1;">process</div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="mod sketch"><div class="ch"><span class="cn">What I'm reading / into</span></div><div class="line dark" style="width:90%"></div><div class="line" style="width:75%"></div><div class="line" style="width:82%"></div></div>
+          <div class="mod sketch">
+            <div class="ch"><span class="cn">Q&amp;A</span></div>
+            <div style="color:var(--accent);font-weight:700;">What makes a good designer?</div>
+            <div class="line dark" style="width:92%"></div><div class="line" style="width:85%"></div>
+            <div style="color:var(--accent);font-weight:700;margin-top:8px;">What do you do when not designing?</div>
+            <div class="line" style="width:88%"></div>
+          </div>
+        </div>
+        <div class="note">A light <b>Q&amp;A</b> shows personality without a wall of text — keep it to 3–4 questions.</div>
+      </div>
+
+      <!-- writing -->
+      <div class="sec">
+        <div class="sec-h"><span class="t">Writing</span><span class="n">All →</span></div>
+        <div class="lrow"><span class="idx">01</span><span class="rt">Kicking it off</span><span class="rr">Continuous discovery at Sleep Cycle</span><span class="ry">Jun 26</span><span class="ra">→</span></div>
+        <div class="lrow"><span class="idx">02</span><span class="rt">[ Article two ]</span><span class="rr">Short description</span><span class="ry">Mar 25</span><span class="ra">→</span></div>
+      </div>
+
+      <div class="mfoot">
+        <div class="fbig">Say hi 👋</div>
+        <div><span class="chip">Email copied ✓</span><span class="chip">LinkedIn</span><span class="chip">Instagram</span></div>
+      </div>
+
+    </div>
+  </div>
+  <p class="legend" style="margin-top:18px;">Footer detail: a "<b>click-to-copy email</b>" with an "Email copied ✓" confirmation — exactly the kind of small delight Bill uses.</p>
+</section>
+
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const frames = document.querySelectorAll('.frame');
+  tabs.forEach(t=>{
+    t.addEventListener('click',()=>{
+      const d = t.dataset.dir;
+      tabs.forEach(x=>x.classList.toggle('active', x===t));
+      frames.forEach(f=>f.classList.toggle('active', f.dataset.dir===d));
+      window.scrollTo({top:0,behavior:'smooth'});
+      try{ localStorage.setItem('wf_dir', d); }catch(e){}
+    });
+  });
+  // restore
+  try{
+    const saved = localStorage.getItem('wf_dir');
+    if(saved){ const t=[...tabs].find(x=>x.dataset.dir===saved); if(t) t.click(); }
+  }catch(e){}
+
+  const chk = document.getElementById('notesChk');
+  chk.addEventListener('change',()=>{
+    document.body.classList.toggle('notes-off', !chk.checked);
+  });
+</script>
+
+</body>
+</html>

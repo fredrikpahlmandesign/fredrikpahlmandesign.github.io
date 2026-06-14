@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Study — Layout Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Caveat:wght@400;600;700&family=Architects+Daughter&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f1ea; --ink:#2b2b2b; --soft:#7c766b; --line:#cfc8ba; --box:#fff;
+    --accent:#c2603d; --accent-soft:#ecd8cd;
+    --note:#d23b3b; --note-bg:#fff4f0;
+    --hand:'Gaegu',cursive; --marker:'Caveat',cursive;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--hand);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:linear-gradient(#00000008 1px,transparent 1px),linear-gradient(90deg,#00000008 1px,transparent 1px);background-size:26px 26px;}
+
+  /* toolbar */
+  .toolbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    padding:12px 22px;background:rgba(244,241,234,.92);backdrop-filter:blur(6px);border-bottom:2px solid var(--ink);}
+  .toolbar .brand{font-weight:700;font-size:20px;letter-spacing:.5px;}
+  .toolbar .brand small{font-family:var(--marker);font-size:18px;color:var(--soft);font-weight:600;margin-left:6px;}
+  .spacer{flex:1;}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;}
+  .tab{font-family:var(--hand);font-weight:700;font-size:16px;padding:6px 16px;cursor:pointer;background:var(--box);
+    border:2px solid var(--ink);border-radius:14px 11px 13px 10px/10px 13px 11px 14px;transition:transform .12s ease,background .12s ease;}
+  .tab:hover{transform:translateY(-1px) rotate(-.6deg);}
+  .tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .tab span{display:block;font-family:var(--marker);font-weight:600;font-size:13px;opacity:.85;}
+  .toggle{display:flex;align-items:center;gap:8px;font-family:var(--marker);font-size:18px;color:var(--soft);cursor:pointer;user-select:none;}
+  .toggle input{width:18px;height:18px;accent-color:var(--note);}
+
+  .stage{position:relative;z-index:1;max-width:1140px;margin:0 auto;padding:30px 20px 90px;}
+  .frame{display:none;}
+  .frame.active{display:block;animation:pop .25s ease;}
+  @keyframes pop{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  .dir-head{display:flex;align-items:baseline;gap:14px;margin:4px 4px 16px;flex-wrap:wrap;}
+  .dir-head h2{font-size:30px;margin:0;font-weight:700;}
+  .dir-head .tagline{font-family:var(--marker);font-size:22px;color:var(--accent);font-weight:600;}
+  .legend{font-family:var(--marker);font-size:17px;color:var(--soft);margin:0 6px 22px;}
+  .legend b{color:var(--note);}
+
+  .browser{border:2.5px solid var(--ink);border-radius:16px;overflow:hidden;background:var(--box);box-shadow:7px 9px 0 #00000012;}
+  .chrome{display:flex;align-items:center;gap:7px;padding:9px 14px;border-bottom:2px solid var(--ink);background:#efe9df;}
+  .chrome i{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--ink);display:inline-block;}
+  .chrome .url{margin-left:12px;font-family:var(--marker);font-size:15px;color:var(--soft);}
+
+  /* primitives */
+  .sketch{border:2px solid var(--ink);border-radius:14px 11px 13px 10px/10px 13px 11px 14px;}
+  .ph{background:repeating-linear-gradient(45deg,#eceae3,#eceae3 7px,#f6f4ee 7px,#f6f4ee 14px);
+    border:1.6px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;
+    color:#9a9387;font-family:'Architects Daughter',monospace;font-size:12px;letter-spacing:.3px;padding:8px;min-height:60px;}
+  .line{height:9px;border-radius:5px;background:#e2ddd2;margin:7px 0;}
+  .line.dark{background:#cfc8ba;}
+  .chip{display:inline-block;font-family:var(--marker);font-size:15px;color:var(--soft);border:1.6px solid var(--line);
+    border-radius:20px;padding:1px 12px;margin:3px 4px 0 0;background:#faf8f3;}
+  .eyebrow{font-family:var(--marker);font-size:18px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px;}
+  .lbl{font-family:'Architects Daughter',monospace;font-size:11px;color:#9a9387;letter-spacing:.5px;text-transform:uppercase;}
+
+  .sec{padding:30px 36px;border-top:1.6px dashed var(--line);}
+  .sec:first-child{border-top:none;}
+  .sec-h{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;}
+  .sec-h .t{font-size:24px;font-weight:700;}
+  .sec-h .n{font-family:'Architects Daughter',monospace;font-size:13px;color:var(--soft);}
+  .pagepad{padding:30px 36px;}
+
+  .mnav{display:flex;align-items:center;justify-content:space-between;padding:14px 36px;border-bottom:1.6px solid var(--line);font-size:15px;color:var(--soft);}
+  .mnav .mono{width:32px;height:32px;border-radius:50%;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink);}
+  .back{font-family:var(--marker);font-size:17px;color:var(--accent);font-weight:600;}
+
+  .ptitle-xl{font-size:60px;line-height:1;font-weight:700;letter-spacing:-1px;margin:6px 0;}
+  .lead{max-width:620px;color:#46443f;font-size:20px;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .metabar{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding:18px 0;border-top:1.6px solid var(--line);border-bottom:1.6px solid var(--line);}
+  .metabar .lbl{margin-bottom:4px;}
+  .metabar b{font-size:17px;}
+
+  /* device + screen + motion primitives */
+  .phone{border:2.5px solid var(--ink);border-radius:26px;padding:7px 6px;background:#fff;aspect-ratio:9/19;display:flex;flex-direction:column;}
+  .phone .notch{width:34%;height:7px;background:var(--ink);border-radius:6px;margin:0 auto 6px;}
+  .phone .scr{flex:1;}
+  .screen{aspect-ratio:16/10;}
+  .play{position:relative;}
+  .play::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:0;height:0;border-left:20px solid var(--accent);border-top:13px solid transparent;border-bottom:13px solid transparent;}
+  .play::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:56px;height:56px;border:2.5px solid var(--accent);border-radius:50%;background:#fff9;}
+  .badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--marker);font-size:15px;font-weight:600;color:var(--accent);
+    border:1.6px solid var(--accent);border-radius:20px;padding:0 10px;background:#fff;}
+
+  /* filmstrip */
+  .film{display:flex;gap:14px;overflow-x:auto;padding:6px 2px 14px;scroll-snap-type:x mandatory;}
+  .film>*{flex:0 0 46%;scroll-snap-align:start;}
+  .film::-webkit-scrollbar{height:8px;}
+  .film::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px;}
+
+  /* sticky narrative demo (visual representation, not actual sticky) */
+  .sticky{display:grid;grid-template-columns:.85fr 1.15fr;gap:26px;align-items:start;}
+  .sticky .pin{position:sticky;top:80px;}
+  .sticky .pin .tagpin{display:inline-block;font-family:var(--marker);color:var(--accent);font-weight:600;border:1.6px dashed var(--accent);border-radius:14px;padding:2px 10px;margin-bottom:8px;}
+  .flowcol{display:flex;flex-direction:column;gap:18px;}
+
+  /* before/after */
+  .ba{position:relative;}
+  .ba .split{position:absolute;top:8px;bottom:8px;left:50%;width:3px;background:var(--accent);}
+  .ba .knob{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:#fff;border:2.5px solid var(--accent);display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700;}
+  .ba .tagL,.ba .tagR{position:absolute;top:12px;font-family:var(--marker);font-weight:600;color:var(--soft);font-size:15px;}
+  .ba .tagL{left:14px;} .ba .tagR{right:14px;}
+
+  .mfoot{padding:28px 36px;border-top:2px solid var(--ink);background:#efe9df;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+  .mfoot .fbig{font-size:26px;font-weight:700;}
+
+  /* pattern card wrapper (tabs B & C) */
+  .pat{margin-bottom:30px;}
+  .pat-h{display:flex;align-items:baseline;gap:10px;margin-bottom:6px;}
+  .pat-h .num{font-family:'Architects Daughter',monospace;font-size:14px;color:#fff;background:var(--accent);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex:0 0 26px;}
+  .pat-h .pt{font-size:22px;font-weight:700;}
+  .pat-body{border:2px solid var(--ink);border-radius:14px 11px 13px 10px/10px 13px 11px 14px;padding:18px;background:#fcfaf5;}
+
+  /* annotations */
+  .note{position:relative;font-family:var(--marker);font-size:18px;line-height:1.25;color:var(--note);
+    background:var(--note-bg);border:2px solid var(--note);border-radius:16px 9px 15px 10px/9px 15px 10px 16px;padding:9px 13px;margin:14px 0;transition:opacity .2s;}
+  .note b{font-weight:700;} .note::before{content:"✱ ";font-weight:700;}
+  .note.use{color:#3a6b3a;background:#f1f7ee;border-color:#6a9a5e;}
+  .note.use::before{content:"✎ ";}
+  .note.float{position:absolute;max-width:230px;z-index:5;box-shadow:4px 5px 0 #d23b3b22;}
+  .anno-wrap{position:relative;}
+  body.notes-off .note{display:none;}
+
+  @media(max-width:860px){
+    .grid2,.grid3,.grid4,.metabar{grid-template-columns:1fr 1fr;}
+    .sticky{grid-template-columns:1fr;} .sticky .pin{position:static;}
+    .ptitle-xl{font-size:40px;} .film>*{flex:0 0 78%;}
+    .note.float{position:static;max-width:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="brand">Case-study wireframes <small>Direction A · screens &amp; motion</small></div>
+  <div class="spacer"></div>
+  <div class="tabs">
+    <button class="tab active" data-dir="page">Page<span>full skeleton</span></button>
+    <button class="tab" data-dir="screens">Screens<span>many-screen blocks</span></button>
+    <button class="tab" data-dir="motion">Motion<span>animation blocks</span></button>
+    <button class="tab" data-dir="sleep">Sleep Cycle<span>worked example</span></button>
+  </div>
+  <label class="toggle"><input type="checkbox" id="notesChk" checked> notes</label>
+</div>
+
+<div class="stage">
+<p class="legend">Case-study layout for the <b>Editorial Index</b> direction. Tab 1 is the full page skeleton; tabs 2–3 are reusable <b>content blocks</b> for the hard parts — many screens &amp; motion. <span style="color:#6a9a5e;">✎ green notes</span> = when to reach for a block.</p>
+
+<!-- ===================================================== TAB 1 — PAGE SKELETON -->
+<section class="frame active" data-dir="page">
+  <div class="dir-head"><h2>Full case page</h2><span class="tagline">consistent shell · outcome up top · narrative flow</span></div>
+
+  <div class="browser">
+    <div class="chrome"><i></i><i></i><i></i><span class="url">fredrikpahlman.design/work/sleep-cycle-discovery</span></div>
+
+    <!-- nav + back -->
+    <nav class="mnav"><span class="back">← All work</span><div class="mono">FP</div></nav>
+
+    <!-- hero -->
+    <div class="pagepad anno-wrap">
+      <div class="eyebrow">Product Discovery · Org change</div>
+      <div class="ptitle-xl">Continuous Discovery<br>at Sleep Cycle</div>
+      <p class="lead">From sporadic research bursts to weekly user sessions with every product team.</p>
+      <div class="note float" style="top:18px;right:0;">Hero = title + one-line <b>thesis</b>. No cover image needed yet — let the first big visual be a real screen, not decoration.</div>
+    </div>
+    <div class="pagepad" style="padding-top:0;">
+      <div class="ph sketch" style="aspect-ratio:16/7;">full-bleed cover — hero screen, photo, or motion still</div>
+      <!-- meta -->
+      <div class="metabar" style="margin-top:22px;">
+        <div><div class="lbl">Role</div><b>Design &amp; Discovery Lead</b></div>
+        <div><div class="lbl">Team</div><b>4 product squads</b></div>
+        <div><div class="lbl">Timeline</div><b>2023 – 2025</b></div>
+        <div><div class="lbl">Platform</div><b>iOS · Android · Web</b></div>
+      </div>
+    </div>
+
+    <!-- TL;DR outcome up top -->
+    <div class="sec anno-wrap" style="background:#faf6f0;">
+      <div class="sec-h"><span class="t">In short</span><span class="n">outcome first</span></div>
+      <div class="grid3">
+        <div><div class="ptitle-xl" style="font-size:38px;color:var(--accent);">12→1</div><div class="line" style="width:80%"></div></div>
+        <div><div class="ptitle-xl" style="font-size:38px;color:var(--accent);">wk</div><div class="line" style="width:85%"></div></div>
+        <div><div class="ptitle-xl" style="font-size:38px;color:var(--accent);">4 sq</div><div class="line" style="width:75%"></div></div>
+      </div>
+      <div class="note">Put the <b>result before the story</b>. Busy readers (recruiters) get the win in 5 seconds; the curious scroll on for the how.</div>
+    </div>
+
+    <!-- problem -->
+    <div class="sec">
+      <div class="sec-h"><span class="t">01 — The problem</span></div>
+      <div class="grid2" style="align-items:center;">
+        <div><div class="line dark" style="width:96%"></div><div class="line" style="width:90%"></div><div class="line" style="width:93%"></div><div class="line" style="width:70%"></div></div>
+        <div class="ph sketch" style="aspect-ratio:4/3;">supporting screen / artefact</div>
+      </div>
+    </div>
+
+    <!-- process = sticky narrative (this is the many-screens moment) -->
+    <div class="sec anno-wrap">
+      <div class="sec-h"><span class="t">02 — Process</span><span class="n">many screens live here</span></div>
+      <div class="note">This is where a case with lots of screens earns its length. Default to the <b>sticky-narrative</b> block (Tab → Screens, pattern 1): commentary pins on the left while screens scroll past on the right.</div>
+      <div class="sticky">
+        <div class="pin">
+          <span class="tagpin">stays pinned ⇣</span>
+          <div class="line dark" style="width:90%"></div><div class="line" style="width:80%"></div><div class="line" style="width:85%"></div>
+          <div style="margin-top:10px;"><span class="chip">Step 1 · 2 · 3</span></div>
+        </div>
+        <div class="flowcol">
+          <div class="ph sketch screen">screen — research wall</div>
+          <div class="ph sketch screen">screen — synthesis board</div>
+          <div class="ph sketch screen">screen — weekly cadence</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- motion band -->
+    <div class="sec anno-wrap" style="background:#1f1c18;border-color:#1f1c18;">
+      <div class="sec-h"><span class="t" style="color:#f4f1ea;">03 — The interaction</span><span class="n" style="color:#b9b1a3;">motion moment</span></div>
+      <div class="ph play sketch" style="aspect-ratio:16/8;background:repeating-linear-gradient(45deg,#33302b,#33302b 7px,#3c3933 7px,#3c3933 14px);border-color:#5a554c;color:#9a9387;">full-bleed motion reel — autoplay, muted, loops</div>
+      <div class="note">Give the hero animation a <b>dark full-bleed band</b> so motion pops. See Tab → Motion, pattern 2.</div>
+    </div>
+
+    <!-- gallery wall -->
+    <div class="sec anno-wrap">
+      <div class="sec-h"><span class="t">04 — More screens</span><span class="n">gallery wall</span></div>
+      <div class="grid3">
+        <div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">screen</div>
+        <div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">screen</div>
+      </div>
+      <div class="note">Overflow screens that don't need narration go in a <b>click-to-enlarge grid wall</b> — keeps the page from becoming an endless stack.</div>
+    </div>
+
+    <!-- outcome + reflection -->
+    <div class="sec">
+      <div class="sec-h"><span class="t">05 — Outcome &amp; reflection</span></div>
+      <div class="line dark" style="width:94%"></div><div class="line" style="width:88%"></div><div class="line" style="width:60%"></div>
+    </div>
+
+    <!-- next project -->
+    <div class="mfoot"><div class="fbig">Next: [ Project Two ] →</div><span class="back">← All work</span></div>
+  </div>
+</section>
+
+<!-- ===================================================== TAB 2 — SCREEN PATTERNS -->
+<section class="frame" data-dir="screens">
+  <div class="dir-head"><h2>Many-screen blocks</h2><span class="tagline">5 reusable ways to show a lot without an endless stack</span></div>
+
+  <!-- 1 sticky -->
+  <div class="pat">
+    <div class="pat-h"><span class="num">1</span><span class="pt">Sticky narrative</span></div>
+    <div class="pat-body">
+      <div class="sticky">
+        <div class="pin"><span class="tagpin">commentary pins ⇣</span><div class="line dark" style="width:88%"></div><div class="line" style="width:78%"></div><div class="line" style="width:84%"></div></div>
+        <div class="flowcol"><div class="ph sketch screen">screen 1</div><div class="ph sketch screen">screen 2</div><div class="ph sketch screen">screen 3</div></div>
+      </div>
+      <div class="note use">Use as your <b>default</b> for a flow you want to narrate step-by-step. Best signal of senior thinking — every screen gets a "why".</div>
+    </div>
+  </div>
+
+  <!-- 2 filmstrip -->
+  <div class="pat">
+    <div class="pat-h"><span class="num">2</span><span class="pt">Horizontal filmstrip</span></div>
+    <div class="pat-body">
+      <div class="film">
+        <div class="ph sketch screen">step 1 →</div><div class="ph sketch screen">step 2 →</div><div class="ph sketch screen">step 3 →</div><div class="ph sketch screen">step 4</div>
+      </div>
+      <div class="lbl">↔ scroll / swipe — try it</div>
+      <div class="note use">Use for an ordered <b>flow or before→after sequence</b> where horizontal motion mirrors the user's journey. Compact, playful, mobile-friendly.</div>
+    </div>
+  </div>
+
+  <!-- 3 grid wall -->
+  <div class="pat">
+    <div class="pat-h"><span class="num">3</span><span class="pt">Grid wall + lightbox</span></div>
+    <div class="pat-body">
+      <div class="grid4">
+        <div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">screen</div>
+        <div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">+ 6 more</div>
+      </div>
+      <div class="note use">Use for <b>volume without narration</b> — explorations, variants, the "we tried a lot" story. Click any to enlarge in a lightbox.</div>
+    </div>
+  </div>
+
+  <!-- 4 device carousel -->
+  <div class="pat">
+    <div class="pat-h"><span class="num">4</span><span class="pt">Device carousel</span></div>
+    <div class="pat-body">
+      <div class="film">
+        <div class="phone" style="flex:0 0 150px;"><div class="notch"></div><div class="ph scr">app screen</div></div>
+        <div class="phone" style="flex:0 0 150px;"><div class="notch"></div><div class="ph scr">app screen</div></div>
+        <div class="phone" style="flex:0 0 150px;"><div class="notch"></div><div class="ph scr">app screen</div></div>
+        <div class="phone" style="flex:0 0 150px;"><div class="notch"></div><div class="ph scr">app screen</div></div>
+      </div>
+      <div class="note use">Use when <b>device context matters</b> (mobile app, responsive). Real bezels read instantly as "shipped product".</div>
+    </div>
+  </div>
+
+  <!-- 5 full bleed stack -->
+  <div class="pat">
+    <div class="pat-h"><span class="num">5</span><span class="pt">Full-bleed stack</span></div>
+    <div class="pat-body">
+      <div class="ph sketch" style="aspect-ratio:16/7;margin-bottom:12px;">one hero screen, edge to edge</div>
+      <div class="ph sketch" style="aspect-ratio:16/7;">another hero screen</div>
+      <div class="note use">Use <b>sparingly</b> — 1–2 showpiece screens that deserve to fill the width. Too many in a row = the endless scroll you want to avoid.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== TAB 3 — MOTION PATTERNS -->
+<section class="frame" data-dir="motion">
+  <div class="dir-head"><h2>Animation blocks</h2><span class="tagline">how to show motion without it feeling like homework</span></div>
+
+  <!-- 1 device loop -->
+  <div class="pat">
+    <div class="pat-h"><span class="num">1</span><span class="pt">Device-framed loop</span></div>
+    <div class="pat-body">
+      <div class="grid3" style="align-items:center;">
+        <div class="phone" style="max-width:160px;margin:auto;"><div class="notch"></div><div class="ph scr play">loop</div></div>
+        <div style="grid-column:span 2;">
+          <div class="badge">▣ autoplay · muted · loops</div>
+          <div class="line dark" style="width:90%;margin-top:10px;"></div><div class="line" style="width:80%"></div>
+          <div class="note use" style="margin-top:10px;">Use for <b>micro-interactions</b> — a toggle, a transition, a gesture. Short silent loop inside a phone; no controls, no sound. The cleanest way to prove "it moves".</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 reel band -->
+  <div class="pat">
+    <div class="pat-h"><span class="num">2</span><span class="pt">Full-bleed reel band</span></div>
+    <div class="pat-body" style="padding:0;overflow:hidden;">
+      <div class="ph play" style="aspect-ratio:16/7;border:none;border-radius:0;background:repeating-linear-gradient(45deg,#33302b,#33302b 7px,#3c3933 7px,#3c3933 14px);color:#9a9387;">dark full-bleed reel — the showpiece motion moment</div>
+      <div style="padding:16px 18px;"><div class="note use" style="margin:0;">Use for the <b>one hero animation</b> per case. Dark band makes motion pop and gives the page a beat of drama. Pair with a one-line caption.</div></div>
+    </div>
+  </div>
+
+  <!-- 3 before/after -->
+  <div class="pat">
+    <div class="pat-h"><span class="num">3</span><span class="pt">Before → After</span></div>
+    <div class="pat-body">
+      <div class="ba ph sketch" style="aspect-ratio:16/7;">
+        <span class="tagL">before</span><span class="tagR">after</span>
+        <div class="split"></div><div class="knob">⇄</div>
+      </div>
+      <div class="note use">Use to show <b>impact of a redesign</b> — drag-to-reveal slider, or a simple tap-toggle. Instantly legible; great for "old vs new".</div>
+    </div>
+  </div>
+
+  <!-- 4 captioned strip -->
+  <div class="pat">
+    <div class="pat-h"><span class="num">4</span><span class="pt">Captioned sequence strip</span></div>
+    <div class="pat-body">
+      <div class="grid4">
+        <div><div class="ph sketch" style="aspect-ratio:1;">frame 1</div><div class="lbl" style="margin-top:5px;">tap</div></div>
+        <div><div class="ph sketch" style="aspect-ratio:1;">frame 2</div><div class="lbl" style="margin-top:5px;">expand</div></div>
+        <div><div class="ph sketch" style="aspect-ratio:1;">frame 3</div><div class="lbl" style="margin-top:5px;">confirm</div></div>
+        <div><div class="ph sketch" style="aspect-ratio:1;">frame 4</div><div class="lbl" style="margin-top:5px;">done</div></div>
+      </div>
+      <div class="note use">Use when motion needs <b>explaining</b> — break an animation into key frames with captions. Works in print/PDF too, where video can't play.</div>
+    </div>
+  </div>
+
+  <!-- 5 live embed -->
+  <div class="pat">
+    <div class="pat-h"><span class="num">5</span><span class="pt">Live prototype embed</span></div>
+    <div class="pat-body">
+      <div class="ph sketch" style="aspect-ratio:16/8;">
+        <div style="text-align:center;"><div class="badge" style="margin-bottom:8px;">▶ interactive</div><br>embedded Figma / Framer / coded prototype</div>
+      </div>
+      <div class="note use">Use for the <b>one thing worth touching</b>. Powerful but heavy — gate behind a "Launch prototype" click so it never slows the page.</div>
+    </div>
+  </div>
+
+  <div class="note">Rule of thumb across all of these: <b>one motion showpiece per case</b>, everything else static. Motion earns attention precisely because it's rare on the page.</div>
+</section>
+
+<!-- ===================================================== TAB 4 — SLEEP CYCLE WORKED EXAMPLE -->
+<section class="frame" data-dir="sleep">
+  <div class="dir-head"><h2>Sleep Cycle — assembled</h2><span class="tagline">screen-heavy AND motion-heavy · paced so it breathes</span></div>
+
+  <div class="note" style="margin:0 4px 18px;">The challenge you named: lots of screens <b>and</b> lots of motion. The fix isn't picking one — it's <b>rhythm</b>. Alternate a dense screen block with a single motion beat, so neither fatigues. Watch the left rail tags ↓ to see the pulse: <b>screens → motion → screens → motion → showpiece</b>.</div>
+
+  <div class="browser">
+    <div class="chrome"><i></i><i></i><i></i><span class="url">fredrikpahlman.design/work/sleep-cycle-discovery</span></div>
+    <nav class="mnav"><span class="back">← All work</span><div class="mono">FP</div></nav>
+
+    <!-- hero with motion still -->
+    <div class="pagepad anno-wrap">
+      <div class="eyebrow">Product Discovery · Org change</div>
+      <div class="ptitle-xl">Continuous Discovery<br>at Sleep Cycle</div>
+      <p class="lead">From sporadic research bursts to weekly user sessions with every product team.</p>
+    </div>
+    <div class="pagepad" style="padding-top:0;">
+      <div class="ph play sketch" style="aspect-ratio:16/7;">cover = a quiet motion still (loops on hover)</div>
+      <div class="metabar" style="margin-top:20px;">
+        <div><div class="lbl">Role</div><b>Design &amp; Discovery Lead</b></div>
+        <div><div class="lbl">Team</div><b>4 product squads</b></div>
+        <div><div class="lbl">Timeline</div><b>2023 – 2025</b></div>
+        <div><div class="lbl">Platform</div><b>iOS · Android · Web</b></div>
+      </div>
+    </div>
+
+    <!-- outcome first -->
+    <div class="sec" style="background:#faf6f0;">
+      <div class="sec-h"><span class="t">In short</span><span class="n">result first</span></div>
+      <div class="grid3">
+        <div><div class="ptitle-xl" style="font-size:34px;color:var(--accent);">weekly</div><div class="line" style="width:80%"></div></div>
+        <div><div class="ptitle-xl" style="font-size:34px;color:var(--accent);">4 squads</div><div class="line" style="width:85%"></div></div>
+        <div><div class="ptitle-xl" style="font-size:34px;color:var(--accent);">0→100%</div><div class="line" style="width:75%"></div></div>
+      </div>
+    </div>
+
+    <!-- beat: PROBLEM (light) -->
+    <div class="sec anno-wrap">
+      <div class="sec-h"><span class="t">01 — The problem</span><span class="n">text + 1 screen</span></div>
+      <div class="grid2" style="align-items:center;">
+        <div><div class="line dark" style="width:96%"></div><div class="line" style="width:90%"></div><div class="line" style="width:70%"></div></div>
+        <div class="ph sketch" style="aspect-ratio:4/3;">the old research backlog</div>
+      </div>
+      <div class="note use">Open light — one artefact, no firehose. Save the volume for when it's earned.</div>
+    </div>
+
+    <!-- beat: SCREENS (sticky narrative — the system) -->
+    <div class="sec anno-wrap">
+      <div class="sec-h"><span class="t">02 — The system we built</span><span class="n">block: sticky narrative</span></div>
+      <div class="sticky">
+        <div class="pin"><span class="tagpin">screens ⇣ block 1</span><div class="line dark" style="width:90%"></div><div class="line" style="width:80%"></div><div class="line" style="width:85%"></div><div style="margin-top:10px;"><span class="chip">recruit</span><span class="chip">interview</span><span class="chip">synthesise</span></div></div>
+        <div class="flowcol"><div class="ph sketch screen">research wall</div><div class="ph sketch screen">interview template</div><div class="ph sketch screen">synthesis board</div></div>
+      </div>
+      <div class="note use">Narrate the screens that need a "why". This is the depth recruiters scroll for.</div>
+    </div>
+
+    <!-- beat: MOTION (device loop — micro-interaction) -->
+    <div class="sec anno-wrap">
+      <div class="sec-h"><span class="t">03 — How a session gets booked</span><span class="n">↳ motion beat</span></div>
+      <div class="grid3" style="align-items:center;">
+        <div class="phone" style="max-width:150px;margin:auto;"><div class="notch"></div><div class="ph scr play">booking loop</div></div>
+        <div style="grid-column:span 2;">
+          <div class="badge">▣ autoplay · muted · loops</div>
+          <div class="line dark" style="width:90%;margin-top:10px;"></div><div class="line" style="width:78%"></div>
+          <div class="note use" style="margin-top:10px;">A short silent loop, right after the dense block — a <b>palate cleanser</b> that also proves the thing moves.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- beat: SCREENS (filmstrip — the weekly flow) -->
+    <div class="sec anno-wrap">
+      <div class="sec-h"><span class="t">04 — The weekly cadence</span><span class="n">block: filmstrip ↔</span></div>
+      <div class="film">
+        <div class="ph sketch screen">Mon · plan →</div><div class="ph sketch screen">Wed · sessions →</div><div class="ph sketch screen">Thu · synthesis →</div><div class="ph sketch screen">Fri · share</div>
+      </div>
+      <div class="lbl">↔ swipe through the week</div>
+      <div class="note use">An ordered flow → horizontal motion mirrors the journey. Different shape from block 2, so the eye stays awake.</div>
+    </div>
+
+    <!-- beat: MOTION SHOWPIECE (full-bleed reel) -->
+    <div class="sec anno-wrap" style="background:#1f1c18;border-color:#1f1c18;">
+      <div class="sec-h"><span class="t" style="color:#f4f1ea;">05 — The insight pipeline, in motion</span><span class="n" style="color:#b9b1a3;">★ showpiece</span></div>
+      <div class="ph play sketch" style="aspect-ratio:16/8;background:repeating-linear-gradient(45deg,#33302b,#33302b 7px,#3c3933 7px,#3c3933 14px);border-color:#5a554c;color:#9a9387;">full-bleed reel — research turning into roadmap</div>
+      <div class="note use">The <b>one</b> big animation. Dark band, center of the page — the moment everything builds to.</div>
+    </div>
+
+    <!-- beat: SCREENS (grid wall — overflow) -->
+    <div class="sec anno-wrap">
+      <div class="sec-h"><span class="t">06 — Everything else we shipped</span><span class="n">block: grid wall</span></div>
+      <div class="grid4">
+        <div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">screen</div>
+        <div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">screen</div><div class="ph sketch" style="aspect-ratio:4/3;">+ more</div>
+      </div>
+      <div class="note use">All the remaining screens land here — click to enlarge. No narration needed, so they don't stretch the page.</div>
+    </div>
+
+    <!-- outcome + reflection -->
+    <div class="sec">
+      <div class="sec-h"><span class="t">07 — Outcome &amp; what I'd do differently</span></div>
+      <div class="line dark" style="width:94%"></div><div class="line" style="width:88%"></div><div class="line" style="width:55%"></div>
+    </div>
+
+    <div class="mfoot"><div class="fbig">Next: [ Project Two ] →</div><span class="back">← All work</span></div>
+  </div>
+
+  <p class="legend" style="margin-top:18px;">Net effect: ~6 screen surfaces + 2 motion moments, but it never reads as a wall — because <b>no two adjacent blocks share a shape</b>. That alternation is the whole trick for a case this rich.</p>
+</section>
+
+</div>
+
+<script>
+  const tabs=document.querySelectorAll('.tab'), frames=document.querySelectorAll('.frame');
+  tabs.forEach(t=>t.addEventListener('click',()=>{
+    const d=t.dataset.dir;
+    tabs.forEach(x=>x.classList.toggle('active',x===t));
+    frames.forEach(f=>f.classList.toggle('active',f.dataset.dir===d));
+    window.scrollTo({top:0,behavior:'smooth'});
+    try{localStorage.setItem('cs_dir',d);}catch(e){}
+  }));
+  try{const s=localStorage.getItem('cs_dir');if(s){const t=[...tabs].find(x=>x.dataset.dir===s);if(t)t.click();}}catch(e){}
+  const chk=document.getElementById('notesChk');
+  chk.addEventListener('change',()=>document.body.classList.toggle('notes-off',!chk.checked));
+</script>
+</body>
+</html>

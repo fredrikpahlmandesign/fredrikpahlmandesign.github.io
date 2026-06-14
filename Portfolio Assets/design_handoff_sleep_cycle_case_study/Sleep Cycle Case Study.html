@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sleep Cycle — Premium &amp; Trial · Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4efe6;
+    --paper-2:#ece5d8;
+    --ink:#211d17;
+    --soft:#6d6457;
+    --line:#ddd4c4;
+    --accent:#bd5a35;          /* terracotta */
+    --accent-ink:#8f3f22;
+    --dark:#13110d;
+    --teal:#0d2a2e;
+    --teal-2:#10353a;
+    --serif:'Newsreader',Georgia,serif;
+    --sans:'Hanken Grotesk',system-ui,sans-serif;
+    --mono:'Space Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+  img{display:block;max-width:100%;}
+  a{color:inherit;}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+  .wrap-wide{max-width:1320px;margin:0 auto;padding:0 32px;}
+
+  .mono{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);}
+  .serif{font-family:var(--serif);}
+  .accent{color:var(--accent);}
+
+  /* nav */
+  nav.top{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+    padding:16px 32px;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  nav.top .back{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--soft);transition:color .2s;}
+  nav.top .back:hover{color:var(--accent);}
+  nav.top .brand{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:600;font-size:15px;}
+
+  /* hero */
+  header.hero{position:relative;padding:0;}
+  .hero-copy{padding:74px 0 40px;}
+  .eyebrow{display:inline-flex;gap:12px;align-items:center;margin-bottom:22px;}
+  .eyebrow .mono{color:var(--accent);}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(40px,6.4vw,82px);line-height:1.02;letter-spacing:-.015em;margin:0;max-width:14ch;}
+  h1 em{font-style:italic;color:var(--accent);}
+  .thesis{font-size:clamp(19px,2.1vw,24px);color:#3a352c;max-width:30ch;margin:24px 0 0;line-height:1.45;}
+  .hero-img{width:100%;height:min(62vh,620px);object-fit:cover;object-position:center 32%;}
+  .hero-figcap{padding:10px 0 0;}
+
+  /* meta bar */
+  .meta{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;padding:30px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .meta .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:7px;}
+  .meta .val{font-size:16px;line-height:1.35;font-weight:500;}
+
+  /* section scaffolding */
+  section{padding:72px 0;}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+  h2{font-family:var(--serif);font-weight:500;font-size:clamp(28px,3.8vw,46px);line-height:1.08;letter-spacing:-.01em;margin:0 0 22px;max-width:18ch;}
+  h3{font-family:var(--serif);font-weight:500;font-size:24px;margin:0 0 8px;}
+  p{margin:0 0 18px;max-width:64ch;}
+  p.lead-p{font-size:21px;color:#332f27;max-width:54ch;}
+  .soft{color:var(--soft);}
+
+  /* outcome band */
+  .band-paper{background:var(--paper-2);}
+  .shortgrid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start;}
+  .metrics{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .metric{border:1.5px dashed var(--accent);border-radius:14px;padding:18px 16px;background:color-mix(in srgb,var(--accent) 5%,transparent);}
+  .metric .num{font-family:var(--serif);font-size:40px;line-height:1;color:var(--accent-ink);}
+  .metric .mlbl{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-top:8px;}
+  .metric .add{font-family:var(--mono);font-size:10.5px;color:var(--accent);letter-spacing:.08em;margin-top:6px;}
+  .draftnote{font-family:var(--mono);font-size:11.5px;color:var(--soft);letter-spacing:.04em;margin-top:18px;}
+
+  /* figures */
+  figure{margin:0;}
+  .fullfig{margin:36px 0 8px;}
+  .fullfig img{width:100%;border-radius:14px;}
+  figcaption{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--soft);margin-top:12px;text-transform:uppercase;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+
+  /* dark / teal bands */
+  .band-dark{background:var(--dark);color:#efe9dd;}
+  .band-teal{background:var(--teal);color:#e7efea;}
+  .band-dark h2,.band-teal h2{color:#fff;}
+  .band-dark .kicker,.band-teal .kicker{color:#e7a07f;}
+  .band-dark p,.band-teal p{color:#c7c0b2;}
+  .band-teal p{color:#b7c9c4;}
+  .band-dark .soft,.band-teal .soft{color:#8f897c;}
+
+  /* device frames (crop transparent margins) */
+  .device{aspect-ratio:48/100;overflow:hidden;border-radius:20px;}
+  .device img{width:100%;height:100%;object-fit:cover;object-position:center;}
+  .devgrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
+  .devgrid2{display:grid;grid-template-columns:1fr 1fr;gap:36px;}
+  .devcap{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--soft);text-transform:uppercase;margin-top:12px;text-align:center;}
+  .band-dark .devcap,.band-teal .devcap{color:#8f897c;}
+
+  /* floating angled device (uncropped) */
+  .float-dev{filter:drop-shadow(0 30px 50px rgba(0,0,0,.45));}
+
+  /* sticky narrative */
+  .sticky{display:grid;grid-template-columns:.82fr 1.18fr;gap:56px;align-items:start;}
+  .sticky .pin{position:sticky;top:96px;}
+  .stepnum{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--accent);margin-bottom:10px;}
+  .flowcol{display:flex;flex-direction:column;gap:42px;}
+
+  /* motion band */
+  .motion-wrap{position:relative;border-radius:18px;overflow:hidden;}
+  .motion-wrap video{width:100%;display:block;}
+  .motion-meta{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .pill{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:1px solid currentColor;border-radius:30px;padding:3px 12px;color:#e7a07f;}
+
+  /* paywall feature row */
+  .feature-lead{display:grid;grid-template-columns:.95fr 1.05fr;gap:48px;align-items:center;}
+
+  /* next */
+  footer.next{background:var(--paper-2);border-top:1px solid var(--line);padding:54px 0;}
+  .nextrow{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .nextrow .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);}
+  .nextrow .big{font-family:var(--serif);font-size:clamp(28px,4vw,42px);font-weight:500;}
+  .nextrow a{text-decoration:none;}
+  .site-foot{padding:30px 0;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);}
+
+  @media(max-width:880px){
+    .meta{grid-template-columns:1fr 1fr;gap:18px;}
+    .shortgrid,.two,.sticky,.feature-lead{grid-template-columns:1fr;gap:32px;}
+    .sticky .pin{position:static;}
+    .devgrid3{grid-template-columns:1fr 1fr;}
+    h1{font-size:clamp(36px,10vw,56px);}
+  }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a class="back" href="#">← All work</a>
+  <div class="brand serif">FP</div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" data-screen-label="Hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <div class="eyebrow"><span class="mono">Sleep Cycle · 2024–25</span><span class="mono soft">Subscription &amp; Growth</span></div>
+      <h1>Helping Sleep&nbsp;Cycle earn <em>Premium</em> the gentle way</h1>
+      <p class="thesis">Rethinking the trial model, onboarding and paywall so people meet the right offer at the right moment — without the hard sell.</p>
+    </div>
+  </div>
+  <figure>
+    <img class="hero-img" src="assets/hero-dream.jpg" alt="A sleeper drifting among floating pillows in a starlit sky">
+  </figure>
+</header>
+
+<!-- meta -->
+<div class="wrap">
+  <div class="meta">
+    <div><div class="lbl">Role</div><div class="val">Product &amp; Design Lead</div></div>
+    <div><div class="lbl">Team</div><div class="val">PM, 2 engineers, data, marketing</div></div>
+    <div><div class="lbl">Timeline</div><div class="val">~9 months</div></div>
+    <div><div class="lbl">Platform</div><div class="val">iOS · Android</div></div>
+    <div><div class="lbl">My focus</div><div class="val">Strategy, discovery, UX, motion direction</div></div>
+  </div>
+</div>
+
+<!-- ============ IN SHORT ============ -->
+<section class="band-paper" data-screen-label="In short">
+  <div class="wrap">
+    <div class="shortgrid">
+      <div>
+        <div class="kicker">In short</div>
+        <p class="lead-p">We moved Sleep Cycle away from a one-size hard trial toward a flexible model — freemium and reverse-trial paths — backed by continuous discovery and a calmer, brand-led set of paywall moments.</p>
+        <p class="soft">Premium stopped feeling like a wall and started feeling like an invitation. The same screens now carry a clearer value story across the whole trial lifecycle.</p>
+      </div>
+      <div>
+        <div class="metrics">
+          <div class="metric"><div class="num">—</div><div class="mlbl">Trial → Paid</div><div class="add">+ add your number</div></div>
+          <div class="metric"><div class="num">—</div><div class="mlbl">Premium retention</div><div class="add">+ add your number</div></div>
+          <div class="metric"><div class="num">—</div><div class="mlbl">ARPU</div><div class="add">+ add your number</div></div>
+          <div class="metric"><div class="num">—</div><div class="mlbl">Activation</div><div class="add">+ add your number</div></div>
+        </div>
+        <div class="draftnote">▢ Draft copy &amp; placeholder metrics — drop in the real figures &amp; story.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 01 PROBLEM ============ -->
+<section data-screen-label="Problem">
+  <div class="wrap">
+    <div class="kicker">01 — The problem</div>
+    <h2>One trial for everyone left value on the table</h2>
+    <p class="lead-p">Sleep Cycle ran a single opt-out trial: a hard paywall up front, then a premium trial that quietly converted. It worked — but it asked for commitment before people had felt the value, and it gave us little room to learn.</p>
+    <p>We wanted a model that could flex to different users and let us experiment safely. So we started where the questions were — mapping the whole monetisation journey as an opportunity solution tree with the team.</p>
+  </div>
+  <div class="wrap-wide">
+    <figure class="fullfig">
+      <img src="assets/ost-board-opt.jpg" alt="Opportunity solution tree mapped on a glass wall with sticky notes" loading="lazy">
+      <figcaption>Discovery — mapping the monetisation journey, opportunities &amp; bets with the squad (OST on glass)</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ 02 STRATEGY ============ -->
+<section class="band-teal" data-screen-label="Strategy">
+  <div class="wrap">
+    <div class="kicker">02 — The strategy</div>
+    <h2>Three models, one flexible spine</h2>
+    <p class="lead-p">Rather than redesign a screen, we redesigned the <em>shape</em> of the offer — a spine that could run as opt-out today, freemium now, and reverse-trial next.</p>
+  </div>
+  <div class="wrap-wide">
+    <figure class="fullfig">
+      <img src="assets/growth-models.png" alt="Diagram of three monetisation models: opt-out trial, freemium, reverse trial" loading="lazy">
+      <figcaption>Current → ongoing experiment → future: opt-out trial, freemium, reverse trial</figcaption>
+    </figure>
+  </div>
+  <div class="wrap">
+    <div class="two" style="margin-top:30px;">
+      <div>
+        <h3 class="serif" style="color:#fff;">From wall to doorway</h3>
+        <p>The reverse trial flips the ask: full Premium for 14 days, <em>no card needed</em>, then a graceful downgrade to free. People feel the value first, decide second.</p>
+      </div>
+      <figure>
+        <img class="float-dev" style="max-width:380px;margin:0 auto;" src="assets/onb-trial-start.png" alt="Try Premium for 14 days, no card needed screen" loading="lazy">
+        <div class="devcap">Reverse-trial entry — no card, auto-downgrade</div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 ONBOARDING (sticky) ============ -->
+<section data-screen-label="Onboarding">
+  <div class="wrap">
+    <div class="sticky">
+      <div class="pin">
+        <div class="kicker">03 — Onboarding &amp; activation</div>
+        <h2>Earn the trial by understanding the person</h2>
+        <p>Before asking for anything, we ask what better sleep means to <em>them</em> — then frame Premium around that goal. Activation is the real conversion event, so the flow leads with personalisation, not price.</p>
+        <p class="soft">Each step is narrated below — goal-setting, the journey framing, and an honest, gentle data-permission prime.</p>
+      </div>
+      <div class="flowcol">
+        <figure>
+          <div class="stepnum">Step 01 — Goals</div>
+          <div class="device"><img src="assets/onb-goals.png" alt="Help us tailor your journey — goal selection screen" loading="lazy"></div>
+          <div class="devcap">Pick what matters → tailor the whole journey</div>
+        </figure>
+        <figure>
+          <div class="stepnum">Step 02 — Momentum</div>
+          <div class="device"><img src="assets/onb-journey.png" alt="You're on your journey to better sleep screen" loading="lazy"></div>
+          <div class="devcap">Reinforce progress, not paywalls</div>
+        </figure>
+        <figure>
+          <div class="stepnum">Step 03 — Honest prime</div>
+          <div class="device"><img src="assets/att-priming.png" alt="Help more people sleep better — data permission priming screen" loading="lazy"></div>
+          <div class="devcap">Permission, framed around the mission</div>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MOTION BAND ============ -->
+<section class="band-dark" data-screen-label="Motion">
+  <div class="wrap">
+    <div class="motion-meta"><span class="pill">▣ Motion · autoplay · loops</span></div>
+    <div class="kicker">The feel</div>
+    <h2>Premium should feel like a calmer place</h2>
+    <p class="lead-p">Working with brand &amp; motion, we gave the experience a dreamlike, nighttime quality — so the upgrade reads as an atmosphere, not a transaction.</p>
+  </div>
+  <div class="wrap-wide">
+    <figure class="fullfig">
+      <div class="motion-wrap">
+        <video src="assets/sequence.mp4" poster="assets/motion-texture.png" autoplay muted loop playsinline></video>
+      </div>
+      <figcaption>Title / transition sequence — set the nighttime tone across Premium surfaces</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ 04 PAYWALL & LIFECYCLE ============ -->
+<section data-screen-label="Paywall">
+  <div class="wrap">
+    <div class="kicker">04 — Paywall &amp; trial lifecycle</div>
+    <h2>One value story, told across every moment</h2>
+    <p class="lead-p">The paywall isn't a single screen — it's a sequence that runs from first offer through the trial to the downgrade. Each touch repeats the same promise in the user's language.</p>
+  </div>
+  <div class="wrap" >
+    <div class="feature-lead" style="margin-top:30px;">
+      <figure>
+        <img class="float-dev" style="max-width:420px;margin:0 auto;filter:drop-shadow(0 24px 40px rgba(0,0,0,.22));" src="assets/paywall-hero.png" alt="Wake up feeling rested paywall screen" loading="lazy">
+        <div class="devcap">Primary paywall — emotional hook, one clear price</div>
+      </figure>
+      <div>
+        <h3>Lead with the outcome</h3>
+        <p>“Wake up feeling rested” before “299 kr/year.” The hero image and headline sell the morning; the price is calm, singular, and reversible.</p>
+        <h3 style="margin-top:24px;">Then show the substance</h3>
+        <p>A scannable feature list backs the promise for people who want detail — richer data, sleep sounds, programs — without burying the decision.</p>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="devgrid3" style="margin-top:56px;">
+      <figure>
+        <div class="device"><img src="assets/paywall-features.png" alt="Wake up to a brighter you — premium features list" loading="lazy"></div>
+        <div class="devcap">What's in Premium</div>
+      </figure>
+      <figure>
+        <div class="device"><img src="assets/trial-halfway.png" alt="You're halfway through your Premium trial screen" loading="lazy"></div>
+        <div class="devcap">Mid-trial — nudge toward value used</div>
+      </figure>
+      <figure>
+        <div class="device"><img src="assets/trial-ends.png" alt="Your Premium trial ends tomorrow screen" loading="lazy"></div>
+        <div class="devcap">Trial ending — loss framed honestly</div>
+      </figure>
+    </div>
+    <div class="two" style="margin-top:48px;">
+      <figure>
+        <img class="float-dev" style="max-width:360px;margin:0 auto;filter:drop-shadow(0 24px 40px rgba(0,0,0,.22));" src="assets/downgrade-free.png" alt="You are now on the free plan screen" loading="lazy">
+        <div class="devcap">Graceful downgrade — door left open</div>
+      </figure>
+      <div>
+        <h3>Even the downgrade is a moment</h3>
+        <p>When the trial ends, “You're now on the free plan” reassures rather than punishes — core tracking stays, and the door back to Premium is always warm. That respect is what makes the next offer land.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 OUTCOME ============ -->
+<section class="band-paper" data-screen-label="Outcome">
+  <div class="wrap">
+    <div class="kicker">05 — Outcome &amp; reflection</div>
+    <h2>A model that can keep learning</h2>
+    <p class="lead-p">The biggest win wasn't a single number — it was turning monetisation into something we could test, in a system the whole team understood and a tone that fit the brand.</p>
+    <p class="soft">▢ Replace with your real results: trial→paid lift, retention, ARPU, and what the experiments taught you. A short “what I'd do differently” paragraph lands well here.</p>
+  </div>
+</section>
+
+<!-- ============ NEXT ============ -->
+<footer class="next">
+  <div class="wrap">
+    <div class="nextrow">
+      <div>
+        <div class="lbl">Next project</div>
+        <a href="#" class="big serif">[ Project Two ] →</a>
+      </div>
+      <a class="back mono" href="#" style="text-decoration:none;color:var(--soft);">← All work</a>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="site-foot">
+      <span>Fredrik Påhlman — Design &amp; Product</span>
+      <span>LinkedIn · Read.cv · Email</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
