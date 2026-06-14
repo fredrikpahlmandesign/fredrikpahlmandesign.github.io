@@ -3,755 +3,445 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sleep Cycle — Fredrik Påhlman</title>
+  <title>Sleep Cycle — Premium & Trial · Fredrik Påhlman</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #F7F5F0;
-      --bg-alt: #EDEAE3;
-      --ink: #1A1814;
-      --ink-mid: #6B6760;
-      --ink-light: #B0ADA7;
-      --accent: #C8562A;
-      --serif: 'Fraunces', Georgia, serif;
-      --sans: 'Inter', system-ui, sans-serif;
-      --max: 1200px;
-      --pad: clamp(1.5rem, 5vw, 4rem);
+      --paper: #f4efe6;
+      --paper-2: #ece5d8;
+      --ink: #211d17;
+      --soft: #6d6457;
+      --line: #ddd4c4;
+      --accent: #bd5a35;
+      --accent-ink: #8f3f22;
+      --dark: #13110d;
+      --teal: #0d2a2e;
+      --serif: 'Newsreader', Georgia, serif;
+      --sans: 'Hanken Grotesk', system-ui, sans-serif;
+      --mono: 'Space Mono', ui-monospace, monospace;
     }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: var(--sans);
-      font-size: 16px;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
+    body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 18px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; }
+
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+    .wrap-wide { max-width: 1320px; margin: 0 auto; padding: 0 32px; }
 
     /* NAV */
     nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.25rem var(--pad);
-      background: rgba(11, 12, 16, 0.88);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      transition: background 0.4s, border-color 0.4s;
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 32px;
+      background: color-mix(in srgb, var(--paper) 88%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
     }
-    nav.light {
-      background: var(--bg);
-      border-color: var(--bg-alt);
+    .nav-back {
+      font-family: var(--mono); font-size: 12px; letter-spacing: .12em;
+      text-transform: uppercase; text-decoration: none; color: var(--soft);
+      transition: color .2s;
     }
-    .nav-logo {
-      font-family: var(--serif);
-      font-weight: 400;
-      font-size: 1rem;
-      color: #E8E3DA;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-    nav.light .nav-logo { color: var(--ink); }
+    .nav-back:hover { color: var(--accent); }
     .nav-links { display: flex; gap: 2rem; list-style: none; }
     .nav-links a {
-      font-size: 0.8125rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: rgba(232, 227, 218, 0.55);
-      text-decoration: none;
-      transition: color 0.2s;
+      font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+      text-transform: uppercase; text-decoration: none; color: var(--soft);
+      transition: color .2s;
     }
-    nav.light .nav-links a { color: var(--ink-mid); }
-    .nav-links a:hover { color: #E8E3DA; }
-    nav.light .nav-links a:hover { color: var(--ink); }
+    .nav-links a:hover { color: var(--ink); }
 
     /* HERO */
-    .hero {
-      background: #0B0C10;
-      position: relative;
-      height: 100vh;
-      min-height: 600px;
-      overflow: hidden;
-      display: flex;
-      align-items: flex-end;
-    }
-    .hero-video {
-      position: absolute;
-      inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      opacity: 0.7;
-    }
-    .hero-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, rgba(11,12,16,0.85) 0%, rgba(11,12,16,0.2) 55%, transparent 100%);
-    }
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      padding: var(--pad);
-      padding-bottom: clamp(2.5rem, 6vw, 5rem);
-      max-width: var(--max);
-      width: 100%;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-    .hero-title {
-      font-family: var(--serif);
-      font-weight: 300;
-      font-size: clamp(2.5rem, 6vw, 5rem);
-      letter-spacing: -0.02em;
-      line-height: 1;
-      color: #E8E3DA;
-    }
-    .hero-title em {
-      font-style: italic;
-      color: rgba(232,227,218,0.5);
-    }
-    .hero-right {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      align-items: flex-end;
-      padding-bottom: 0.35rem;
-    }
-    .hero-tag {
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: rgba(232,227,218,0.4);
-      border: 1px solid rgba(232,227,218,0.12);
-      padding: 0.3rem 0.75rem;
-      border-radius: 100px;
-    }
+    header.hero { position: relative; padding: 0; }
+    .hero-copy { padding: 74px 0 40px; }
+    .eyebrow { display: inline-flex; gap: 12px; align-items: center; margin-bottom: 22px; }
+    .eyebrow .mono { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+    .eyebrow .mono.soft { color: var(--soft); }
+    h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(40px, 6.4vw, 82px); line-height: 1.02; letter-spacing: -.015em; max-width: 14ch; }
+    h1 em { font-style: italic; color: var(--accent); }
+    .thesis { font-size: clamp(19px, 2.1vw, 24px); color: #3a352c; max-width: 30ch; margin: 24px 0 0; line-height: 1.45; }
+    .hero-img { width: 100%; height: min(62vh, 620px); object-fit: cover; object-position: center 32%; }
+
+    /* META BAR */
+    .meta { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; padding: 30px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .meta .lbl { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--soft); margin-bottom: 7px; }
+    .meta .val { font-size: 16px; line-height: 1.35; font-weight: 500; }
+
+    /* SECTIONS */
+    section { padding: 72px 0; }
+    .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    h2 { font-family: var(--serif); font-weight: 500; font-size: clamp(28px, 3.8vw, 46px); line-height: 1.08; letter-spacing: -.01em; margin: 0 0 22px; max-width: 18ch; }
+    h3 { font-family: var(--serif); font-weight: 500; font-size: 24px; margin: 0 0 8px; }
+    p { margin: 0 0 18px; max-width: 64ch; }
+    p.lead-p { font-size: 21px; color: #332f27; max-width: 54ch; }
+    .soft-text { color: var(--soft); }
+
+    /* IN SHORT */
+    .band-paper { background: var(--paper-2); }
+    .shortgrid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: start; }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .metric { border: 1.5px dashed var(--accent); border-radius: 14px; padding: 18px 16px; background: color-mix(in srgb, var(--accent) 5%, transparent); }
+    .metric .num { font-family: var(--serif); font-size: 40px; line-height: 1; color: var(--accent-ink); }
+    .metric .mlbl { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); margin-top: 8px; }
+    .metric .add { font-family: var(--mono); font-size: 10.5px; color: var(--accent); letter-spacing: .08em; margin-top: 6px; }
+    .draftnote { font-family: var(--mono); font-size: 11.5px; color: var(--soft); letter-spacing: .04em; margin-top: 18px; }
+
+    /* FIGURES */
+    figure { margin: 0; }
+    .fullfig { margin: 36px 0 8px; }
+    .fullfig img { width: 100%; border-radius: 14px; }
+    figcaption { font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; color: var(--soft); margin-top: 12px; text-transform: uppercase; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+
+    /* DARK / TEAL BANDS */
+    .band-dark { background: var(--dark); color: #efe9dd; }
+    .band-teal { background: var(--teal); color: #e7efea; }
+    .band-dark h2, .band-teal h2 { color: #fff; }
+    .band-dark .kicker, .band-teal .kicker { color: #e7a07f; }
+    .band-dark p, .band-teal p { color: #c7c0b2; }
+    .band-teal p { color: #b7c9c4; }
+    .band-dark .soft-text, .band-teal .soft-text { color: #8f897c; }
+    .band-dark figcaption, .band-teal figcaption { color: #8f897c; }
+    .band-dark .devcap, .band-teal .devcap { color: #8f897c; }
+
+    /* DEVICE FRAMES */
+    .device { aspect-ratio: 48/100; overflow: hidden; border-radius: 20px; }
+    .device img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .devgrid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+    .devcap { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--soft); text-transform: uppercase; margin-top: 12px; text-align: center; }
+    .float-dev { filter: drop-shadow(0 30px 50px rgba(0,0,0,.45)); }
+
+    /* STICKY NARRATIVE */
+    .sticky-grid { display: grid; grid-template-columns: .82fr 1.18fr; gap: 56px; align-items: start; }
+    .pin { position: sticky; top: 96px; }
+    .stepnum { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; color: var(--accent); margin-bottom: 10px; }
+    .flowcol { display: flex; flex-direction: column; gap: 42px; }
+
+    /* MOTION BAND */
+    .motion-wrap { position: relative; border-radius: 18px; overflow: hidden; }
+    .motion-wrap video { width: 100%; display: block; }
+    .motion-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .pill { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; border: 1px solid currentColor; border-radius: 30px; padding: 3px 12px; color: #e7a07f; }
+
+    /* PAYWALL */
+    .feature-lead { display: grid; grid-template-columns: .95fr 1.05fr; gap: 48px; align-items: center; }
 
     /* CASE STORY CALLOUT */
     .case-story {
-      margin-top: 3.5rem;
+      margin-top: 3rem;
       border-left: 3px solid var(--accent);
       padding: 2rem 2.5rem;
-      background: var(--bg-alt);
+      background: var(--paper-2);
       border-radius: 0 8px 8px 0;
     }
-    .case-story-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 1rem;
-    }
-    .case-story-title {
-      font-family: var(--serif);
-      font-size: clamp(1.1rem, 2vw, 1.35rem);
-      font-weight: 300;
-      line-height: 1.45;
-      color: var(--ink);
-      margin-bottom: 1.25rem;
-    }
-    .case-story .body-text { color: var(--ink-mid); }
-    .case-story-outcome {
-      display: flex;
-      align-items: baseline;
-      gap: 1rem;
-      margin-top: 1.75rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--bg-alt);
-      border-top-color: rgba(0,0,0,0.08);
-    }
-    .case-story-outcome-num {
-      font-family: var(--serif);
-      font-size: 2.5rem;
-      font-weight: 300;
-      color: var(--ink);
-      line-height: 1;
-    }
-    .case-story-outcome-desc {
-      font-size: 0.875rem;
-      color: var(--ink-mid);
-      line-height: 1.5;
-    }
-
-    /* SECTIONS */
-    .section { padding: 5rem var(--pad); }
-    .section-inner { max-width: var(--max); margin: 0 auto; }
-
-    /* SECTION LABEL */
-    .section-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-      margin-bottom: 2rem;
-    }
-
-    /* OVERVIEW */
-    .overview-grid {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 4rem;
-      align-items: start;
-    }
-    @media (max-width: 700px) { .overview-grid { grid-template-columns: 1fr; gap: 2rem; } }
-    .overview-meta { display: flex; flex-direction: column; gap: 1.75rem; }
-    .meta-block-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-      margin-bottom: 0.4rem;
-    }
-    .meta-block-value {
-      font-size: 0.9375rem;
-      color: var(--ink-mid);
-      line-height: 1.6;
-    }
-    .overview-text {
-      font-family: var(--serif);
-      font-size: clamp(1.15rem, 2.5vw, 1.5rem);
-      font-weight: 300;
-      line-height: 1.6;
-      letter-spacing: -0.01em;
-    }
-    .overview-text p + p { margin-top: 1.25em; }
-
-    /* DIVIDER */
-    .divider { border: none; border-top: 1px solid var(--bg-alt); }
-
-    /* BODY TEXT */
-    .body-text {
-      font-size: 1rem;
-      color: var(--ink-mid);
-      line-height: 1.8;
-      max-width: 62ch;
-    }
-    .body-text p + p { margin-top: 1.1em; }
-
-    /* CHAPTER MARKER */
-    .chapter {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 3rem;
-    }
-    .chapter-num {
-      font-family: var(--serif);
-      font-size: 3.5rem;
-      font-weight: 300;
-      color: var(--bg-alt);
-      line-height: 1;
-    }
-    .chapter-text {}
-    .chapter-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-      margin-bottom: 0.35rem;
-    }
-    .chapter-title {
-      font-family: var(--serif);
-      font-weight: 300;
-      font-size: clamp(1.5rem, 3vw, 2.25rem);
-      letter-spacing: -0.01em;
-      line-height: 1.2;
-    }
-
-    /* SPLIT */
-    .split {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: start;
-    }
-    @media (max-width: 800px) { .split { grid-template-columns: 1fr; gap: 2.5rem; } }
-    .split-media {
-      border-radius: 4px;
-      overflow: hidden;
-      background: var(--bg-alt);
-    }
-    .split-media img, .split-media video {
-      width: 100%; height: auto; display: block;
-    }
-    .split-media.dark { background: #0B0C10; }
-    .split-media video { width: 100%; display: block; }
-
-    /* MOCKUP ROW */
-    .mockup-row {
-      display: flex;
-      gap: 1rem;
-      margin-top: 2.5rem;
-      overflow-x: auto;
-      padding-bottom: 0.5rem;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-    }
-    .mockup-row::-webkit-scrollbar { display: none; }
-    .mockup-row img {
-      flex-shrink: 0;
-      height: 480px;
-      width: auto;
-      border-radius: 3px;
-      display: block;
-      background: var(--bg-alt);
-    }
-
-    /* IMAGE FULL */
-    .img-full {
-      width: 100%; border-radius: 4px; display: block;
-      background: var(--bg-alt);
-    }
-
-    /* VIDEO PAIR */
-    .video-pair {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      margin-top: 2.5rem;
-    }
-    @media (max-width: 700px) { .video-pair { grid-template-columns: 1fr; } }
-    .video-pair video {
-      width: 100%; display: block;
-      border-radius: 4px;
-      background: #0B0C10;
-    }
-
-    /* VIDEO TRIO */
-    .video-trio {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-      margin-top: 2rem;
-    }
-    @media (max-width: 700px) { .video-trio { grid-template-columns: 1fr; } }
-    .video-trio video {
-      width: 100%; display: block;
-      border-radius: 4px;
-      background: #0B0C10;
-    }
-
-    /* INSIGHT CARDS */
-    .insight-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.5rem;
-      margin-top: 2.5rem;
-    }
-    @media (max-width: 700px) { .insight-grid { grid-template-columns: 1fr; } }
-    .insight-card {
-      padding: 1.75rem;
-      background: var(--bg-alt);
-      border-radius: 4px;
-    }
-    .insight-card-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-      margin-bottom: 0.75rem;
-    }
-    .insight-card-text {
-      font-family: var(--serif);
-      font-size: 1.0625rem;
-      font-weight: 300;
-      line-height: 1.6;
-    }
-
-    /* STAT ROW */
-    .stat-row {
-      display: flex;
-      gap: 3rem;
-      flex-wrap: wrap;
-      margin-top: 2.5rem;
-      padding-top: 2.5rem;
-      border-top: 1px solid var(--bg-alt);
-    }
-    .stat { flex: 1; min-width: 120px; }
-    .stat-num {
-      font-family: var(--serif);
-      font-size: clamp(2rem, 4vw, 3rem);
-      font-weight: 300;
-      letter-spacing: -0.02em;
-      line-height: 1;
-      margin-bottom: 0.4rem;
-    }
-    .stat-label {
-      font-size: 0.8125rem;
-      color: var(--ink-mid);
-    }
-
-    /* DARK SECTION */
-    .section-dark {
-      background: #0B0C10;
-      color: #E8E3DA;
-    }
-    .section-dark .section-label { color: rgba(232,227,218,0.3); }
-    .section-dark .body-text { color: rgba(232,227,218,0.6); }
-    .section-dark .chapter-num { color: rgba(232,227,218,0.07); }
-    .section-dark .chapter-label { color: rgba(232,227,218,0.3); }
-    .section-dark .chapter-title { color: #E8E3DA; }
-    .section-dark .stat-label { color: rgba(232,227,218,0.5); }
-    .section-dark .stat-num { color: #E8E3DA; }
-    .section-dark .divider { border-color: rgba(232,227,218,0.08); }
-    .section-dark hr.divider { border-color: rgba(232,227,218,0.08); }
-
-    /* PROJECT NAV */
-    .project-nav {
-      padding: 3rem var(--pad);
-      border-top: 1px solid var(--bg-alt);
-    }
-    .project-nav-inner {
-      max-width: var(--max);
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .project-nav a {
-      font-size: 0.8125rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .project-nav a:hover { color: var(--accent); }
+    .case-story-label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+    .case-story h3 { font-family: var(--serif); font-size: clamp(1.1rem, 2vw, 1.35rem); font-weight: 400; line-height: 1.45; margin-bottom: 1rem; }
+    .case-story p { color: var(--soft); font-size: 17px; }
+    .case-story-outcome { display: flex; align-items: baseline; gap: 1rem; margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+    .case-story-outcome .num { font-family: var(--serif); font-size: 2.5rem; font-weight: 400; color: var(--ink); line-height: 1; }
+    .case-story-outcome .desc { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); line-height: 1.6; }
 
     /* FOOTER */
-    footer {
-      padding: 3rem var(--pad);
-      border-top: 1px solid var(--bg-alt);
-    }
-    .footer-inner {
-      max-width: var(--max);
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-    .footer-name {
-      font-family: var(--serif);
-      font-size: 1rem;
-      font-weight: 300;
-      color: var(--ink-mid);
-    }
-    .footer-links { display: flex; gap: 1.75rem; list-style: none; }
-    .footer-links a {
-      font-size: 0.8125rem;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .footer-links a:hover { color: var(--ink); }
+    footer.next { background: var(--paper-2); border-top: 1px solid var(--line); padding: 54px 0; }
+    .nextrow { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .nextrow .lbl { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--soft); margin-bottom: 6px; }
+    .nextrow .big { font-family: var(--serif); font-size: clamp(28px, 4vw, 42px); font-weight: 500; text-decoration: none; }
+    .nextrow .big:hover { color: var(--accent); }
+    .site-foot { padding: 30px 0; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
 
     /* FADE IN */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
+    .fade-in { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
     .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 880px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .meta { grid-template-columns: 1fr 1fr; gap: 18px; }
+      .shortgrid, .two, .sticky-grid, .feature-lead { grid-template-columns: 1fr; gap: 32px; }
+      .pin { position: static; }
+      .devgrid3 { grid-template-columns: 1fr 1fr; }
+      h1 { font-size: clamp(36px, 10vw, 56px); }
+      .wrap, .wrap-wide { padding: 0 20px; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav id="nav">
-    <a href="index.html" class="nav-logo">Fredrik Påhlman</a>
-    <ul class="nav-links">
-      <li><a href="index.html#work">Work</a></li>
-      <li><a href="index.html#personal">Personal</a></li>
-      <li><a href="writing.html">Writing</a></li>
-      <li><a href="resume.html">Resume</a></li>
-      <li><a href="mailto:fredrikande@gmail.com">Contact</a></li>
-    </ul>
-  </nav>
+<nav>
+  <a class="nav-back" href="index.html">← All work</a>
+  <ul class="nav-links">
+    <li><a href="index.html#work">Work</a></li>
+    <li><a href="index.html#personal">Personal</a></li>
+    <li><a href="writing.html">Writing</a></li>
+    <li><a href="resume.html">Resume</a></li>
+    <li><a href="mailto:fredrikande@gmail.com">Contact</a></li>
+  </ul>
+</nav>
 
-  <!-- HERO -->
-  <header class="hero" id="hero">
-    <video class="hero-video"
-           src="Portfolio Assets/Sleep Cycle/Sequence 01_2.mp4"
-           autoplay muted loop playsinline></video>
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <h1 class="hero-title">Sleep Cycle<br><em>&amp; Activation</em></h1>
-      <div class="hero-right">
-        <span class="hero-tag">Product Design</span>
-        <span class="hero-tag">Discovery</span>
-        <span class="hero-tag">2024 – Present</span>
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <div class="eyebrow">
+        <span class="mono">Sleep Cycle · 2024–25</span>
+        <span class="mono soft">Subscription &amp; Growth</span>
       </div>
-    </div>
-  </header>
-
-  <!-- OVERVIEW -->
-  <section class="section" id="overview">
-    <div class="section-inner">
-      <div class="overview-grid fade-in">
-        <div class="overview-meta">
-          <div>
-            <p class="meta-block-label">Company</p>
-            <p class="meta-block-value">Sleep Cycle · Gothenburg<br>~40 people</p>
-          </div>
-          <div>
-            <p class="meta-block-label">Role</p>
-            <p class="meta-block-value">Senior Product Designer<br>UX &amp; Discovery Lead</p>
-          </div>
-          <div>
-            <p class="meta-block-label">Scope</p>
-            <p class="meta-block-value">Discovery practice<br>Activation &amp; monetisation<br>AI-assisted design generation</p>
-          </div>
-          <div>
-            <p class="meta-block-label">Period</p>
-            <p class="meta-block-value">Oct 2024 – Present</p>
-          </div>
-        </div>
-        <div class="overview-text">
-          <p>Sleep Cycle is a sleep-tracking app used by millions worldwide. I joined as Senior Product Designer in the Activation team, working on converting free users to paid subscribers through better onboarding, paywalls, and feature design.</p>
-          <p>Alongside the design work, I took on the role of UX &amp; Discovery Lead — responsible for building a continuous discovery practice across four product teams from scratch. These two tracks fed each other in ways that changed how I think about both.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <hr class="divider">
-
-  <!-- CHAPTER 1: DISCOVERY -->
-  <section class="section">
-    <div class="section-inner">
-      <div class="chapter fade-in">
-        <div class="chapter-num">01</div>
-        <div class="chapter-text">
-          <p class="chapter-label">Discovery Practice</p>
-          <h2 class="chapter-title">Building continuous discovery<br>from scratch</h2>
-        </div>
-      </div>
-
-      <div class="split fade-in">
-        <div class="body-text">
-          <p>When I joined, there was no structured discovery practice. User research happened sporadically, insights rarely made it into decisions, and each team was operating largely on assumptions.</p>
-          <p>I set up a weekly rhythm: every week, across all four teams, we ran user interviews. Not as a project, not tied to a launch — just a standing cadence. We've now maintained that without interruption for 18 months.</p>
-          <p>The harder part was what to do with everything we were learning. I built a JTBD-based insight system in Notion that made research findable and connectable — so designers and PMs could pull from a growing body of knowledge rather than starting from scratch each time.</p>
-          <p>Over time I brought AI into the synthesis process: using Claude to help identify patterns across interview transcripts, spot contradictions between weeks, and surface connections to existing insights. The goal was keeping the cadence sustainable without drowning in raw data.</p>
-        </div>
-        <div>
-          <div class="split-media">
-            <img src="Portfolio Assets/Sleep Cycle/OST apr 14.JPG"
-                 alt="Open Space session — discovery alignment across teams"
-                 loading="lazy">
-          </div>
-          <div class="stat-row">
-            <div class="stat">
-              <div class="stat-num">18 mo</div>
-              <div class="stat-label">Unbroken weekly cadence</div>
-            </div>
-            <div class="stat">
-              <div class="stat-num">4</div>
-              <div class="stat-label">Product teams</div>
-            </div>
-            <div class="stat">
-              <div class="stat-num">40+</div>
-              <div class="stat-label">People in the company</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="insight-grid fade-in">
-        <div class="insight-card">
-          <p class="insight-card-label">The cadence principle</p>
-          <p class="insight-card-text">Continuous discovery only works if it's not treated as a project. The weekly interviews had to become boring infrastructure — predictable, low-stakes, always on. When that clicks, the quality of decisions changes.</p>
-        </div>
-        <div class="insight-card">
-          <p class="insight-card-label">AI as synthesis partner</p>
-          <p class="insight-card-text">The bottleneck in discovery isn't gathering insight — it's making sense of it fast enough to be useful. AI-assisted synthesis didn't replace judgment, it meant we could keep up with the volume we were generating.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <hr class="divider">
-
-  <!-- CHAPTER 2: ACTIVATION DESIGN -->
-  <section class="section">
-    <div class="section-inner">
-      <div class="chapter fade-in">
-        <div class="chapter-num">02</div>
-        <div class="chapter-text">
-          <p class="chapter-label">Design Craft</p>
-          <h2 class="chapter-title">Activation, paywalls,<br>and feature design</h2>
-        </div>
-      </div>
-
-      <div class="split fade-in">
-        <div class="body-text">
-          <p>As a designer in the Activation team, the brief was conversion — moving users from free to paid in a way that felt earned rather than coerced. That meant rethinking onboarding, paywalls, and the moments where the product's value becomes clear enough to justify paying.</p>
-          <p>A lot of the work was about sequencing: what do users need to experience before a paywall makes sense? What's the right gate to put on which features? When does a soft paywall actually convert better than a hard one?</p>
-          <p>Discovery fed directly into these questions. Running weekly interviews meant we were constantly updating our picture of where users were in their journey, what they found confusing, and what they valued enough to pay for.</p>
-        </div>
-        <div class="split-media dark">
-          <video src="Portfolio Assets/Sleep Cycle/Paywall golden sky.mov"
-                 autoplay muted loop playsinline></video>
-        </div>
-      </div>
-
-      <!-- MOCKUP SCROLL -->
-      <div class="mockup-row fade-in">
-        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture.png"    alt="Sleep Cycle design" loading="lazy">
-        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture 1.png"  alt="Sleep Cycle design" loading="lazy">
-        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture 7.png"  alt="Sleep Cycle design" loading="lazy">
-        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture 14.png" alt="Sleep Cycle design" loading="lazy">
-        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture paywall.png" alt="Sleep Cycle paywall" loading="lazy">
-      </div>
-
-      <!-- VIDEO PAIR: activation flows -->
-      <div class="video-pair fade-in">
-        <video src="Portfolio Assets/Sleep Cycle/Banner to paywall 7 day soft paywall.mov"
-               autoplay muted loop playsinline></video>
-        <video src="Portfolio Assets/Sleep Cycle/Reverse trial intro video.mov"
-               autoplay muted loop playsinline></video>
-      </div>
-
-      <!-- CASE STORY: Onboarding video experiment -->
-      <div class="case-story fade-in">
-        <p class="case-story-label">Discovery → Experiment → Outcome</p>
-        <p class="case-story-title">Users didn't know what Sleep Cycle did for them — so they weren't ready to pay for it.</p>
-        <div class="body-text">
-          <p>In weekly discovery sessions we kept hearing the same thing: users hitting the paywall didn't understand what they'd actually get from a subscription. The onboarding had walked them through setup, but hadn't shown them the product in action. They arrived at the paywall curious but unpersuaded.</p>
-          <p>The hypothesis was simple: if we showed them what the product did before asking them to pay, more would be ready to say yes. We added a short UI reel — a few seconds of the core experience — directly into the onboarding flow, right before the paywall.</p>
-          <p>We ran it as an A/B test. The result was a 6.7% increase in subscriptions.</p>
-        </div>
-        <div class="case-story-outcome">
-          <span class="case-story-outcome-num">+6.7%</span>
-          <span class="case-story-outcome-desc">subscription uplift<br>A/B test · Onboarding UI reel</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <hr class="divider">
-
-  <!-- CHAPTER 3: AI IN DESIGN GENERATION -->
-  <section class="section">
-    <div class="section-inner">
-      <div class="chapter fade-in">
-        <div class="chapter-num">03</div>
-        <div class="chapter-text">
-          <p class="chapter-label">Workflow Experiment</p>
-          <h2 class="chapter-title">Using AI to generate<br>design assets and motion</h2>
-        </div>
-      </div>
-
-      <div class="split fade-in">
-        <div class="body-text">
-          <p>Working in a small design team at a product company meant the pace of execution mattered. I started experimenting with AI-assisted generation not as a replacement for design judgment, but as a way to collapse the gap between concept and testable asset.</p>
-          <p>For campaign and marketing work — onboarding animations, contextual ad creatives, paywall visuals — I explored using AI to generate imagery and motion in a way that matched the Sleep Cycle visual language without requiring a production cycle for each variant.</p>
-          <p>The experiments shifted how I think about the designer's role: less about making every pixel, more about specifying the right language precisely enough that generation produces something worth shipping, or something close enough to iterate quickly from.</p>
-        </div>
-        <div>
-          <div class="split-media dark" style="margin-bottom: 0.75rem;">
-            <video src="Portfolio Assets/Sleep Cycle/Sequence 03_2.mp4"
-                   autoplay muted loop playsinline></video>
-          </div>
-          <div class="split-media" style="background: #0d0f15;">
-            <img src="Portfolio Assets/Sleep Cycle/Assets exploration short.png"
-                 alt="Asset exploration" loading="lazy">
-          </div>
-        </div>
-      </div>
-
-      <!-- FEATURE VIDEOS -->
-      <div class="video-trio fade-in">
-        <video src="Portfolio Assets/Sleep Cycle/feature cards.mov"
-               autoplay muted loop playsinline></video>
-        <video src="Portfolio Assets/Sleep Cycle/apple health kit sync.mov"
-               autoplay muted loop playsinline></video>
-        <video src="Portfolio Assets/Sleep Cycle/back to school 4.mov"
-               autoplay muted loop playsinline></video>
-      </div>
-
-      <!-- CAMPAIGN IMAGERY -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem;" class="fade-in">
-        <img src="Portfolio Assets/Sleep Cycle/AE Campaign 5 toes.png"
-             alt="Campaign imagery" loading="lazy" class="img-full">
-        <img src="Portfolio Assets/Sleep Cycle/paywall starry sky.png"
-             alt="Paywall visual" loading="lazy" class="img-full">
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem;" class="fade-in">
-        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture1.png"  alt="Sleep Cycle screen" loading="lazy" class="img-full">
-        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture2.png"  alt="Sleep Cycle screen" loading="lazy" class="img-full">
-        <img src="Portfolio Assets/Sleep Cycle/mockrocket-capture3.png"  alt="Sleep Cycle screen" loading="lazy" class="img-full">
-      </div>
-    </div>
-  </section>
-
-  <!-- PROJECT NAV -->
-  <div class="project-nav">
-    <div class="project-nav-inner">
-      <a href="project-bubble-studio.html">← Bubble Studio</a>
-      <a href="index.html#work">All work →</a>
+      <h1>Helping Sleep&nbsp;Cycle earn <em>Premium</em> the gentle way</h1>
+      <p class="thesis">Rethinking the trial model, onboarding and paywall so people meet the right offer at the right moment — without the hard sell.</p>
     </div>
   </div>
+  <figure>
+    <img class="hero-img" src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/hero-dream.jpg" alt="A sleeper drifting among floating pillows in a starlit sky">
+  </figure>
+</header>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-inner">
-      <span class="footer-name">Fredrik Påhlman — Design &amp; Product</span>
-      <ul class="footer-links">
-        <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">LinkedIn</a></li>
-        <li><a href="mailto:fredrikande@gmail.com">Email</a></li>
-      </ul>
+<!-- META BAR -->
+<div class="wrap">
+  <div class="meta fade-in">
+    <div><div class="lbl">Role</div><div class="val">Product &amp; Design Lead</div></div>
+    <div><div class="lbl">Team</div><div class="val">PM, 2 engineers, data, marketing</div></div>
+    <div><div class="lbl">Timeline</div><div class="val">~9 months</div></div>
+    <div><div class="lbl">Platform</div><div class="val">iOS · Android</div></div>
+    <div><div class="lbl">My focus</div><div class="val">Strategy, discovery, UX, motion direction</div></div>
+  </div>
+</div>
+
+<!-- IN SHORT -->
+<section class="band-paper">
+  <div class="wrap">
+    <div class="shortgrid fade-in">
+      <div>
+        <div class="kicker">In short</div>
+        <p class="lead-p">We moved Sleep Cycle away from a one-size hard trial toward a flexible model — freemium and reverse-trial paths — backed by continuous discovery and a calmer, brand-led set of paywall moments.</p>
+        <p class="soft-text">Premium stopped feeling like a wall and started feeling like an invitation. The same screens now carry a clearer value story across the whole trial lifecycle.</p>
+      </div>
+      <div>
+        <div class="metrics">
+          <div class="metric">
+            <div class="num">+6.7%</div>
+            <div class="mlbl">Subscription uplift</div>
+            <div class="add">A/B · Onboarding UI reel</div>
+          </div>
+          <div class="metric">
+            <div class="num">—</div>
+            <div class="mlbl">Premium retention</div>
+            <div class="add">+ add your number</div>
+          </div>
+          <div class="metric">
+            <div class="num">—</div>
+            <div class="mlbl">ARPU</div>
+            <div class="add">+ add your number</div>
+          </div>
+          <div class="metric">
+            <div class="num">—</div>
+            <div class="mlbl">Activation</div>
+            <div class="add">+ add your number</div>
+          </div>
+        </div>
+        <div class="draftnote">▢ Add remaining metrics when available.</div>
+      </div>
     </div>
-  </footer>
+  </div>
+</section>
 
-  <script>
-    const nav = document.getElementById('nav');
-    const hero = document.getElementById('hero');
-    function checkNav() {
-      const heroBottom = hero.getBoundingClientRect().bottom;
-      if (heroBottom <= 80) {
-        nav.classList.add('light');
-      } else {
-        nav.classList.remove('light');
-      }
-    }
-    window.addEventListener('scroll', checkNav, { passive: true });
-    checkNav();
+<!-- 01 PROBLEM -->
+<section>
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="kicker">01 — The problem</div>
+      <h2>One trial for everyone left value on the table</h2>
+      <p class="lead-p">Sleep Cycle ran a single opt-out trial: a hard paywall up front, then a premium trial that quietly converted. It worked — but it asked for commitment before people had felt the value, and it gave us little room to learn.</p>
+      <p>We wanted a model that could flex to different users and let us experiment safely. So we started where the questions were — mapping the whole monetisation journey as an opportunity solution tree with the team.</p>
+    </div>
+  </div>
+  <div class="wrap-wide">
+    <figure class="fullfig fade-in">
+      <img src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/ost-board-opt.jpg" alt="Opportunity solution tree mapped on a glass wall with sticky notes" loading="lazy">
+      <figcaption>Discovery — mapping the monetisation journey, opportunities &amp; bets with the squad (OST on glass)</figcaption>
+    </figure>
+  </div>
+</section>
 
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
-      }),
-      { threshold: 0.08 }
-    );
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-  </script>
+<!-- 02 STRATEGY -->
+<section class="band-teal">
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="kicker">02 — The strategy</div>
+      <h2>Three models, one flexible spine</h2>
+      <p class="lead-p">Rather than redesign a screen, we redesigned the <em>shape</em> of the offer — a spine that could run as opt-out today, freemium now, and reverse-trial next.</p>
+    </div>
+  </div>
+  <div class="wrap-wide">
+    <figure class="fullfig fade-in">
+      <img src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/growth-models.png" alt="Diagram of three monetisation models: opt-out trial, freemium, reverse trial" loading="lazy">
+      <figcaption>Current → ongoing experiment → future: opt-out trial, freemium, reverse trial</figcaption>
+    </figure>
+  </div>
+  <div class="wrap">
+    <div class="two fade-in" style="margin-top:30px;">
+      <div>
+        <h3 style="color:#fff;">From wall to doorway</h3>
+        <p>The reverse trial flips the ask: full Premium for 14 days, <em>no card needed</em>, then a graceful downgrade to free. People feel the value first, decide second.</p>
+      </div>
+      <figure>
+        <img class="float-dev" style="max-width:380px;margin:0 auto;" src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/onb-trial-start.png" alt="Try Premium for 14 days, no card needed screen" loading="lazy">
+        <div class="devcap">Reverse-trial entry — no card, auto-downgrade</div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- 03 ONBOARDING (sticky) -->
+<section>
+  <div class="wrap">
+    <div class="sticky-grid fade-in">
+      <div class="pin">
+        <div class="kicker">03 — Onboarding &amp; activation</div>
+        <h2>Earn the trial by understanding the person</h2>
+        <p>Before asking for anything, we ask what better sleep means to <em>them</em> — then frame Premium around that goal. Activation is the real conversion event, so the flow leads with personalisation, not price.</p>
+        <p class="soft-text">Each step is narrated below — goal-setting, the journey framing, and an honest, gentle data-permission prime.</p>
+      </div>
+      <div class="flowcol">
+        <figure>
+          <div class="stepnum">Step 01 — Goals</div>
+          <div class="device"><img src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/onb-goals.png" alt="Help us tailor your journey — goal selection screen" loading="lazy"></div>
+          <div class="devcap">Pick what matters → tailor the whole journey</div>
+        </figure>
+        <figure>
+          <div class="stepnum">Step 02 — Momentum</div>
+          <div class="device"><img src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/onb-journey.png" alt="You're on your journey to better sleep screen" loading="lazy"></div>
+          <div class="devcap">Reinforce progress, not paywalls</div>
+        </figure>
+        <figure>
+          <div class="stepnum">Step 03 — Honest prime</div>
+          <div class="device"><img src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/att-priming.png" alt="Help more people sleep better — data permission priming screen" loading="lazy"></div>
+          <div class="devcap">Permission, framed around the mission</div>
+        </figure>
+      </div>
+    </div>
+
+    <!-- CASE STORY -->
+    <div class="case-story fade-in">
+      <p class="case-story-label">Discovery → Experiment → Outcome</p>
+      <h3>Users didn't know what Sleep Cycle did for them — so they weren't ready to pay for it.</h3>
+      <p>In weekly discovery sessions we kept hearing the same thing: users hitting the paywall didn't understand what they'd get from a subscription. The onboarding had walked them through setup, but hadn't shown them the product in action. They arrived at the paywall curious but unpersuaded.</p>
+      <p>The hypothesis was simple: show them what the product does before asking them to pay. We added a short UI reel — a few seconds of the core experience — directly into the onboarding flow, right before the paywall. We ran it as an A/B test.</p>
+      <div class="case-story-outcome">
+        <span class="num">+6.7%</span>
+        <span class="desc">subscription uplift<br>A/B test · Onboarding UI reel</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MOTION BAND -->
+<section class="band-dark">
+  <div class="wrap">
+    <div class="motion-meta fade-in"><span class="pill">▣ Motion · autoplay · loops</span></div>
+    <div class="fade-in">
+      <div class="kicker">The feel</div>
+      <h2>Premium should feel like a calmer place</h2>
+      <p class="lead-p" style="color:#c7c0b2;">Working with brand &amp; motion, we gave the experience a dreamlike, nighttime quality — so the upgrade reads as an atmosphere, not a transaction.</p>
+    </div>
+  </div>
+  <div class="wrap-wide">
+    <figure class="fullfig fade-in">
+      <div class="motion-wrap">
+        <video src="Portfolio Assets/Sleep Cycle/Sequence 01_2.mp4" poster="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/motion-texture.png" autoplay muted loop playsinline></video>
+      </div>
+      <figcaption>Title / transition sequence — set the nighttime tone across Premium surfaces</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- 04 PAYWALL & LIFECYCLE -->
+<section>
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="kicker">04 — Paywall &amp; trial lifecycle</div>
+      <h2>One value story, told across every moment</h2>
+      <p class="lead-p">The paywall isn't a single screen — it's a sequence that runs from first offer through the trial to the downgrade. Each touch repeats the same promise in the user's language.</p>
+    </div>
+    <div class="feature-lead fade-in" style="margin-top:30px;">
+      <figure>
+        <img class="float-dev" style="max-width:420px;margin:0 auto;filter:drop-shadow(0 24px 40px rgba(0,0,0,.22));" src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/paywall-hero.png" alt="Wake up feeling rested paywall screen" loading="lazy">
+        <div class="devcap">Primary paywall — emotional hook, one clear price</div>
+      </figure>
+      <div>
+        <h3>Lead with the outcome</h3>
+        <p>"Wake up feeling rested" before "299 kr/year." The hero image and headline sell the morning; the price is calm, singular, and reversible.</p>
+        <h3 style="margin-top:24px;">Then show the substance</h3>
+        <p>A scannable feature list backs the promise for people who want detail — richer data, sleep sounds, programs — without burying the decision.</p>
+      </div>
+    </div>
+    <div class="devgrid3 fade-in" style="margin-top:56px;">
+      <figure>
+        <div class="device"><img src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/paywall-features.png" alt="Wake up to a brighter you — premium features list" loading="lazy"></div>
+        <div class="devcap">What's in Premium</div>
+      </figure>
+      <figure>
+        <div class="device"><img src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/trial-halfway.png" alt="You're halfway through your Premium trial screen" loading="lazy"></div>
+        <div class="devcap">Mid-trial — nudge toward value used</div>
+      </figure>
+      <figure>
+        <div class="device"><img src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/trial-ends.png" alt="Your Premium trial ends tomorrow screen" loading="lazy"></div>
+        <div class="devcap">Trial ending — loss framed honestly</div>
+      </figure>
+    </div>
+    <div class="two fade-in" style="margin-top:48px;">
+      <figure>
+        <img class="float-dev" style="max-width:360px;margin:0 auto;filter:drop-shadow(0 24px 40px rgba(0,0,0,.22));" src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/downgrade-free.png" alt="You are now on the free plan screen" loading="lazy">
+        <div class="devcap">Graceful downgrade — door left open</div>
+      </figure>
+      <div>
+        <h3>Even the downgrade is a moment</h3>
+        <p>When the trial ends, "You're now on the free plan" reassures rather than punishes — core tracking stays, and the door back to Premium is always warm. That respect is what makes the next offer land.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 OUTCOME -->
+<section class="band-paper">
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="kicker">05 — Outcome &amp; reflection</div>
+      <h2>A model that can keep learning</h2>
+      <p class="lead-p">The biggest win wasn't a single number — it was turning monetisation into something we could test, in a system the whole team understood and a tone that fit the brand.</p>
+      <p class="soft-text">A 6.7% subscription lift from a single onboarding experiment validated the discovery process as much as it validated the design. The cadence — weekly sessions, fast experiments, real data — is what made it possible.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="next">
+  <div class="wrap">
+    <div class="nextrow">
+      <div>
+        <div class="lbl">Next project</div>
+        <a href="project-carboncloud.html" class="big">CarbonCloud →</a>
+      </div>
+      <a class="nav-back" href="index.html">← All work</a>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="site-foot">
+      <span>Fredrik Påhlman — Design &amp; Product</span>
+      <span><a href="https://linkedin.com/in/fredrikpahlman" style="text-decoration:none;">LinkedIn</a> · <a href="mailto:fredrikande@gmail.com" style="text-decoration:none;">Email</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
 
 </body>
 </html>
