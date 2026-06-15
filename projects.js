@@ -17,34 +17,19 @@
 
 const PROJECTS = [
   {
-    id: "bubble-studio",
-    title: "Bubble Studio Asset Generator",
-    meta: "Personal Project · WebGL · AI-built tool",
-    href: "project-bubble-studio.html",
+    id: "design-tools",
+    title: "Design Tools",
+    meta: "Personal Projects · AI-built parametric generators",
+    href: "project-design-tools.html",
     visible: true,
     featured: false,
     category: "personal",
-    bg: "#000000",
-    bodyBg: "#080808",
+    bg: "#050401",
+    bodyBg: "#0d0b08",
     textColor: "#F0EBE0",
-    mediaSrc: "Portfolio Assets/Bubble Studio/bubble_1024_30fps_1780781789029.webm",
+    mediaSrc: "Portfolio Assets/Hero Generator/hero-pixel-1781557087467.webm",
     mediaType: "video",
     order: 0
-  },
-  {
-    id: "wallpaper-studio",
-    title: "Wallpaper Studio",
-    meta: "Personal Project · Canvas · AI-built tool",
-    href: "project-wallpaper-studio.html",
-    visible: true,
-    featured: false,
-    category: "personal",
-    bg: "#1a1510",
-    bodyBg: "#111008",
-    textColor: "#F0EBE0",
-    mediaSrc: "Portfolio Assets/Wall paper studio/Original inspirtation.PNG",
-    mediaType: "image",
-    order: 1
   },
   {
     id: "sleep-cycle-discovery",

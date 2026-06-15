@@ -260,6 +260,24 @@
       margin-bottom: 2.5rem;
     }
 
+    .live-tools-strip { margin-bottom: 3rem; }
+    .live-tools-row {
+      display: flex; gap: 2px; flex-wrap: wrap;
+    }
+    .live-tool-link {
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      flex: 1; min-width: 180px;
+      padding: 14px 18px;
+      background: var(--bg-alt);
+      border-radius: 4px;
+      text-decoration: none;
+      color: var(--ink);
+      transition: background .2s;
+    }
+    .live-tool-link:hover { background: #e0d8cc; }
+    .live-tool-name { font-size: 0.875rem; font-weight: 500; }
+    .live-tool-arrow { font-size: 1rem; color: var(--ink-mid); }
+
     .craft-sub-label {
       font-family: var(--mono, 'Space Mono', monospace);
       font-size: 0.7rem;
@@ -562,6 +580,25 @@
           });
         })();
       </script>
+
+      <!-- LIVE TOOLS STRIP -->
+      <div class="live-tools-strip fade-in">
+        <p class="craft-sub-label" style="margin-bottom: 0.75rem;">Try the tools</p>
+        <div class="live-tools-row">
+          <a href="https://dazzling-yeot-1dac53.netlify.app/" target="_blank" rel="noopener" class="live-tool-link">
+            <span class="live-tool-name">Bubble Studio</span>
+            <span class="live-tool-arrow">↗</span>
+          </a>
+          <a href="https://astounding-basbousa-8022d9.netlify.app/" target="_blank" rel="noopener" class="live-tool-link">
+            <span class="live-tool-name">Wallpaper Studio</span>
+            <span class="live-tool-arrow">↗</span>
+          </a>
+          <a href="#" class="live-tool-link" style="opacity: 0.4; pointer-events: none;">
+            <span class="live-tool-name">Motion Hero Generator</span>
+            <span class="live-tool-arrow" style="font-size: 0.7rem; letter-spacing: .08em;">soon</span>
+          </a>
+        </div>
+      </div>
 
       <p class="craft-sub-label fade-in">Craft</p>
       <p class="craft-intro fade-in" style="margin-top: -1rem;">Wood carving.</p>

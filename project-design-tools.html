@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Tools — Fredrik Påhlman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f4efe6;
+      --paper-2: #ece5d8;
+      --ink: #211d17;
+      --soft: #6d6457;
+      --line: #ddd4c4;
+      --accent: #bd5a35;
+      --accent-ink: #8f3f22;
+      --dark: #13110d;
+      --teal: #0d2a2e;
+      --serif: 'Newsreader', Georgia, serif;
+      --sans: 'Hanken Grotesk', system-ui, sans-serif;
+      --mono: 'Space Mono', ui-monospace, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--dark); color: #efe9dd; font-family: var(--sans); font-size: 18px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; }
+
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+    .wrap-wide { max-width: 1320px; margin: 0 auto; padding: 0 32px; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 32px;
+      background: color-mix(in srgb, var(--dark) 88%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .nav-back { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--soft); transition: color .2s; }
+    .nav-back:hover { color: var(--accent); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; color: var(--soft); transition: color .2s; }
+    .nav-links a:hover { color: #efe9dd; }
+
+    /* HERO */
+    .hero { position: relative; min-height: 72vh; display: flex; align-items: flex-end; overflow: hidden; background: #050401; }
+    .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+    .hero-copy { position: relative; padding: 80px 0 64px; width: 100%; }
+    .eyebrow { display: inline-flex; gap: 12px; align-items: center; margin-bottom: 20px; }
+    .mono-tag { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+    .mono-soft { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
+    h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(42px, 6.4vw, 84px); line-height: 1.02; letter-spacing: -.015em; color: #f0ebe0; max-width: 14ch; }
+    h1 em { font-style: italic; color: #c8a882; }
+    .thesis { font-size: clamp(17px, 2vw, 21px); color: rgba(240,235,224,0.6); max-width: 38ch; margin: 22px 0 0; line-height: 1.5; }
+
+    /* SECTIONS */
+    section { padding: 80px 0; }
+    .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    h2 { font-family: var(--serif); font-weight: 500; font-size: clamp(30px, 4vw, 50px); line-height: 1.06; letter-spacing: -.01em; margin: 0 0 22px; color: #f0ebe0; }
+    h3 { font-family: var(--serif); font-weight: 500; font-size: 22px; margin: 0 0 10px; color: #f0ebe0; }
+    p { margin: 0 0 18px; max-width: 62ch; color: #b8ae9e; }
+    p.lead { font-size: clamp(18px, 2vw, 21px); color: #d0c8b8; max-width: 50ch; }
+
+    /* BAND OVERRIDES */
+    .band-light { background: var(--paper); color: var(--ink); }
+    .band-light h2, .band-light h3 { color: var(--ink); }
+    .band-light p { color: var(--soft); }
+    .band-light p.lead { color: #332f27; }
+    .band-light .kicker { color: var(--accent); }
+    .band-light figcaption { color: var(--soft); }
+
+    .band-mid { background: #1c1814; }
+
+    /* METHOD INTRO */
+    .method-intro { padding: 56px 0; border-top: 1px solid rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+    .insight {
+      border-left: 3px solid var(--accent);
+      padding: 20px 24px;
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+      border-radius: 0 12px 12px 0;
+      margin: 0;
+    }
+    .insight p { color: #d4c9b8; font-size: 19px; line-height: 1.5; margin: 0; max-width: 44ch; }
+    .band-light .insight p { color: #3a352c; }
+    .band-light .insight { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+
+    /* TOOL DIVIDER */
+    .tool-divider {
+      display: flex; align-items: center; gap: 20px;
+      padding: 0 0 48px;
+    }
+    .tool-number { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,0.2); white-space: nowrap; }
+    .tool-line { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+    .tool-name { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.25); white-space: nowrap; }
+
+    /* STICKY GRID */
+    .sticky-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 64px; align-items: start; }
+    .sticky-grid.flipped { grid-template-columns: 1.1fr 1fr; }
+    .pin { position: sticky; top: 96px; }
+
+    /* MEDIA */
+    figure { margin: 0; }
+    figcaption { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: rgba(255,255,255,0.3); margin-top: 12px; text-transform: uppercase; }
+    .media-frame { border-radius: 16px; overflow: hidden; background: #050401; }
+    .media-frame video, .media-frame img { width: 100%; display: block; }
+    .media-frame.rounded-lg { border-radius: 22px; }
+
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 32px; }
+    .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+    .phone-frame { border-radius: 22px; overflow: hidden; background: #050401; }
+    .phone-frame img { width: 100%; display: block; }
+
+    /* MODE TABS DEMO */
+    .mode-tabs { display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+    .mode-tab {
+      font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+      padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.4); background: transparent; cursor: default;
+    }
+    .mode-tab.active { background: rgba(255,255,255,0.08); color: #efe9dd; border-color: rgba(255,255,255,0.25); }
+
+    /* LIVE TOOL LINK */
+    .tool-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+      text-decoration: none; color: var(--accent);
+      border: 1px solid rgba(189,90,53,0.4); border-radius: 8px; padding: 10px 18px;
+      transition: border-color .2s, color .2s; margin-top: 24px; display: inline-flex;
+    }
+    .tool-link:hover { border-color: var(--accent); }
+    .band-light .tool-link { border-color: rgba(189,90,53,0.35); }
+
+    /* THREE-TOOL SUMMARY */
+    .tool-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin: 48px 0 0; }
+    .tool-card { padding: 32px 28px; background: #1a1612; }
+    .tool-card:first-child { border-radius: 14px 0 0 14px; }
+    .tool-card:last-child { border-radius: 0 14px 14px 0; }
+    .tc-num { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-bottom: 16px; }
+    .tc-title { font-family: var(--serif); font-size: 22px; color: #f0ebe0; margin-bottom: 10px; }
+    .tc-desc { font-size: 14px; color: #7a7268; line-height: 1.5; margin-bottom: 20px; }
+    .tc-link { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+    .tc-link:hover { color: #e07a55; }
+
+    /* FADE IN */
+    .fade-in { opacity: 0; transform: translateY(16px); transition: opacity .55s ease, transform .55s ease; }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 860px) {
+      .sticky-grid, .sticky-grid.flipped, .method-grid { grid-template-columns: 1fr; }
+      .pin { position: static; }
+      .two, .three { grid-template-columns: 1fr; }
+      .tool-cards { grid-template-columns: 1fr; gap: 2px; }
+      .tool-card:first-child { border-radius: 14px 14px 0 0; }
+      .tool-card:last-child { border-radius: 0 0 14px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-back">← Fredrik Påhlman</a>
+    <ul class="nav-links">
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="index.html#personal">Personal</a></li>
+      <li><a href="index.html#about">About</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <video class="hero-video" autoplay muted loop playsinline>
+      <source src="Portfolio Assets/Hero Generator/hero-pixel-1781557087467.webm" type="video/webm">
+    </video>
+    <div class="wrap" style="width: 100%;">
+      <div class="hero-copy">
+        <div class="eyebrow">
+          <span class="mono-tag">Personal Projects</span>
+          <span class="mono-soft">·</span>
+          <span class="mono-soft">2024–2025</span>
+        </div>
+        <h1>Design<br><em>Tools</em></h1>
+        <p class="thesis">Three parametric generators — bubbles, wallpapers, motion heroes — built by asking AI to build the tool, not produce the output.</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- METHOD -->
+  <div class="method-intro">
+    <div class="wrap">
+      <div class="method-grid fade-in">
+        <div>
+          <p class="kicker">The approach</p>
+          <h2 style="font-size: clamp(24px, 3vw, 36px);">Parametric tools instead of prompt iteration</h2>
+          <p>The common thread across all three: instead of generating an output with AI and reprompting until it's right, I describe the visual system and ask Claude to build a tool with sliders. Then I play the tool.</p>
+          <p>This shifts the creative work to where it belongs — with the designer — and removes the bottleneck of prompt negotiation. You explore a much wider design space, and you get exactly where you want to go.</p>
+        </div>
+        <div class="insight">
+          <p>If you can describe the controls of a visual system, you can explore it far more efficiently than iterating prompts. The tool becomes the creative interface.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────
+       TOOL 01 — BUBBLE STUDIO
+  ──────────────────────────────── -->
+  <section id="bubble-studio">
+    <div class="wrap">
+      <div class="tool-divider fade-in">
+        <span class="tool-number">Tool 01</span>
+        <div class="tool-line"></div>
+        <span class="tool-name">Bubble Studio</span>
+      </div>
+
+      <div class="sticky-grid fade-in">
+        <div>
+          <p class="kicker">Asset generator</p>
+          <h2>Generative bubble animations</h2>
+          <p class="lead">The first in the series. I needed a distinctive animated visual system for a design asset — not a stock video, something that felt generated and alive.</p>
+          <p>Rather than prompt Midjourney or RunwayML until something looked right, I asked Claude to build a WebGL renderer with controls for: sphere count, size variance, velocity, attraction forces, colour palette, glow, and bloom.</p>
+          <p>The output is a looping .webm — ready to drop into any hero, cover, or presentation background. Export at 1024×1024 or 2048×2048.</p>
+          <a href="https://dazzling-yeot-1dac53.netlify.app/" target="_blank" rel="noopener" class="tool-link">Try Bubble Studio →</a>
+        </div>
+        <div class="pin">
+          <div class="media-frame">
+            <video autoplay muted loop playsinline>
+              <source src="Portfolio Assets/Bubble Studio/bubble_1024_30fps_1780781789029.webm" type="video/webm">
+            </video>
+          </div>
+          <figcaption>Live export — bubble animation</figcaption>
+        </div>
+      </div>
+
+      <div class="three fade-in" style="margin-top: 48px;">
+        <div class="media-frame">
+          <img src="Portfolio Assets/Bubble Studio/bubble_2048_1780781699977.png" alt="Bubble output 1">
+        </div>
+        <div class="media-frame">
+          <img src="Portfolio Assets/Bubble Studio/bubble_2048_1780781761506.png" alt="Bubble output 2">
+        </div>
+        <div class="media-frame">
+          <img src="Portfolio Assets/Bubble Studio/bubble_2048_1780781843365.png" alt="Bubble output 3">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────
+       TOOL 02 — WALLPAPER STUDIO
+  ──────────────────────────────── -->
+  <section id="wallpaper-studio" class="band-light">
+    <div class="wrap">
+      <div class="tool-divider fade-in" style="border-top: none;">
+        <span class="tool-number" style="color: rgba(0,0,0,0.2);">Tool 02</span>
+        <div class="tool-line" style="background: rgba(0,0,0,0.1);"></div>
+        <span class="tool-name" style="color: rgba(0,0,0,0.2);">Wallpaper Studio</span>
+      </div>
+
+      <div class="sticky-grid flipped fade-in">
+        <div class="pin">
+          <div class="phone-frame" style="max-width: 280px;">
+            <img src="Portfolio Assets/Wall paper studio/IMG_0033.PNG" alt="Wallpaper Studio presets">
+          </div>
+          <figcaption style="color: var(--soft);">Presets — Titanium, Obsidian, Sahara, Slate</figcaption>
+        </div>
+        <div>
+          <p class="kicker">Phone wallpaper generator</p>
+          <h2>Procedural ridge textures</h2>
+          <p class="lead">A refurbished iPhone arrived with a wallpaper from a few years back — wavy, grainy, tactile. I wanted to recreate it and then some.</p>
+          <p>I described the visual system to Claude: ridges, lighting model, grain, curve shapes. Claude built the Canvas renderer and the controls panel. I played the controls until the texture felt right, then kept going.</p>
+          <p>Controls: ridge count, amplitude, center position, tilt, curve shape (cubic / wave / arch), organic warp, edge sharpness, shadow depth, light direction, light elevation. Four named presets. Shuffle. Export at full phone resolution.</p>
+          <a href="https://astounding-basbousa-8022d9.netlify.app/" target="_blank" rel="noopener" class="tool-link">Try Wallpaper Studio →</a>
+        </div>
+      </div>
+
+      <div class="two fade-in" style="margin-top: 48px; align-items: start; gap: 16px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="phone-frame"><img src="Portfolio Assets/Wall paper studio/IMG_0024.PNG" alt="1 ridge"></div>
+          <div class="phone-frame"><img src="Portfolio Assets/Wall paper studio/IMG_0025.PNG" alt="5 ridges"></div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="phone-frame"><img src="Portfolio Assets/Wall paper studio/IMG_0026.PNG" alt="4 ridges"></div>
+          <div class="phone-frame"><img src="Portfolio Assets/Wall paper studio/IMG_0027.PNG" alt="4 ridges offset"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────
+       TOOL 03 — MOTION HERO GENERATOR
+  ──────────────────────────────── -->
+  <section id="hero-generator">
+    <div class="wrap">
+      <div class="tool-divider fade-in">
+        <span class="tool-number">Tool 03</span>
+        <div class="tool-line"></div>
+        <span class="tool-name">Motion Hero Generator</span>
+      </div>
+
+      <div class="sticky-grid fade-in">
+        <div>
+          <p class="kicker">Animated hero backgrounds</p>
+          <h2>Four rendering modes, one export</h2>
+          <p class="lead">Web hero areas are often stuck between stock footage and static gradients. This generates something in between — animated, branded, and fully controlled.</p>
+          <p>The tool has four distinct rendering engines: Liquid (fluid simulation with warp depth), Ink (diffusion-based bleed), Dots (noise-driven halftone grid), and Pixel (quantised noise blocks). Each mode has its own parameter set plus shared post-processing: contrast, grain, colour.</p>
+          <p>Eight colour presets — Ocean, Twilight, Forest, Ember, Aurora, Cosmos, Rose, Slate — plus custom. Shuffle Vibe randomises everything at once. Export as .webm loop or as a self-contained Hero HTML file that embeds directly into any codebase.</p>
+          <a href="#" class="tool-link" id="hero-live-link" style="opacity: 0.5; pointer-events: none;">Coming soon →</a>
+        </div>
+        <div class="pin">
+          <div class="media-frame">
+            <video autoplay muted loop playsinline>
+              <source src="Portfolio Assets/Hero Generator/hero-liquid-1781557107344.webm" type="video/webm">
+            </video>
+          </div>
+          <figcaption>Liquid mode — Twilight preset</figcaption>
+        </div>
+      </div>
+
+      <!-- MODE GRID -->
+      <div class="fade-in" style="margin-top: 56px;">
+        <p style="font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 20px;">Rendering modes</p>
+        <div class="two" style="gap: 16px;">
+          <div>
+            <div class="media-frame">
+              <video autoplay muted loop playsinline>
+                <source src="Portfolio Assets/Hero Generator/hero-pixel-1781557087467.webm" type="video/webm">
+              </video>
+            </div>
+            <figcaption style="margin-top: 10px;">Pixel mode — Custom yellow</figcaption>
+          </div>
+          <div>
+            <div class="media-frame">
+              <video autoplay muted loop playsinline>
+                <source src="Portfolio Assets/Hero Generator/hero-halftone-1781557160640.webm" type="video/webm">
+              </video>
+            </div>
+            <figcaption style="margin-top: 10px;">Dots mode — halftone grid</figcaption>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────
+       SUMMARY / REFLECTION
+  ──────────────────────────────── -->
+  <section class="band-mid">
+    <div class="wrap">
+      <p class="kicker fade-in">The pattern</p>
+      <h2 class="fade-in">Same method, different materials</h2>
+      <p class="lead fade-in">Each tool started from a specific visual itch — an animation I couldn't find, a texture I wanted to recreate, a hero background that didn't exist yet. The method was the same each time: describe the system, build the controls, explore.</p>
+
+      <div class="tool-cards fade-in">
+        <div class="tool-card">
+          <div class="tc-num">01</div>
+          <div class="tc-title">Bubble Studio</div>
+          <div class="tc-desc">WebGL sphere simulation. Looping .webm at 1024 or 2048px. Gravity, attraction, glow, bloom.</div>
+          <a href="https://dazzling-yeot-1dac53.netlify.app/" target="_blank" rel="noopener" class="tc-link">Open tool →</a>
+        </div>
+        <div class="tool-card">
+          <div class="tc-num">02</div>
+          <div class="tc-title">Wallpaper Studio</div>
+          <div class="tc-desc">Canvas ridge renderer. Phone-resolution export. Ridge count, lighting, curve shapes, grain.</div>
+          <a href="https://astounding-basbousa-8022d9.netlify.app/" target="_blank" rel="noopener" class="tc-link">Open tool →</a>
+        </div>
+        <div class="tool-card" id="hero-card">
+          <div class="tc-num">03</div>
+          <div class="tc-title">Motion Hero Generator</div>
+          <div class="tc-desc">Four rendering modes. .webm loop or embedded HTML. Eight presets, custom colour, Shuffle Vibe.</div>
+          <a href="#" class="tc-link" id="hero-card-link" style="opacity: 0.4; pointer-events: none;">Coming soon →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="border-top: 1px solid rgba(255,255,255,0.07); padding: 40px 0;">
+    <div class="wrap" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+      <a href="index.html" class="nav-back">← All work</a>
+      <span style="font-family: var(--mono); font-size: 11px; letter-spacing: .08em; color: rgba(255,255,255,0.2);">Personal projects · 2024–2025</span>
+    </div>
+  </footer>
+
+  <script>
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.06 });
+    document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+  </script>
+
+</body>
+</html>
