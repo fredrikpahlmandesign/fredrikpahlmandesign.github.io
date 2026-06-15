@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wallpaper Studio — Fredrik Påhlman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f4efe6;
+      --paper-2: #ece5d8;
+      --ink: #211d17;
+      --soft: #6d6457;
+      --line: #ddd4c4;
+      --accent: #bd5a35;
+      --accent-ink: #8f3f22;
+      --dark: #13110d;
+      --teal: #0d2a2e;
+      --serif: 'Newsreader', Georgia, serif;
+      --sans: 'Hanken Grotesk', system-ui, sans-serif;
+      --mono: 'Space Mono', ui-monospace, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--dark); color: #efe9dd; font-family: var(--sans); font-size: 18px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; }
+
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+    .wrap-wide { max-width: 1320px; margin: 0 auto; padding: 0 32px; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 32px;
+      background: color-mix(in srgb, var(--dark) 88%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .nav-back {
+      font-family: var(--mono); font-size: 12px; letter-spacing: .12em;
+      text-transform: uppercase; text-decoration: none; color: var(--soft);
+      transition: color .2s;
+    }
+    .nav-back:hover { color: var(--accent); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+      text-transform: uppercase; text-decoration: none; color: var(--soft);
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: #efe9dd; }
+
+    /* HERO */
+    .hero { position: relative; background: var(--dark); overflow: hidden; }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: #0d0b08;
+    }
+    .hero-bg img {
+      width: 100%; height: 100%; object-fit: cover; opacity: 0.35;
+    }
+    .hero-copy { position: relative; padding: 100px 0 72px; }
+    .eyebrow { display: inline-flex; gap: 12px; align-items: center; margin-bottom: 22px; }
+    .eyebrow .mono { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+    .eyebrow .mono.soft { color: rgba(255,255,255,0.35); }
+    h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(40px, 6.4vw, 82px); line-height: 1.02; letter-spacing: -.015em; max-width: 14ch; color: #f0ebe0; }
+    h1 em { font-style: italic; color: #c8a882; }
+    .thesis { font-size: clamp(18px, 2.1vw, 22px); color: rgba(240,235,224,0.65); max-width: 34ch; margin: 24px 0 0; line-height: 1.5; }
+
+    /* META BAR */
+    .meta {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+      padding: 28px 0;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .meta .lbl { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 7px; }
+    .meta .val { font-size: 15px; line-height: 1.35; font-weight: 500; color: #e0dbd2; }
+    .meta .launch-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+      text-transform: uppercase; text-decoration: none;
+      color: var(--accent);
+      border: 1px solid rgba(189,90,53,0.35);
+      border-radius: 6px; padding: 8px 14px; margin-top: 4px;
+      transition: border-color .2s, color .2s;
+    }
+    .meta .launch-link:hover { border-color: var(--accent); color: #e07a55; }
+
+    /* SECTIONS */
+    section { padding: 72px 0; }
+    .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    h2 { font-family: var(--serif); font-weight: 500; font-size: clamp(28px, 3.8vw, 46px); line-height: 1.08; letter-spacing: -.01em; margin: 0 0 22px; max-width: 18ch; color: #f0ebe0; }
+    h3 { font-family: var(--serif); font-weight: 500; font-size: 24px; margin: 0 0 12px; color: #f0ebe0; }
+    p { margin: 0 0 18px; max-width: 64ch; color: #c2b8a8; }
+    p.lead-p { font-size: 21px; color: #d4c9b8; max-width: 52ch; }
+
+    /* LIGHT SECTION */
+    .band-light { background: var(--paper); color: var(--ink); }
+    .band-light h2 { color: var(--ink); }
+    .band-light h3 { color: var(--ink); }
+    .band-light p { color: var(--soft); }
+    .band-light p.lead-p { color: #332f27; }
+    .band-light .kicker { color: var(--accent); }
+    .band-light figcaption { color: var(--soft); }
+    .band-light-alt { background: var(--paper-2); color: var(--ink); }
+    .band-light-alt h2 { color: var(--ink); }
+    .band-light-alt h3 { color: var(--ink); }
+    .band-light-alt p { color: var(--soft); }
+    .band-light-alt .kicker { color: var(--accent); }
+    .band-light-alt figcaption { color: var(--soft); }
+
+    /* FIGURES */
+    figure { margin: 0; }
+    .fullfig { margin: 36px 0 8px; }
+    .fullfig img { width: 100%; border-radius: 14px; }
+    figcaption { font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; color: rgba(255,255,255,0.3); margin-top: 12px; text-transform: uppercase; }
+
+    /* PHONE GRID */
+    .phone-row { display: grid; gap: 16px; align-items: start; margin-top: 40px; }
+    .phone-row.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .phone-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .phone-row.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .phone-card { border-radius: 18px; overflow: hidden; background: #050401; }
+    .phone-card img { width: 100%; display: block; }
+
+    /* PHONE BESIDE TEXT */
+    .split-grid { display: grid; grid-template-columns: 1fr 280px; gap: 56px; align-items: start; }
+    .split-grid.left-wide { grid-template-columns: 1.3fr 260px; }
+    .phone-pin { position: sticky; top: 96px; }
+    .phone-frame { border-radius: 22px; overflow: hidden; background: #050401; }
+    .phone-frame img { width: 100%; display: block; }
+
+    /* TWO-COL TEXT */
+    .two-text { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+
+    /* INSIGHT BLOCK */
+    .insight {
+      border-left: 3px solid var(--accent);
+      padding: 20px 24px;
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+      border-radius: 0 12px 12px 0;
+      margin: 32px 0;
+    }
+    .insight p { color: #d4c9b8; font-size: 19px; line-height: 1.5; margin: 0; max-width: 48ch; }
+    .band-light .insight p, .band-light-alt .insight p { color: #3a352c; }
+    .band-light .insight, .band-light-alt .insight { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+
+    /* STICKY NARRATIVE */
+    .sticky-grid { display: grid; grid-template-columns: .82fr 1.18fr; gap: 56px; align-items: start; }
+    .pin { position: sticky; top: 96px; }
+
+    /* CONTROLS DEMO */
+    .control-row {
+      display: flex; align-items: center; gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .control-label { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; color: rgba(255,255,255,0.45); min-width: 140px; }
+    .control-track { flex: 1; height: 3px; background: rgba(255,255,255,0.12); border-radius: 2px; position: relative; }
+    .control-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+    .control-dot { width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid var(--accent); position: absolute; top: 50%; transform: translateY(-50%); }
+    .control-val { font-family: var(--mono); font-size: 12px; color: rgba(255,255,255,0.3); min-width: 36px; text-align: right; }
+
+    /* LOCKSCREEN */
+    .lockscreen-wrap { max-width: 320px; margin: 40px auto 0; }
+    .lockscreen-frame { border-radius: 44px; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.6); }
+    .lockscreen-frame img { width: 100%; display: block; }
+
+    /* FADE IN */
+    .fade-in { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 800px) {
+      .split-grid, .two-text, .sticky-grid { grid-template-columns: 1fr; }
+      .phone-pin { position: static; }
+      .phone-row.cols-4 { grid-template-columns: repeat(2, 1fr); }
+      .phone-row.cols-3 { grid-template-columns: repeat(2, 1fr); }
+      .meta { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 500px) {
+      .phone-row.cols-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-back">← Fredrik Påhlman</a>
+    <ul class="nav-links">
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="index.html#personal">Personal</a></li>
+      <li><a href="index.html#about">About</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-bg">
+      <img src="Portfolio Assets/Wall paper studio/IMG_0026.PNG" alt="Wallpaper Studio output">
+    </div>
+    <div class="wrap">
+      <div class="hero-copy">
+        <div class="eyebrow">
+          <span class="mono">Personal Project</span>
+          <span class="mono soft">·</span>
+          <span class="mono soft">2025</span>
+        </div>
+        <h1>Wallpaper<br><em>Studio</em></h1>
+        <p class="thesis">A parametric wallpaper generator — built with AI to explore a design aesthetic through controls rather than prompts.</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- META BAR -->
+  <div class="wrap">
+    <div class="meta fade-in">
+      <div>
+        <div class="lbl">Type</div>
+        <div class="val">Personal project<br>Design tool</div>
+      </div>
+      <div>
+        <div class="lbl">Stack</div>
+        <div class="val">HTML · Canvas API<br>Built with Claude</div>
+      </div>
+      <div>
+        <div class="lbl">Year</div>
+        <div class="val">2025</div>
+      </div>
+      <div>
+        <div class="lbl">Live</div>
+        <a href="https://astounding-basbousa-8022d9.netlify.app/" target="_blank" rel="noopener" class="launch-link">
+          Open tool →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORIGIN -->
+  <section class="band-light">
+    <div class="wrap">
+      <div class="split-grid">
+        <div>
+          <p class="kicker">01 — Origin</p>
+          <h2>A wallpaper on a refurbished phone</h2>
+          <p class="lead-p">I bought a refurbished iPhone recently and it came with a wallpaper from a few years back — wavy, grainy, satisfying. Something about the texture stayed with me.</p>
+          <p>I wanted to recreate it. But instead of generating it with AI and reprompting a hundred times, I took a different approach: I asked Claude to build me a tool with sliders.</p>
+          <div class="insight">
+            <p>The insight: if you can describe the controls of a visual system, you can explore a much wider design space than iterating prompts — and get exactly where you want to go.</p>
+          </div>
+          <p>This is increasingly how I think about AI in design workflows. Don't ask for an output. Ask for a machine that produces outputs.</p>
+        </div>
+        <div class="phone-pin">
+          <div class="phone-frame">
+            <img src="Portfolio Assets/Wall paper studio/Original inspirtation.PNG" alt="Original wallpaper inspiration">
+          </div>
+          <figcaption style="color: var(--soft);">The wallpaper that started it</figcaption>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE TOOL -->
+  <section>
+    <div class="wrap">
+      <p class="kicker fade-in">02 — The tool</p>
+      <h2 class="fade-in">Sliders instead of prompts</h2>
+      <p class="lead-p fade-in">I described the visual system — ridges, lighting, grain, curve shapes — and Claude built the UI. The controls became the creative interface.</p>
+
+      <div class="split-grid left-wide fade-in" style="margin-top: 40px;">
+        <div>
+          <p>The tool generates ridge-based wallpapers through a Canvas renderer with full parametric control: ridge count, amplitude, center position, tilt, curve shape (cubic, wave, arch), organic warp, edge sharpness, shadow depth, light direction, and light elevation.</p>
+          <p>Four colour presets — Titanium, Obsidian, Sahara, Slate — plus custom colour controls. A Shuffle button generates random combinations. Export at full resolution.</p>
+
+          <!-- CONTROL DEMO -->
+          <div style="margin-top: 36px; padding: 24px; background: rgba(255,255,255,0.04); border-radius: 14px; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 18px;">Ridge controls</div>
+            <div class="control-row">
+              <span class="control-label">Ridge count</span>
+              <div class="control-track"><div class="control-fill" style="width: 20%;"></div><div class="control-dot" style="left: calc(20% - 6px);"></div></div>
+              <span class="control-val">1</span>
+            </div>
+            <div class="control-row">
+              <span class="control-label">Center position</span>
+              <div class="control-track"><div class="control-fill" style="width: 100%;"></div><div class="control-dot" style="left: calc(100% - 6px);"></div></div>
+              <span class="control-val">1</span>
+            </div>
+            <div class="control-row">
+              <span class="control-label">Amplitude</span>
+              <div class="control-track"><div class="control-fill" style="width: 47%;"></div><div class="control-dot" style="left: calc(47% - 6px);"></div></div>
+              <span class="control-val">0.47</span>
+            </div>
+            <div class="control-row">
+              <span class="control-label">Tilt</span>
+              <div class="control-track"><div class="control-fill" style="width: 43%;"></div><div class="control-dot" style="left: calc(43% - 6px);"></div></div>
+              <span class="control-val">−0.07</span>
+            </div>
+            <div class="control-row" style="border-bottom: none;">
+              <span class="control-label">Edge sharpness</span>
+              <div class="control-track"><div class="control-fill" style="width: 69%;"></div><div class="control-dot" style="left: calc(69% - 6px);"></div></div>
+              <span class="control-val">0.69</span>
+            </div>
+          </div>
+        </div>
+        <div class="phone-pin">
+          <div class="phone-frame">
+            <img src="Portfolio Assets/Wall paper studio/IMG_0024.PNG" alt="Tool UI showing ridge controls">
+          </div>
+          <figcaption>Ridge tab — single wave</figcaption>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPLORATION -->
+  <section class="band-light-alt">
+    <div class="wrap">
+      <p class="kicker fade-in">03 — Exploration</p>
+      <h2 class="fade-in">Unexpected patterns emerged</h2>
+      <p class="lead-p fade-in">Once the tool was running, something interesting happened. Adjusting ridge count didn't just scale the original — it generated genuinely different aesthetics.</p>
+      <p class="fade-in">One ridge: a single soft wave, almost architectural. Four ridges: flowing dunes. Five: something that started to look braided. Each combination of curve shape, center offset, and lighting felt like a new material.</p>
+    </div>
+    <div class="wrap-wide" style="margin-top: 40px;">
+      <div class="phone-row cols-4 fade-in">
+        <div class="phone-card">
+          <img src="Portfolio Assets/Wall paper studio/IMG_0024.PNG" alt="1 ridge">
+          <div style="padding: 10px 14px; background: #f0ebe0;"><span style="font-family: var(--mono); font-size: 11px; color: var(--soft); letter-spacing: .06em; text-transform: uppercase;">1 ridge</span></div>
+        </div>
+        <div class="phone-card">
+          <img src="Portfolio Assets/Wall paper studio/IMG_0026.PNG" alt="4 ridges">
+          <div style="padding: 10px 14px; background: #f0ebe0;"><span style="font-family: var(--mono); font-size: 11px; color: var(--soft); letter-spacing: .06em; text-transform: uppercase;">4 ridges</span></div>
+        </div>
+        <div class="phone-card">
+          <img src="Portfolio Assets/Wall paper studio/IMG_0027.PNG" alt="4 ridges offset">
+          <div style="padding: 10px 14px; background: #f0ebe0;"><span style="font-family: var(--mono); font-size: 11px; color: var(--soft); letter-spacing: .06em; text-transform: uppercase;">4 ridges · offset</span></div>
+        </div>
+        <div class="phone-card">
+          <img src="Portfolio Assets/Wall paper studio/IMG_0025.PNG" alt="5 ridges braided">
+          <div style="padding: 10px 14px; background: #f0ebe0;"><span style="font-family: var(--mono); font-size: 11px; color: var(--soft); letter-spacing: .06em; text-transform: uppercase;">5 ridges</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRESETS -->
+  <section>
+    <div class="wrap">
+      <div class="split-grid fade-in">
+        <div>
+          <p class="kicker">04 — Presets</p>
+          <h2>Titanium, Obsidian, Sahara, Slate</h2>
+          <p class="lead-p">As favourite combinations settled, they became presets — named after the material they resembled most.</p>
+          <p>The Shuffle button randomises all parameters at once, for when you want to break out of what you know looks good. The export crops to full phone resolution.</p>
+          <p>The light controls (direction, elevation, shadow depth) push the ridges from graphic to tactile — small changes in angle change whether the surface reads as matte, specular, or deeply textured.</p>
+        </div>
+        <div class="phone-pin">
+          <div class="phone-frame">
+            <img src="Portfolio Assets/Wall paper studio/IMG_0033.PNG" alt="Presets screen">
+          </div>
+          <figcaption>Presets — Titanium selected</figcaption>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IN USE -->
+  <section class="band-light">
+    <div class="wrap">
+      <p class="kicker fade-in">05 — In use</p>
+      <h2 class="fade-in">On the lock screen</h2>
+      <p class="lead-p fade-in">The whole point was always to end up with something I'd actually put on my phone. The wallpaper I started with is still there — but now next to a few I made myself.</p>
+      <div class="lockscreen-wrap fade-in">
+        <div class="lockscreen-frame">
+          <img src="Portfolio Assets/Wall paper studio/IMG_0042.jpg" alt="Wallpaper on lock screen">
+        </div>
+        <figcaption style="text-align: center; margin-top: 14px; color: var(--soft);">ons 10 juni, 19:37</figcaption>
+      </div>
+    </div>
+  </section>
+
+  <!-- REFLECTION -->
+  <section>
+    <div class="wrap">
+      <p class="kicker fade-in">06 — Reflection</p>
+      <div class="two-text fade-in">
+        <div>
+          <h3>The method</h3>
+          <p>Building a parametric tool instead of prompting directly is increasingly how I approach AI-assisted design. It shifts the creative work to where it belongs — in the designer's hands — and removes the bottleneck of prompt iteration.</p>
+          <p>The tool becomes a creative instrument. You play it, rather than negotiate with it.</p>
+        </div>
+        <div>
+          <h3>What I'd do differently</h3>
+          <p>The colour system is still fairly manual — selecting from four presets plus custom. A future version could derive the colour palette from a reference image, giving you the texture of the tool with the palette of something you already love.</p>
+          <p>This is the same approach I used for <a href="project-bubble-studio.html" style="color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(189,90,53,0.35);">Bubble Studio</a> — the two projects are siblings.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="border-top: 1px solid rgba(255,255,255,0.08); padding: 40px 0; margin-top: 0;">
+    <div class="wrap" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+      <a href="index.html" class="nav-back">← All work</a>
+      <a href="https://astounding-basbousa-8022d9.netlify.app/" target="_blank" rel="noopener" style="font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); text-decoration: none;">Open Wallpaper Studio →</a>
+    </div>
+  </footer>
+
+  <script>
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+  </script>
+
+</body>
+</html>
