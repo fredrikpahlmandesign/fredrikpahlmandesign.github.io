@@ -59,6 +59,20 @@ const PROJECTS = [
     order: 2
   },
   {
+    id: "sleep-cycle-metrics",
+    title: "Moving the Metrics",
+    meta: "Product Design · Conversion · Sleep Cycle",
+    href: "project-sleep-metrics.html",
+    visible: true,
+    featured: false,
+    bg: "#0d2a2e",
+    bodyBg: "#0d2a2e",
+    textColor: "#e7efea",
+    mediaSrc: "Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/growth-models.png",
+    mediaType: "image",
+    order: 3
+  },
+  {
     id: "sleep-cycle",
     title: "Sleep Cycle & Activation",
     meta: "Product Design · App",
