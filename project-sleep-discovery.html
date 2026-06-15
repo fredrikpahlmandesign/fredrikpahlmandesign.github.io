@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Building the Research Practice — Sleep Cycle · Fredrik Påhlman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f4efe6;
+      --paper-2: #ece5d8;
+      --ink: #211d17;
+      --soft: #6d6457;
+      --line: #ddd4c4;
+      --accent: #bd5a35;
+      --accent-ink: #8f3f22;
+      --dark: #13110d;
+      --teal: #0d2a2e;
+      --serif: 'Newsreader', Georgia, serif;
+      --sans: 'Hanken Grotesk', system-ui, sans-serif;
+      --mono: 'Space Mono', ui-monospace, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 18px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; }
+
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+    .wrap-wide { max-width: 1320px; margin: 0 auto; padding: 0 32px; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 32px;
+      background: color-mix(in srgb, var(--paper) 88%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-back {
+      font-family: var(--mono); font-size: 12px; letter-spacing: .12em;
+      text-transform: uppercase; text-decoration: none; color: var(--soft);
+      transition: color .2s;
+    }
+    .nav-back:hover { color: var(--accent); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+      text-transform: uppercase; text-decoration: none; color: var(--soft);
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* HERO */
+    header.hero { position: relative; padding: 0; }
+    .hero-copy { padding: 74px 0 40px; }
+    .eyebrow { display: inline-flex; gap: 12px; align-items: center; margin-bottom: 22px; }
+    .eyebrow .mono { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+    .eyebrow .mono.soft { color: var(--soft); }
+    h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(40px, 6.4vw, 82px); line-height: 1.02; letter-spacing: -.015em; max-width: 14ch; }
+    h1 em { font-style: italic; color: var(--accent); }
+    .thesis { font-size: clamp(19px, 2.1vw, 24px); color: #3a352c; max-width: 30ch; margin: 24px 0 0; line-height: 1.45; }
+    .hero-img { width: 100%; height: min(62vh, 620px); object-fit: cover; object-position: center 55%; }
+
+    /* META BAR */
+    .meta { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; padding: 30px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .meta .lbl { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--soft); margin-bottom: 7px; }
+    .meta .val { font-size: 16px; line-height: 1.35; font-weight: 500; }
+
+    /* SECTIONS */
+    section { padding: 72px 0; }
+    .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    h2 { font-family: var(--serif); font-weight: 500; font-size: clamp(28px, 3.8vw, 46px); line-height: 1.08; letter-spacing: -.01em; margin: 0 0 22px; max-width: 18ch; }
+    h3 { font-family: var(--serif); font-weight: 500; font-size: 24px; margin: 0 0 12px; }
+    p { margin: 0 0 18px; max-width: 64ch; }
+    p.lead-p { font-size: 21px; color: #332f27; max-width: 54ch; }
+    .soft-text { color: var(--soft); }
+
+    /* IN SHORT */
+    .band-paper { background: var(--paper-2); }
+    .shortgrid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: start; }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .metric { border: 1.5px dashed var(--accent); border-radius: 14px; padding: 18px 16px; background: color-mix(in srgb, var(--accent) 5%, transparent); }
+    .metric .num { font-family: var(--serif); font-size: 40px; line-height: 1; color: var(--accent-ink); }
+    .metric .mlbl { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); margin-top: 8px; }
+    .metric .msub { font-family: var(--mono); font-size: 10.5px; color: var(--accent); letter-spacing: .08em; margin-top: 6px; }
+
+    /* FIGURES */
+    figure { margin: 0; }
+    .fullfig { margin: 36px 0 8px; }
+    .fullfig img { width: 100%; border-radius: 14px; }
+    figcaption { font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; color: var(--soft); margin-top: 12px; text-transform: uppercase; }
+    .two-text { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+
+    /* DARK / TEAL BANDS */
+    .band-dark { background: var(--dark); color: #efe9dd; }
+    .band-teal { background: var(--teal); color: #e7efea; }
+    .band-dark h2, .band-teal h2 { color: #fff; }
+    .band-dark h3, .band-teal h3 { color: #fff; }
+    .band-dark .kicker, .band-teal .kicker { color: #e7a07f; }
+    .band-dark p, .band-teal p { color: #c7c0b2; }
+    .band-teal p { color: #b7c9c4; }
+    .band-dark .soft-text, .band-teal .soft-text { color: #8f897c; }
+    .band-dark figcaption, .band-teal figcaption { color: #8f897c; }
+
+    /* DEVICE FRAMES */
+    .device { aspect-ratio: 48/100; overflow: hidden; border-radius: 20px; }
+    .device img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .devcap { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--soft); text-transform: uppercase; margin-top: 12px; text-align: center; }
+
+    /* STICKY NARRATIVE */
+    .sticky-grid { display: grid; grid-template-columns: .82fr 1.18fr; gap: 56px; align-items: start; }
+    .pin { position: sticky; top: 96px; }
+    .stepnum { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; color: var(--accent); margin-bottom: 10px; }
+    .flowcol { display: flex; flex-direction: column; gap: 42px; }
+
+    /* VIDEO BAND */
+    .motion-wrap { position: relative; border-radius: 18px; overflow: hidden; background: #000; }
+    .motion-wrap video { width: 100%; display: block; }
+    .pill { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; border: 1px solid currentColor; border-radius: 30px; padding: 3px 12px; color: #e7a07f; margin-bottom: 16px; }
+
+    /* GAP SECTION — text + portrait video side by side */
+    .gap-grid { display: grid; grid-template-columns: 1fr 340px; gap: 64px; align-items: start; }
+    .gap-text { }
+    .gap-video { position: sticky; top: 96px; }
+    .phone-wrap { border-radius: 28px; overflow: hidden; max-width: 340px; }
+    .phone-wrap video { display: block; width: 100%; }
+
+    /* INSIGHT CALLOUT */
+    .insight {
+      margin-top: 2.5rem;
+      border-left: 3px solid var(--accent);
+      padding: 1.75rem 2rem;
+      background: var(--paper-2);
+      border-radius: 0 8px 8px 0;
+    }
+    .insight-label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+    .insight p { color: var(--soft); font-size: 17px; max-width: 58ch; margin-bottom: 0; }
+
+    /* FOOTER */
+    footer.next { background: var(--paper-2); border-top: 1px solid var(--line); padding: 54px 0; }
+    .nextrow { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .nextrow .lbl { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--soft); margin-bottom: 6px; }
+    .nextrow .big { font-family: var(--serif); font-size: clamp(28px, 4vw, 42px); font-weight: 500; text-decoration: none; }
+    .nextrow .big:hover { color: var(--accent); }
+    .site-foot { padding: 30px 0; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+    .site-foot a { text-decoration: none; color: var(--soft); transition: color .2s; }
+    .site-foot a:hover { color: var(--accent); }
+
+    /* FADE IN */
+    .fade-in { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 880px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .meta { grid-template-columns: 1fr 1fr; gap: 18px; }
+      .shortgrid, .two-text, .sticky-grid, .gap-grid { grid-template-columns: 1fr; gap: 32px; }
+      .pin, .gap-video { position: static; }
+      .phone-wrap { max-width: 280px; margin: 0 auto; }
+      h1 { font-size: clamp(36px, 10vw, 56px); }
+      .wrap, .wrap-wide { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="index.html">← All work</a>
+  <ul class="nav-links">
+    <li><a href="index.html#work">Work</a></li>
+    <li><a href="writing.html">Writing</a></li>
+    <li><a href="resume.html">Resume</a></li>
+    <li><a href="mailto:fredrikande@gmail.com">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <div class="eyebrow">
+        <span class="mono">Sleep Cycle · 2024–25</span>
+        <span class="mono soft">UX &amp; Research Leadership</span>
+      </div>
+      <h1>Building the <em>research</em> practice</h1>
+      <p class="thesis">Embedding continuous discovery into a product team — and learning what it costs to let it lapse.</p>
+    </div>
+  </div>
+  <figure>
+    <img class="hero-img" src="Portfolio Assets/Sleep Cycle/ceo-discovery-session.jpg" alt="CEO Erik and staff designer Andrea in a continuous discovery session">
+  </figure>
+</header>
+
+<!-- META BAR -->
+<div class="wrap">
+  <div class="meta fade-in">
+    <div><div class="lbl">Role</div><div class="val">UX &amp; Discovery Lead</div></div>
+    <div><div class="lbl">Team</div><div class="val">Product team, designers, PM</div></div>
+    <div><div class="lbl">Timeline</div><div class="val">~12 months</div></div>
+    <div><div class="lbl">Scope</div><div class="val">Org-wide</div></div>
+    <div><div class="lbl">My focus</div><div class="val">Research infrastructure, AI-moderated interviews</div></div>
+  </div>
+</div>
+
+<!-- IN SHORT -->
+<section class="band-paper">
+  <div class="wrap">
+    <div class="shortgrid fade-in">
+      <div>
+        <div class="kicker">In short</div>
+        <p class="lead-p">I built and ran a continuous discovery practice at Sleep Cycle — weekly user sessions, embedded into the product team's rhythm. When the sessions paused over summer, a major experiment shipped without user input and came back flat. Resuming the practice — and scaling it with AI-moderated interviews — is what finally diagnosed what went wrong.</p>
+        <p class="soft-text">The practice didn't just produce research. It changed how the team made decisions — and produced the strategic tools, including a customer journey model, that shaped product direction for over a year.</p>
+      </div>
+      <div>
+        <div class="metrics">
+          <div class="metric">
+            <div class="num">160+</div>
+            <div class="mlbl">User interviews run</div>
+            <div class="msub">Over 18 months</div>
+          </div>
+          <div class="metric">
+            <div class="num">200+</div>
+            <div class="mlbl">AI-moderated sessions</div>
+            <div class="msub">Genway &amp; Userology</div>
+          </div>
+          <div class="metric">
+            <div class="num">+6.7%</div>
+            <div class="mlbl">Subscription uplift</div>
+            <div class="msub">Discovery-informed UI reel</div>
+          </div>
+          <div class="metric">
+            <div class="num">1</div>
+            <div class="mlbl">Strategic model launched</div>
+            <div class="msub">Habit loops — org-wide</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 01 — THE CONTEXT -->
+<section>
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="kicker">01 — The context</div>
+      <h2>Sharp instincts, thin evidence</h2>
+      <p class="lead-p">Sleep Cycle was full of smart people with good product intuitions. But decisions were made mostly by feel. Research happened reactively — when something went wrong, or when a major feature needed sign-off.</p>
+      <p>There was no regular contact with real users. No cadence. No way to build institutional knowledge about who our users were and what they needed. Discovery was a project, not a practice.</p>
+      <p>My goal was to change that — to turn research from an occasional deliverable into the connective tissue of how the team worked.</p>
+    </div>
+  </div>
+  <div class="wrap-wide fade-in">
+    <figure class="fullfig">
+      <img src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/ost-board-opt.jpg" alt="Opportunity solution tree on a whiteboard — the team mapping user opportunities">
+      <figcaption>The opportunity solution tree from an early discovery session. Making the team's assumptions visible was step one.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- 02 — BUILDING THE CADENCE (teal band) -->
+<section class="band-teal">
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="kicker">02 — Building the cadence</div>
+      <h2>Wednesday mornings, every week</h2>
+      <p class="lead-p">We settled on weekly sessions — small groups, rotating guests from across the product team, a structured but open conversation with real users.</p>
+    </div>
+    <div class="two-text fade-in" style="margin-top: 2rem;">
+      <div>
+        <h3>Embedded, not separate</h3>
+        <p>The sessions weren't a research phase that ran alongside the team's work. They were part of how the team worked. Designers attended. PMs attended. Over six months, the Wednesday cadence became a standing fixture — a place where the team heard directly from users before committing to solutions.</p>
+      </div>
+      <div>
+        <h3>Building compound knowledge</h3>
+        <p>What makes continuous discovery valuable isn't any single session — it's the accumulation. Patterns across interviews that no one-off study can surface. Contradictions worth paying attention to. A growing sense of who the users actually were, week by week. That compound knowledge is what the team had been missing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 — THE GAP (dark band) -->
+<section class="band-dark">
+  <div class="wrap">
+    <div class="gap-grid fade-in">
+      <div class="gap-text">
+        <div class="pill">▣ Experiment documentation · screen recording</div>
+        <div class="kicker">03 — The gap</div>
+        <h2>Six weeks without sessions</h2>
+        <p class="lead-p">Summer arrived. The Wednesday sessions paused. What started as a short break stretched to over a month. In the background, an experiment was already in flight.</p>
+        <p>The onboarding AI reel — a sequence of AI-generated video screens designed to give users a sensory first impression of the app — had been in preparation for weeks. It felt like a sure thing. We launched it into the A/B test without the user interviews we would normally have run first.</p>
+        <p>The results came back flat. And we had no way to understand why.</p>
+        <div class="insight" style="background: rgba(255,255,255,.06); border-color: #e7a07f;">
+          <div class="insight-label" style="color: #e7a07f;">The lesson</div>
+          <p style="color: #b7c9c4; max-width: 52ch; margin-bottom: 0;">We'd asked users what mattered to them, then built a static journey that ignored the answer. Without running sessions before launch, we had no way to see that coming.</p>
+        </div>
+      </div>
+      <div class="gap-video">
+        <figure>
+          <div class="motion-wrap phone-wrap">
+            <video autoplay muted loop playsinline>
+              <source src="Portfolio Assets/Sleep Cycle/Onboarding AI video.mov" type="video/mp4">
+            </video>
+          </div>
+          <figcaption style="color: #8f897c;">Screen recording of the AI-generated onboarding experiment. Each screen is a looping AI video clip. Didn't win the A/B test.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 — AI INTERVIEWS AS INFRASTRUCTURE -->
+<section>
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="kicker">04 — AI-moderated interviews</div>
+      <h2>Scaling the diagnosis</h2>
+      <p class="lead-p">When the Wednesday sessions resumed, I needed to move fast. The team was frustrated. We'd shipped something we believed in and had no explanation for why it hadn't worked.</p>
+      <p>I turned to AI-moderated interviews — a tool I'd been using throughout the tenure to extend our regular sessions. Genway earlier, Userology by this point. The capability was the same: send a structured usability test to new users, watch the recordings, reach saturation faster than weekly sessions alone could.</p>
+      <p>I used it alongside regular sessions — not instead of them. When we needed to cover other languages, or reach saturation quickly on a particular feature, AI moderation let us move at a different pace. This was the moment it mattered most.</p>
+    </div>
+  </div>
+  <div class="wrap-wide fade-in" style="margin-top: 2rem;">
+    <div class="sticky-grid">
+      <div class="pin">
+        <div class="kicker">The study</div>
+        <h3>16 interviews, two rounds</h3>
+        <p>I designed two sets of usability tests around a Figma prototype of the onboarding flow. Eight participants per round. The goal: watch real users move through the experience and find where it broke.</p>
+        <p class="soft-text">AI moderation let me run both rounds in a week — the kind of pace that weekly sessions over months couldn't match for a targeted diagnostic question.</p>
+      </div>
+      <div class="flowcol">
+        <div>
+          <div class="stepnum">Round 01 — The question</div>
+          <div class="device">
+            <img src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/onb-goals.png" alt="Onboarding goals screen — asking users what they want from the app" loading="lazy">
+          </div>
+          <div class="devcap">The personalisation question — where the mismatch began</div>
+        </div>
+        <div>
+          <div class="stepnum">Round 02 — The configuration</div>
+          <div class="device">
+            <img src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/onb-journey.png" alt="Onboarding journey configuration screen" loading="lazy">
+          </div>
+          <div class="devcap">Feature setup — relevant only when round 01 aligned</div>
+        </div>
+        <div>
+          <div class="stepnum">Finding — The friction</div>
+          <div class="device">
+            <img src="Portfolio Assets/design_handoff_sleep_cycle_case_study/assets/att-priming.png" alt="Attention priming screen" loading="lazy">
+          </div>
+          <div class="devcap">A static journey that felt dismissive when concerns didn't match</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wrap fade-in">
+    <div class="insight">
+      <div class="insight-label">What we found</div>
+      <p>The AI reel only resonated with users whose selected concern mapped to what they were then asked to configure. For everyone else, the experience felt confusing — we'd asked them what mattered, then ignored the answer. The experiment wasn't a bad idea. The assumption underneath it was.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 — WHAT THE PRACTICE PRODUCED (teal band) -->
+<section class="band-teal">
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="kicker">05 — What the practice produced</div>
+      <h2>A model the team could navigate by</h2>
+      <p class="lead-p">The interviews weren't only for debugging. Across dozens of sessions, patterns emerged about how Sleep Cycle users actually moved through their relationship with the app — from curious newcomer to committed long-term user.</p>
+      <p>Those patterns became the Habit Loops model: a customer journey map built on interview evidence, cleaned up and launched internally as a strategic tool. It mapped how users moved from the trial phase through to the behaviours that defined long-term retention — and where they fell off.</p>
+    </div>
+  </div>
+  <div class="wrap-wide fade-in">
+    <figure class="fullfig">
+      <img src="Portfolio Assets/Sleep Cycle/habit-loops-whiteboard.jpg" alt="Whiteboard sketch of the Habit Loops customer journey model — from trialler to maintainer">
+      <figcaption>The original whiteboard sketch. Trialler → Improver → Maintainer — with the core loop, habit-building phase, and long-term retention arc.</figcaption>
+    </figure>
+  </div>
+  <div class="wrap fade-in" style="margin-top: 56px;">
+    <div class="two-text">
+      <div>
+        <h3>From whiteboard to strategy tool</h3>
+        <p>The cleaned-up version of the model — evolved from the sketch and validated against further interviews — was launched internally across the product team. It anchored decisions about onboarding, paywall messaging, and feature prioritisation for over a year.</p>
+      </div>
+      <div>
+        <h3>Discovery informing craft</h3>
+        <p>The next onboarding experiment — this time shaped by what the interviews had revealed about user expectations — achieved +6.7% uplift in subscription conversion in A/B testing. The discovery practice had done its job: not by generating a deck, but by giving the team a clearer picture of what actually mattered to users.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OUTCOME -->
+<section class="band-paper">
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="kicker">Outcome &amp; reflection</div>
+      <h2>The practice was the product</h2>
+      <p class="lead-p">The most important thing the discovery practice produced wasn't any single insight or experiment result. It was a team that knew how to ask better questions before committing to solutions.</p>
+      <p>The summer gap was instructive in a way no internal presentation could have been. We felt the difference. Launching the onboarding reel without user input — and watching it fail without being able to explain why — made the value of the practice concrete in a way that metrics alone don't.</p>
+      <p class="soft-text">AI-moderated interviews gave us a new capability: the ability to ask focused, urgent questions at pace when the weekly cadence wasn't enough. Used alongside regular sessions, not instead of them, that combination changed what we could learn and how fast we could learn it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="next">
+  <div class="wrap">
+    <div class="nextrow fade-in">
+      <div>
+        <div class="lbl">Next project</div>
+        <a class="big" href="project-sleep-ai.html">AI in Design Practice →</a>
+      </div>
+      <a class="nav-back" href="index.html">← All work</a>
+    </div>
+    <div class="site-foot">
+      <span>Fredrik Påhlman — Design &amp; Product</span>
+      <span>
+        <a href="https://linkedin.com/in/fredrikpahlman" target="_blank">LinkedIn</a>
+        &nbsp;·&nbsp;
+        <a href="https://read.cv/fredrik" target="_blank">Read.cv</a>
+        &nbsp;·&nbsp;
+        <a href="mailto:fredrikande@gmail.com">Email</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.08 }
+  );
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

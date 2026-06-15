@@ -31,11 +31,25 @@ const PROJECTS = [
     order: 0
   },
   {
+    id: "sleep-cycle-discovery",
+    title: "Building the Research Practice",
+    meta: "UX & Research Lead · Sleep Cycle",
+    href: "project-sleep-discovery.html",
+    visible: true,
+    featured: false,
+    bg: "#0d2a2e",
+    bodyBg: "#0d2a2e",
+    textColor: "#e7efea",
+    mediaSrc: "Portfolio Assets/Sleep Cycle/ceo-discovery-session.jpg",
+    mediaType: "image",
+    order: 1
+  },
+  {
     id: "sleep-cycle",
     title: "Sleep Cycle & Activation",
     meta: "Product Design · App",
     href: "project-sleep.html",
-    visible: true,
+    visible: false,
     featured: false,
     bg: "#0B0C10",
     bodyBg: "#0B0C10",
