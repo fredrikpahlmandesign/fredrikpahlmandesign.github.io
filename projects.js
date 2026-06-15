@@ -45,6 +45,20 @@ const PROJECTS = [
     order: 1
   },
   {
+    id: "sleep-cycle-ai",
+    title: "AI in Design Practice",
+    meta: "Product Design · AI · Sleep Cycle",
+    href: "project-sleep-ai.html",
+    visible: true,
+    featured: false,
+    bg: "#13110d",
+    bodyBg: "#13110d",
+    textColor: "#F0EBE0",
+    mediaSrc: "Portfolio Assets/Sleep Cycle/Sequence 01_2.mp4",
+    mediaType: "video",
+    order: 2
+  },
+  {
     id: "sleep-cycle",
     title: "Sleep Cycle & Activation",
     meta: "Product Design · App",

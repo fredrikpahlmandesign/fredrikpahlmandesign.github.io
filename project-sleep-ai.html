@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI in Design Practice — Sleep Cycle · Fredrik Påhlman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f4efe6;
+      --paper-2: #ece5d8;
+      --ink: #211d17;
+      --soft: #6d6457;
+      --line: #ddd4c4;
+      --accent: #bd5a35;
+      --accent-ink: #8f3f22;
+      --dark: #13110d;
+      --teal: #0d2a2e;
+      --serif: 'Newsreader', Georgia, serif;
+      --sans: 'Hanken Grotesk', system-ui, sans-serif;
+      --mono: 'Space Mono', ui-monospace, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 18px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; }
+
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+    .wrap-wide { max-width: 1320px; margin: 0 auto; padding: 0 32px; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 32px;
+      background: color-mix(in srgb, var(--paper) 88%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-back { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--soft); transition: color .2s; }
+    .nav-back:hover { color: var(--accent); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; color: var(--soft); transition: color .2s; }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* HERO */
+    header.hero { position: relative; padding: 0; }
+    .hero-copy { padding: 74px 0 40px; }
+    .eyebrow { display: inline-flex; gap: 12px; align-items: center; margin-bottom: 22px; }
+    .eyebrow .mono { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+    .eyebrow .mono.soft { color: var(--soft); }
+    h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(40px, 6.4vw, 82px); line-height: 1.02; letter-spacing: -.015em; max-width: 14ch; }
+    h1 em { font-style: italic; color: var(--accent); }
+    .thesis { font-size: clamp(19px, 2.1vw, 24px); color: #3a352c; max-width: 30ch; margin: 24px 0 0; line-height: 1.45; }
+    .hero-img { width: 100%; height: min(62vh, 620px); object-fit: cover; object-position: center 40%; }
+
+    /* META BAR */
+    .meta { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; padding: 30px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .meta .lbl { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--soft); margin-bottom: 7px; }
+    .meta .val { font-size: 16px; line-height: 1.35; font-weight: 500; }
+
+    /* SECTIONS */
+    section { padding: 72px 0; }
+    .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    h2 { font-family: var(--serif); font-weight: 500; font-size: clamp(28px, 3.8vw, 46px); line-height: 1.08; letter-spacing: -.01em; margin: 0 0 22px; max-width: 18ch; }
+    h3 { font-family: var(--serif); font-weight: 500; font-size: 24px; margin: 0 0 12px; }
+    p { margin: 0 0 18px; max-width: 64ch; }
+    p.lead-p { font-size: 21px; color: #332f27; max-width: 54ch; }
+    .soft-text { color: var(--soft); }
+
+    /* IN SHORT */
+    .band-paper { background: var(--paper-2); }
+    .shortgrid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: start; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    .tag { font-family: var(--mono); font-size: 11px; letter-spacing: .10em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 30px; padding: 5px 14px; color: var(--soft); }
+
+    /* FIGURES */
+    figure { margin: 0; }
+    .fullfig { margin: 36px 0 8px; }
+    .fullfig img { width: 100%; border-radius: 14px; }
+    figcaption { font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; color: var(--soft); margin-top: 12px; text-transform: uppercase; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+    .two-text { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+    .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
+
+    /* IMAGE CARDS */
+    .imgcard img { border-radius: 14px; width: 100%; }
+    .imgcard-tall img { border-radius: 14px; width: 100%; aspect-ratio: 9/16; object-fit: cover; }
+    .imgcard-wide img { border-radius: 14px; width: 100%; aspect-ratio: 3/2; object-fit: cover; }
+
+    /* DARK / TEAL BANDS */
+    .band-dark { background: var(--dark); color: #efe9dd; }
+    .band-teal { background: var(--teal); color: #e7efea; }
+    .band-dark h2, .band-teal h2 { color: #fff; }
+    .band-dark h3, .band-teal h3 { color: #fff; }
+    .band-dark .kicker, .band-teal .kicker { color: #e7a07f; }
+    .band-dark p, .band-teal p { color: #c7c0b2; }
+    .band-teal p { color: #b7c9c4; }
+    .band-dark .soft-text, .band-teal .soft-text { color: #8f897c; }
+    .band-dark figcaption, .band-teal figcaption { color: #8f897c; }
+    .band-dark .tag { border-color: rgba(255,255,255,.15); color: #8f897c; }
+
+    /* VIDEO */
+    .motion-wrap { position: relative; border-radius: 18px; overflow: hidden; background: #000; }
+    .motion-wrap video { width: 100%; display: block; }
+    .motion-wrap-sm { position: relative; border-radius: 14px; overflow: hidden; background: #000; }
+    .motion-wrap-sm video { width: 100%; display: block; }
+    .pill { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; border: 1px solid currentColor; border-radius: 30px; padding: 3px 12px; color: #e7a07f; margin-bottom: 16px; }
+
+    /* CAMPAIGN GRID — wide image + portrait video side by side */
+    .campaign-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; margin-top: 40px; }
+
+    /* INSIGHT CALLOUT */
+    .insight { margin-top: 2.5rem; border-left: 3px solid var(--accent); padding: 1.75rem 2rem; background: var(--paper-2); border-radius: 0 8px 8px 0; }
+    .insight-label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+    .insight p { color: var(--soft); font-size: 17px; max-width: 58ch; margin-bottom: 0; }
+
+    /* FOOTER */
+    footer.next { background: var(--paper-2); border-top: 1px solid var(--line); padding: 54px 0; }
+    .nextrow { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .nextrow .lbl { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--soft); margin-bottom: 6px; }
+    .nextrow .big { font-family: var(--serif); font-size: clamp(28px, 4vw, 42px); font-weight: 500; text-decoration: none; }
+    .nextrow .big:hover { color: var(--accent); }
+    .site-foot { padding: 30px 0; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+    .site-foot a { text-decoration: none; color: var(--soft); transition: color .2s; }
+    .site-foot a:hover { color: var(--accent); }
+
+    /* FADE IN */
+    .fade-in { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 880px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .meta { grid-template-columns: 1fr 1fr; gap: 18px; }
+      .shortgrid, .two, .two-text, .campaign-grid { grid-template-columns: 1fr; gap: 28px; }
+      .three { grid-template-columns: 1fr 1fr; }
+      h1 { font-size: clamp(36px, 10vw, 56px); }
+      .wrap, .wrap-wide { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="index.html">← All work</a>
+  <ul class="nav-links">
+    <li><a href="index.html#work">Work</a></li>
+    <li><a href="writing.html">Writing</a></li>
+    <li><a href="resume.html">Resume</a></li>
+    <li><a href="mailto:fredrikande@gmail.com">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <div class="eyebrow">
+        <span class="mono">Sleep Cycle · 2024–25</span>
+        <span class="mono soft">AI in Design Practice</span>
+      </div>
+      <h1>Using <em>AI</em> across every layer of the work</h1>
+      <p class="thesis">From brand imagery to motion to copy — how AI expanded what a small design team could make.</p>
+    </div>
+  </div>
+  <figure>
+    <img class="hero-img" src="Portfolio Assets/Sleep Cycle/pillow 4.png" alt="AI-generated dreamlike image of a floating pillow — created with Midjourney for Sleep Cycle">
+  </figure>
+</header>
+
+<!-- META BAR -->
+<div class="wrap">
+  <div class="meta fade-in">
+    <div><div class="lbl">Role</div><div class="val">Product Designer</div></div>
+    <div><div class="lbl">Team</div><div class="val">Design, marketing</div></div>
+    <div><div class="lbl">Timeline</div><div class="val">2024–25</div></div>
+    <div><div class="lbl">Scope</div><div class="val">Brand, product, campaigns</div></div>
+    <div><div class="lbl">My focus</div><div class="val">AI tooling, motion direction, copy systems</div></div>
+  </div>
+</div>
+
+<!-- IN SHORT -->
+<section class="band-paper">
+  <div class="wrap">
+    <div class="shortgrid fade-in">
+      <div>
+        <div class="kicker">In short</div>
+        <p class="lead-p">AI became a working part of the toolkit at every level — not as a shortcut, but as a way to reach visual and written territory that a lean team couldn't have accessed otherwise.</p>
+        <p class="soft-text">Midjourney produced brand stills and motion assets for paywalls. AI video explored onboarding. A Claude model trained on Sleep Cycle's tone shaped copy at scale. And AI prototyping made it possible to simulate experiences that Figma simply couldn't express.</p>
+      </div>
+      <div>
+        <div class="kicker" style="margin-bottom: 16px;">Across the work</div>
+        <div class="tag-list">
+          <span class="tag">Midjourney stills</span>
+          <span class="tag">AI motion</span>
+          <span class="tag">Video campaigns</span>
+          <span class="tag">Copy model</span>
+          <span class="tag">AI prototyping</span>
+          <span class="tag">Onboarding experiments</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 01 — MIDJOURNEY STILLS -->
+<section>
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="kicker">01 — Midjourney as art direction</div>
+      <h2>Brand visuals made in a prompt</h2>
+      <p class="lead-p">Sleep Cycle needed a visual language for its paywall moments — something warm, dreamlike, aspirational. Commissioning photography at that quality and volume wasn't feasible. Midjourney was.</p>
+      <p>The images weren't used as-is. They went through art direction rounds — prompts refined across many iterations to hit a specific tone: not generic stock, not sterile digital, but something that felt like a waking dream. The bed and window image became a paywall background. The starry sky anchored a soft paywall rollout.</p>
+    </div>
+  </div>
+  <div class="wrap-wide fade-in">
+    <div class="two" style="margin-top: 36px; align-items: stretch;">
+      <figure class="imgcard">
+        <img src="Portfolio Assets/Sleep Cycle/paywall image bed and window.png" alt="Midjourney-generated bedroom with warm morning light — used as paywall background" loading="lazy">
+        <figcaption>Paywall background — bed &amp; window. Midjourney.</figcaption>
+      </figure>
+      <figure class="imgcard-tall">
+        <img src="Portfolio Assets/Sleep Cycle/paywall starry sky.png" alt="Midjourney-generated starry night sky — used in soft paywall" loading="lazy">
+        <figcaption>Soft paywall visual — starry sky. Midjourney.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- 02 — MOTION (dark band) -->
+<section class="band-dark">
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="pill">▣ Motion · autoplay · loops</div>
+      <div class="kicker">02 — AI motion</div>
+      <h2>Slow, ambient, alive</h2>
+      <p class="lead-p">The Midjourney sequences were the most distinctive asset in the paywall — looping AI-generated video clips with a quality no motion designer could have produced at this pace or cost.</p>
+      <p>The brief was restraint: nothing that distracts, everything that creates mood. Each sequence was chosen for its almost imperceptible movement — a sense that something is gently breathing. The effect on paywall screens was a premium feel that static imagery couldn't match.</p>
+    </div>
+  </div>
+  <div class="wrap-wide fade-in">
+    <div class="two" style="margin-top: 36px; gap: 20px;">
+      <figure>
+        <div class="motion-wrap">
+          <video autoplay muted loop playsinline>
+            <source src="Portfolio Assets/Sleep Cycle/Sequence 01_2.mp4" type="video/mp4">
+          </video>
+        </div>
+        <figcaption style="color: #8f897c;">Sequence 01 — paywall ambient loop. Midjourney.</figcaption>
+      </figure>
+      <figure>
+        <div class="motion-wrap">
+          <video autoplay muted loop playsinline>
+            <source src="Portfolio Assets/Sleep Cycle/Sequence 03_2.mp4" type="video/mp4">
+          </video>
+        </div>
+        <figcaption style="color: #8f897c;">Sequence 03 — paywall ambient loop. Midjourney.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <div class="wrap-wide fade-in" style="margin-top: 20px;">
+    <figure>
+      <div class="motion-wrap">
+        <video autoplay muted loop playsinline>
+          <source src="Portfolio Assets/Sleep Cycle/Paywall golden sky.mov" type="video/mp4">
+        </video>
+      </div>
+      <figcaption style="color: #8f897c;">Golden sky — paywall full-bleed loop. Midjourney.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- 03 — BACK TO SCHOOL CAMPAIGN (teal band) -->
+<section class="band-teal">
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="kicker">03 — Back to school campaign</div>
+      <h2>First video campaign. It worked.</h2>
+      <p class="lead-p">The back-to-school campaign was Sleep Cycle's first attempt at video advertising. The assets were AI-generated — Midjourney imagery animated into a campaign format.</p>
+      <p>We didn't know if video would convert better than static. It did. The campaign performed well and shifted how the team thought about video as a channel going forward.</p>
+    </div>
+  </div>
+  <div class="wrap-wide fade-in">
+    <div class="campaign-grid">
+      <figure class="imgcard-tall">
+        <img src="Portfolio Assets/Sleep Cycle/AE Campaign 5 toes.png" alt="Back to school campaign — Midjourney-generated visual of toes in grass" loading="lazy">
+        <figcaption style="color: #8f897c;">Campaign still — toes in grass. Midjourney.</figcaption>
+      </figure>
+      <figure>
+        <div class="motion-wrap-sm">
+          <video autoplay muted loop playsinline>
+            <source src="Portfolio Assets/Sleep Cycle/back to school 4.mov" type="video/mp4">
+          </video>
+        </div>
+        <figcaption style="color: #8f897c;">Back to school campaign video. Midjourney.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- 04 — COPY MODEL -->
+<section>
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="kicker">04 — AI copy model</div>
+      <h2>Training Claude on Sleep Cycle's voice</h2>
+      <p class="lead-p">Sleep Cycle had a distinct tone — calm, considered, never clinical. Maintaining it across a growing surface area of paywall states, notifications, and onboarding copy was a constant editorial challenge.</p>
+      <p>I trained a Claude model on Sleep Cycle's existing copy guidelines and writing guides — a corpus of approved copy and editorial principles. The result was a model that could generate on-brand first drafts at scale: fast enough to explore many directions, close enough in tone to be a useful starting point rather than something to fight against.</p>
+      <p class="soft-text">This wasn't about replacing copy decisions. It was about making the first draft less of a blank page — and freeing up editorial attention for the harder calls about what to actually say, not how to say it.</p>
+      <div class="insight">
+        <div class="insight-label">The constraint</div>
+        <p>Copy at scale always drifts. Every new screen written in isolation pulls slightly away from the centre of the brand's voice. A trained model doesn't drift — it holds the established tone as a baseline, which is often more useful than a blank model with a long brief.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 — AI PROTOTYPING (paper-2 band) -->
+<section class="band-paper">
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="kicker">05 — AI for complex prototyping</div>
+      <h2>Simulating what Figma can't express</h2>
+      <p class="lead-p">Some experiences are too dynamic or conversational to prototype meaningfully in Figma. A screen-by-screen flow can't capture how an AI-moderated interaction actually feels — the variability, the pacing, the sense of being in dialogue.</p>
+      <p>I used AI to prototype these flows: generating representative conversation branches, simulating how a system might respond to different user inputs, and creating enough fidelity to test with users without building the real thing. This was particularly relevant for exploring conversational onboarding concepts — where the question-and-answer structure is the experience, not a set of screens.</p>
+      <p class="soft-text">The output wasn't a polished prototype. It was a testable sketch — enough to get genuine reactions from users, which is what the research needed.</p>
+    </div>
+    <div class="two-text fade-in" style="margin-top: 2.5rem;">
+      <div>
+        <h3>Where it applied</h3>
+        <p>Conversational onboarding flows where branching logic exceeded what Figma's prototyping could handle. Exploring how a product might respond to different sleep concerns with personalised follow-up — not just route to a different screen, but generate a different kind of reply.</p>
+      </div>
+      <div>
+        <h3>What it unlocked</h3>
+        <p>Faster signal on whether a conversational model was worth building. Rather than commissioning engineering time to build a prototype, we could get user reactions to a simulation, decide if the concept had legs, and then spec properly. The cost of being wrong dropped significantly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OUTCOME -->
+<section>
+  <div class="wrap">
+    <div class="fade-in">
+      <div class="kicker">Reflection</div>
+      <h2>AI as a multiplier, not a replacement</h2>
+      <p class="lead-p">The consistent pattern across every AI application was the same: AI expanded the range of what was possible with the resources available, and creative direction determined whether the result was any good.</p>
+      <p>Midjourney images only worked because someone decided which prompts to pursue, which iterations had the right tone, and how to integrate them into a visual system. The copy model only saved time because there was an editorial standard for it to be trained against. The prototypes only generated useful research because they were used in well-designed sessions with real users.</p>
+      <p class="soft-text">The tools lowered the cost of exploring. They didn't lower the bar for what the exploration needed to be.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="next">
+  <div class="wrap">
+    <div class="nextrow fade-in">
+      <div>
+        <div class="lbl">Next project</div>
+        <a class="big" href="project-sleep-metrics.html">Moving the Metrics →</a>
+      </div>
+      <a class="nav-back" href="index.html">← All work</a>
+    </div>
+    <div class="site-foot">
+      <span>Fredrik Påhlman — Design &amp; Product</span>
+      <span>
+        <a href="https://linkedin.com/in/fredrikpahlman" target="_blank">LinkedIn</a>
+        &nbsp;·&nbsp;
+        <a href="https://read.cv/fredrik" target="_blank">Read.cv</a>
+        &nbsp;·&nbsp;
+        <a href="mailto:fredrikande@gmail.com">Email</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.08 }
+  );
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
