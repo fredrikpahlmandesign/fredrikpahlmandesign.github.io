@@ -130,6 +130,20 @@ const PROJECTS = [
     order: 4
   },
   {
+    id: "leadership",
+    title: "Leading inUse's Design Practice",
+    meta: "Chief Design Officer · Head of Directors",
+    href: "project-leadership.html",
+    visible: true,
+    featured: false,
+    bg: "#15131F",
+    bodyBg: "#15131F",
+    textColor: "#F2EDE0",
+    mediaSrc: "Portfolio Assets/Speaker/web/IMG_6709.jpg",
+    mediaType: "image",
+    order: 5
+  },
+  {
     id: "placeholder",
     title: "Project Title",
     meta: "Coming soon",

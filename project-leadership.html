@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leadership — Fredrik Påhlman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0d13;
+      --bg-alt: #161b26;
+      --ink: #eef1f6;
+      --ink-mid: #8b94a3;
+      --ink-light: rgba(255,255,255,0.35);
+      --accent: #C8562A;
+      --gold: #C9A24B;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+      --max: 1200px;
+      --pad: clamp(1.5rem, 5vw, 4rem);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem var(--pad);
+      background: rgba(21, 19, 31, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.4s, border-color 0.4s;
+    }
+    nav.light {
+      background: var(--bg);
+      border-color: var(--bg-alt);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 9px;
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1rem;
+      color: #F2EDE0;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    nav.light .nav-logo { color: var(--ink); }
+    .nav-badge {
+      width: 22px; height: 22px; border-radius: 6px;
+      background: var(--accent); color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700; font-size: 0.68rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-wordmark { font-family: 'Schibsted Grotesk', sans-serif; font-weight: 600; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(242,237,224,0.55);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    nav.light .nav-links a { color: var(--ink-mid); }
+    .nav-links a:hover { color: #F2EDE0; }
+    nav.light .nav-links a:hover { color: var(--ink); }
+    .nav-contact { border: 1px solid currentColor; border-radius: 100px; padding: 5px 12px; }
+
+    /* HERO */
+    .hero {
+      background: #15131F;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: var(--pad);
+      padding-top: 7rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(201,162,75,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,162,75,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 30%; right: 10%;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(201,162,75,0.14) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      max-width: var(--max);
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(2.5rem, 7vw, 5.5rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: #F2EDE0;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: rgba(242,237,224,0.4);
+    }
+    .hero-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: flex-end;
+      padding-bottom: 0.2rem;
+    }
+    .hero-tag {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(242,237,224,0.4);
+      border: 1px solid rgba(242,237,224,0.12);
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 3rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(242,237,224,0.08);
+      flex-wrap: wrap;
+    }
+    .hero-stat-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(201,162,75,0.85);
+      margin-bottom: 0.3rem;
+    }
+    .hero-stat-value {
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      font-weight: 300;
+      color: rgba(242,237,224,0.7);
+    }
+
+    /* CONTENT SECTIONS */
+    .section { padding: 5rem var(--pad); }
+    .section-inner { max-width: var(--max); margin: 0 auto; }
+    .divider { border: none; border-top: 1px solid var(--bg-alt); margin: 0; }
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 2.5rem;
+    }
+
+    /* OVERVIEW */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .overview-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .overview-meta { display: flex; flex-direction: column; gap: 1.75rem; }
+    .meta-block-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.4rem;
+    }
+    .meta-block-value { font-size: 0.9375rem; color: var(--ink-mid); line-height: 1.6; }
+    .overview-text {
+      font-family: var(--serif);
+      font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+      font-weight: 300;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+    .overview-text p + p { margin-top: 1.25em; }
+
+    /* BODY TEXT */
+    .body-text { font-size: 1rem; color: var(--ink-mid); line-height: 1.8; max-width: 66ch; }
+    .body-text p + p { margin-top: 1.1em; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      border-left: 2px solid var(--gold);
+      padding-left: 1.5rem;
+      margin: 3rem 0;
+      max-width: 54ch;
+    }
+
+    /* TWO-COL */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+    @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+    /* TEAM IMAGE */
+    .full-image { margin-top: 2.5rem; }
+    .full-image img { width: 100%; border-radius: 4px; display: block; background: var(--bg-alt); }
+    .image-caption {
+      font-size: 0.8125rem;
+      color: var(--ink-light);
+      margin-top: 0.85rem;
+    }
+    .side-image img { width: 100%; border-radius: 4px; display: block; background: var(--bg-alt); }
+
+    /* PHOTO GRID */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.85rem;
+      margin-top: 2.5rem;
+    }
+    @media (max-width: 800px) { .photo-grid { grid-template-columns: repeat(2, 1fr); } }
+    .photo-grid img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: 4px;
+      display: block;
+      background: var(--bg-alt);
+    }
+
+    /* OUTCOME BAND */
+    .outcome-band { background: #15131F; padding: 5rem var(--pad); }
+    .outcome-band-inner { max-width: var(--max); margin: 0 auto; }
+    .outcome-band .section-label { color: rgba(201,162,75,0.85); }
+    .outcome-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+      margin-top: 3rem;
+    }
+    @media (max-width: 700px) { .outcome-stat-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .outcome-stat-num {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 300;
+      color: #F2EDE0;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .outcome-stat-label { font-size: 0.875rem; color: rgba(242,237,224,0.45); line-height: 1.6; }
+
+    /* PROJECT NAV */
+    .project-nav { padding: 3rem var(--pad); border-top: 1px solid var(--bg-alt); }
+    .project-nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .project-nav a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .project-nav a:hover { color: var(--accent); }
+
+    /* FOOTER */
+    footer { padding: 3rem var(--pad); border-top: 1px solid var(--bg-alt); }
+    .footer-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-name { font-family: 'Schibsted Grotesk', sans-serif; font-size: 1rem; font-weight: 600; color: var(--ink-mid); }
+    .footer-links { display: flex; gap: 1.75rem; list-style: none; }
+    .footer-links a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+
+    /* FADE IN */
+    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="index.html" class="nav-logo"><span class="nav-badge">F</span><span class="nav-wordmark">Fredrik Påhlman</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="index.html#personal">Personal</a></li>
+      <li><a href="writing.html">Writing</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="mailto:fredrikande@gmail.com" class="nav-contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero" id="hero">
+    <div class="hero-inner">
+      <div>
+        <h1 class="hero-title">Leadership<br><em>/ inUse</em></h1>
+        <div class="hero-stats">
+          <div>
+            <p class="hero-stat-label">Role</p>
+            <p class="hero-stat-value">Chief Design Officer</p>
+          </div>
+          <div>
+            <p class="hero-stat-label">Since</p>
+            <p class="hero-stat-value">2017</p>
+          </div>
+          <div>
+            <p class="hero-stat-label">Team</p>
+            <p class="hero-stat-value">100+ designers</p>
+          </div>
+          <div>
+            <p class="hero-stat-label">Plus</p>
+            <p class="hero-stat-value">Head of Directors</p>
+          </div>
+        </div>
+      </div>
+      <div class="hero-tags">
+        <span class="hero-tag">Leadership</span>
+        <span class="hero-tag">Coaching &amp; Craft</span>
+        <span class="hero-tag">Public Speaking</span>
+        <span class="hero-tag">2014–Present</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- OVERVIEW: CDO ROLE -->
+  <section class="section" id="overview">
+    <div class="section-inner">
+      <div class="overview-grid fade-in">
+        <div class="overview-meta">
+          <div>
+            <p class="meta-block-label">Company</p>
+            <p class="meta-block-value">inUse</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Role</p>
+            <p class="meta-block-value">Chief Design Officer<br>&amp; Head of Directors</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Since</p>
+            <p class="meta-block-value">2017</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Team</p>
+            <p class="meta-block-value">100+ designers across<br>Gothenburg, Stockholm &amp; Malmö</p>
+          </div>
+        </div>
+        <div class="overview-text">
+          <p>Since 2017, I've been Chief Design Officer and Head of Directors at inUse. As part of the executive management team, I'm responsible for inUse's consultant capabilities — skills development, competence screening in recruitment, work process development, coaching, and more — for the 100+ designers at the company.</p>
+          <p>I do it with the help of my team of Directors, pictured below.</p>
+        </div>
+      </div>
+
+      <div class="full-image fade-in">
+        <img src="Portfolio%20Assets/Speaker/web/inuse-cdo.png" alt="The inUse Directors team — eight portrait headshots, including Fredrik Påhlman, Chief Design Officer and Head of Directors">
+        <p class="image-caption">My team of Directors at inUse.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- TWO-COL: UX DIRECTOR PATH -->
+  <section class="section">
+    <div class="section-inner">
+      <p class="section-label fade-in">Earlier — UX Director</p>
+      <div class="two-col fade-in">
+        <div class="body-text">
+          <p>A few years before, inUse needed senior designers to spend half their time improving our craft and making sure we delivered with excellence. I was one of the first two picked for that role, and the group grew over time.</p>
+          <p>The work included planning and often performing skills development classes for colleagues in Gothenburg, Stockholm and Malmö, coaching designers in projects, supporting project deliveries and client presentations, and helping out in sales meetings with clients.</p>
+          <p>At the same time, I was a teacher for inUse's "UX in Practice" class — running two-day courses in Stockholm and Gothenburg for clients and competitors alike, in between assignments. I also spoke at the Stockholm Control Room Conference, and was stage moderator for the inUse Award.</p>
+        </div>
+        <div class="side-image">
+          <img src="Portfolio%20Assets/Speaker/web/inuse-speaker-conference.png" alt="Fredrik Påhlman teaching a workshop session to a seated audience">
+          <p class="image-caption">Teaching inUse's "UX in Practice" course.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- SPEAKING -->
+  <section class="section">
+    <div class="section-inner">
+      <p class="section-label fade-in">Speaking — Ambition Empower, May 2026</p>
+      <div class="fade-in">
+        <div class="body-text">
+          <p>In May 2026 I spoke at the Ambition Empower conference in Gothenburg and Stockholm, about implementing continuous discovery practices at Sleep Cycle — and reaching further with AI moderation.</p>
+        </div>
+
+        <div class="pull-quote">
+          "Never more than seven days to get user feedback on an idea."
+        </div>
+
+        <div class="photo-grid">
+          <img src="Portfolio%20Assets/Speaker/web/3M4A5769.jpg" alt="Fredrik Påhlman presenting on stage at Ambition Empower, audience seated at round tables">
+          <img src="Portfolio%20Assets/Speaker/web/IMG_6709.jpg" alt="Fredrik Påhlman on stage, title slide reads 'Discovery habits that improve organization and strategy'">
+          <img src="Portfolio%20Assets/Speaker/web/nvmtsd.jpg" alt="Fredrik Påhlman presenting, screen reads 'Never more than seven days to get user feedback on an idea'">
+          <img src="Portfolio%20Assets/Speaker/web/3M4A6573.jpg" alt="Fredrik Påhlman presenting with handheld microphone, slide titled 'Inside the interview'">
+        </div>
+        <p class="image-caption">Ambition Empower — Gothenburg &amp; Stockholm, May 2026.</p>
+      </div>
+
+      <div class="two-col fade-in" style="margin-top:4rem;">
+        <div class="side-image">
+          <img src="Portfolio%20Assets/Speaker/web/couch-gbg_DSF6598.jpg" alt="Fredrik Påhlman on a panel of three, seated on stage at the Empower track in Gothenburg">
+          <p class="image-caption">Panel discussion, Gothenburg.</p>
+        </div>
+        <div class="body-text">
+          <p>The talks covered how we moved Sleep Cycle from sporadic research bursts to a weekly cadence across every product team — and how AI moderation is letting us run more interviews without the team drowning in transcripts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUTCOME BAND -->
+  <div class="outcome-band">
+    <div class="outcome-band-inner">
+      <p class="section-label fade-in">By the numbers</p>
+      <div class="outcome-stat-grid fade-in">
+        <div>
+          <p class="outcome-stat-num">100+</p>
+          <p class="outcome-stat-label">Designers across inUse supported through coaching, skills development and competence screening</p>
+        </div>
+        <div>
+          <p class="outcome-stat-num">9 yrs</p>
+          <p class="outcome-stat-label">As Chief Design Officer, leading inUse's design practice since 2017</p>
+        </div>
+        <div>
+          <p class="outcome-stat-num">3</p>
+          <p class="outcome-stat-label">Cities taught in regularly — Gothenburg, Stockholm and Malmö</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECT NAV -->
+  <div class="project-nav">
+    <div class="project-nav-inner">
+      <a href="index.html#work">← All work</a>
+      <a href="writing.html">Writing →</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-name">Fredrik Påhlman — Design &amp; Product</span>
+      <ul class="footer-links">
+        <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">LinkedIn</a></li>
+        <li><a href="https://read.cv/fredrik" target="_blank">Read.cv</a></li>
+        <li><a href="mailto:fredrikande@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    const hero = document.getElementById('hero');
+    function checkNav() {
+      nav.classList.toggle('light', hero.getBoundingClientRect().bottom <= 80);
+    }
+    window.addEventListener('scroll', checkNav, { passive: true });
+    checkNav();
+
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      }),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
