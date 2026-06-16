@@ -12,11 +12,11 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #F7F5F0;
-      --bg-alt: #EDEAE3;
-      --ink: #1A1814;
-      --ink-mid: #6B6760;
-      --ink-light: #B0ADA7;
+      --bg: #0a0d13;
+      --bg-alt: #161b26;
+      --ink: #eef1f6;
+      --ink-mid: #8b94a3;
+      --ink-light: rgba(255,255,255,0.35);
       --accent: #C8562A;
       --serif: 'Fraunces', Georgia, serif;
       --sans: 'Inter', system-ui, sans-serif;
@@ -242,6 +242,13 @@
 
     /* ── PRINT ── */
     @media print {
+      :root {
+        --bg: #fff;
+        --bg-alt: #EDEAE3;
+        --ink: #1A1814;
+        --ink-mid: #6B6760;
+        --ink-light: #B0ADA7;
+      }
       nav, footer, .resume-download, .variant-banner { display: none !important; }
       body { background: #fff; font-size: 11pt; }
       .resume-wrap {
