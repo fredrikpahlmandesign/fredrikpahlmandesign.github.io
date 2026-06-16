@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -54,6 +55,7 @@
       border-color: var(--bg-alt);
     }
     .nav-logo {
+      display: flex; align-items: center; gap: 9px;
       font-family: var(--serif);
       font-weight: 400;
       font-size: 1rem;
@@ -62,8 +64,18 @@
       transition: color 0.3s;
     }
     nav.light .nav-logo { color: var(--ink); }
+    .nav-badge {
+      width: 22px; height: 22px; border-radius: 6px;
+      background: var(--accent); color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700; font-size: 0.68rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-wordmark { font-family: 'Schibsted Grotesk', sans-serif; font-weight: 600; }
     .nav-links { display: flex; gap: 2rem; list-style: none; }
     .nav-links a {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 0.8125rem;
       font-weight: 500;
       letter-spacing: 0.06em;
@@ -75,6 +87,7 @@
     nav.light .nav-links a { color: var(--ink-mid); }
     .nav-links a:hover { color: #E8EDF2; }
     nav.light .nav-links a:hover { color: var(--ink); }
+    .nav-contact { border: 1px solid currentColor; border-radius: 100px; padding: 5px 12px; }
 
     /* HERO */
     .hero {
@@ -458,9 +471,10 @@
       gap: 2rem;
       flex-wrap: wrap;
     }
-    .footer-name { font-family: var(--serif); font-size: 1rem; font-weight: 300; color: var(--ink-mid); }
+    .footer-name { font-family: 'Schibsted Grotesk', sans-serif; font-size: 1rem; font-weight: 600; color: var(--ink-mid); }
     .footer-links { display: flex; gap: 1.75rem; list-style: none; }
     .footer-links a {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 0.8125rem;
       font-weight: 500;
       letter-spacing: 0.05em;
@@ -480,13 +494,13 @@
 
   <!-- NAV -->
   <nav id="nav">
-    <a href="index.html" class="nav-logo">Fredrik Påhlman</a>
+    <a href="index.html" class="nav-logo"><span class="nav-badge">F</span><span class="nav-wordmark">Fredrik Påhlman</span></a>
     <ul class="nav-links">
       <li><a href="index.html#work">Work</a></li>
       <li><a href="index.html#personal">Personal</a></li>
       <li><a href="writing.html">Writing</a></li>
       <li><a href="resume.html">Resume</a></li>
-      <li><a href="mailto:fredrikande@gmail.com">Contact</a></li>
+      <li><a href="mailto:fredrikande@gmail.com" class="nav-contact">Contact</a></li>
     </ul>
   </nav>
 
@@ -698,6 +712,7 @@
       <span class="footer-name">Fredrik Påhlman — Design &amp; Product</span>
       <ul class="footer-links">
         <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">LinkedIn</a></li>
+        <li><a href="https://read.cv/fredrik" target="_blank">Read.cv</a></li>
         <li><a href="mailto:fredrikande@gmail.com">Email</a></li>
       </ul>
     </div>

@@ -1,765 +1,828 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fredrik Påhlman — Design &amp; Product</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<html lang="en"><head><meta charset="UTF-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fredrik Påhlman — Design &amp; Product</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com/">
-  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root, [data-theme="dark"] {
+    --bg: #0a0d13;
+    --fg: #eef1f6;
+    --muted: #8b94a3;
+    --line: rgba(255,255,255,.10);
+    --card: #11151e;
+    --card2: #161b26;
+    --navbg: rgba(10,13,19,.72);
+    --h1w: 800;
+    --pad: clamp(72px,11vh,150px);
+  }
+  [data-theme="light"] {
+    --bg: #f3f4f5;
+    --fg: #0c1017;
+    --muted: #5c6675;
+    --line: rgba(0,0,0,.12);
+    --card: #ffffff;
+    --card2: #e8eaee;
+    --navbg: rgba(243,244,245,.74);
+    --h1w: 600;
+    --pad: clamp(112px,15vh,210px);
+  }
 
-    :root {
-      --bg: #F7F5F0;
-      --bg-alt: #EDEAE3;
-      --ink: #1A1814;
-      --ink-mid: #6B6760;
-      --ink-light: #B0ADA7;
-      --accent: #C8562A;
-      --serif: 'Fraunces', Georgia, serif;
-      --sans: 'Inter', system-ui, sans-serif;
-      --max: 1200px;
-      --pad: clamp(1.5rem, 5vw, 4rem);
-    }
+  [data-palette="slate"]    { --accent:#6f93c2; --p-deep:#0a1018; --p-mid:#46566e; --p-hi:#c4d2e4; }
+  [data-palette="twilight"] { --accent:#c95cc0; --p-deep:#1a0a24; --p-mid:#b026a6; --p-hi:#f6c453; }
+  [data-palette="ember"]    { --accent:#f0823a; --p-deep:#1a0900; --p-mid:#e0561c; --p-hi:#ffb648; }
+  [data-palette="ocean"]    { --accent:#2aa5c2; --p-deep:#02141f; --p-mid:#0e7d99; --p-hi:#7fe3f0; }
+  [data-palette="forest"]   { --accent:#3aa55f; --p-deep:#04150b; --p-mid:#1f7a3f; --p-hi:#b6e860; }
 
-    html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Schibsted Grotesk', -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    transition: background .5s ease, color .5s ease;
+  }
+  ::selection { background: var(--accent); color: #fff; }
+  a { color: inherit; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
 
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: var(--sans);
-      font-size: 16px;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.3; } }
 
-    /* ── NAV ── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.25rem var(--pad);
-      background: var(--bg);
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.3s;
-    }
-    nav.scrolled { border-color: var(--bg-alt); }
-    .nav-logo {
-      font-family: var(--serif);
-      font-weight: 400;
-      font-size: 1rem;
-      color: var(--ink);
-      text-decoration: none;
-      letter-spacing: 0.01em;
-    }
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-    .nav-links a {
-      font-size: 0.8125rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--ink); }
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px clamp(20px,4vw,52px);
+    background: var(--navbg);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+    transition: background .4s, border-color .4s;
+  }
+  .nav-left { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-badge {
+    width: 26px; height: 26px; border-radius: 7px; background: var(--accent);
+    color: #fff; font-weight: 700; font-size: .8rem;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: background .3s;
+  }
+  .nav-wordmark { font-weight: 600; font-size: .95rem; color: var(--fg); }
+  .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+  .nav-links a {
+    font-size: .82rem; font-weight: 500; letter-spacing: .02em;
+    color: var(--muted); text-decoration: none; transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--fg); }
+  .nav-contact {
+    border: 1px solid var(--line); border-radius: 100px;
+    padding: 8px 16px; font-weight: 600; color: var(--fg) !important;
+  }
+  .nav-right { display: flex; align-items: center; gap: 14px; }
+  .theme-toggle {
+    font-family: 'JetBrains Mono', monospace; font-size: .68rem; letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 8px 14px; border-radius: 100px; border: 1px solid var(--line);
+    background: transparent; color: var(--fg); cursor: pointer; transition: border-color .2s;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  @media (max-width: 760px) { .nav-links { display: none; } }
 
-    /* ── HERO ── */
-    .hero {
-      padding-top: 7rem;
-      padding-bottom: 3rem;
-      padding-left: var(--pad);
-      padding-right: var(--pad);
-      max-width: var(--max);
-      margin: 0 auto;
-    }
-    .hero-label {
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      margin-bottom: 1.5rem;
-    }
-    .hero-name {
-      font-family: var(--serif);
-      font-weight: 300;
-      font-size: clamp(3.5rem, 10vw, 8.5rem);
-      line-height: 0.95;
-      letter-spacing: -0.02em;
-      margin-bottom: 1.5rem;
-    }
-    .hero-name em {
-      font-style: italic;
-      color: var(--ink-mid);
-    }
-    .hero-intro {
-      max-width: 500px;
-      font-size: 1.0625rem;
-      color: var(--ink-mid);
-      line-height: 1.7;
-      margin-bottom: 2.5rem;
-    }
-    .hero-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--ink);
-      text-decoration: none;
-      border-bottom: 1.5px solid var(--ink);
-      padding-bottom: 0.15rem;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .hero-cta:hover { color: var(--accent); border-color: var(--accent); }
+  /* ── HERO ── */
+  .hero {
+    min-height: 100svh; position: relative; overflow: hidden;
+    display: flex; align-items: flex-end;
+    padding: 96px clamp(20px,4vw,52px) 56px;
+  }
+  #hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .hero-scrim-a { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,0,0,.55), transparent 62%); }
+  .hero-scrim-b { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 38%, var(--bg) 102%); }
+  .hero-inner {
+    position: relative; z-index: 3; max-width: 1240px; width: 100%; margin: 0 auto;
+    display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-end; justify-content: space-between;
+  }
+  .hero-copy { max-width: 680px; }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: .78rem; letter-spacing: .08em;
+    text-transform: uppercase; color: rgba(255,255,255,.7); margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-weight: var(--h1w); font-size: clamp(2.8rem,10vw,7.5rem); line-height: .96;
+    letter-spacing: -.01em; color: #fff;
+  }
+  .hero h1 .accent-line { color: var(--accent); display: block; transition: color .3s; }
+  .hero-tagline {
+    max-width: 520px; margin-top: 22px; font-size: 1.05rem; line-height: 1.65; color: rgba(255,255,255,.82);
+  }
+  .hero-cta-row { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; margin-top: 34px; }
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 8px; background: #fff; color: #0a0d13;
+    font-weight: 600; font-size: .92rem; padding: 14px 24px; border-radius: 100px;
+    text-decoration: none; transition: transform .2s;
+  }
+  .hero-cta:hover { transform: translateY(-2px); }
+  .hero-helper {
+    font-family: 'JetBrains Mono', monospace; font-size: .74rem; line-height: 1.6;
+    color: rgba(255,255,255,.55); max-width: 260px;
+  }
+  .hero-helper a { color: rgba(255,255,255,.85); text-decoration: underline; }
 
-    /* ── MARQUEE ── */
-    .marquee-wrap {
-      overflow: hidden;
-      border-top: 1px solid var(--bg-alt);
-      border-bottom: 1px solid var(--bg-alt);
-      padding: 0.9rem 0;
-      margin: 3rem 0;
-    }
-    .marquee-track {
-      display: flex;
-      white-space: nowrap;
-      animation: marquee 22s linear infinite;
-    }
-    .marquee-track:hover { animation-play-state: paused; }
-    .marquee-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 1.5rem;
-      padding-right: 3rem;
-      font-family: var(--serif);
-      font-style: italic;
-      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-      font-weight: 300;
-      color: var(--ink-mid);
-    }
-    .marquee-dot {
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: var(--accent);
-      flex-shrink: 0;
-    }
-    @keyframes marquee {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
-    }
+  /* ── GENERATOR PANEL ── */
+  .gen-panel {
+    position: relative; z-index: 4; width: min(88vw, 320px);
+    background: rgba(14,17,24,.82); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,.10); border-radius: 18px; padding: 20px; color: #eef1f6;
+    flex-shrink: 0;
+  }
+  .gen-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .gen-title-row { display: flex; align-items: center; gap: 8px; font-size: .9rem; font-weight: 600; }
+  .gen-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 2s ease-in-out infinite; }
+  .gen-meta { display: flex; align-items: center; gap: 10px; }
+  .gen-fps { font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: #8b94a3; }
+  .gen-close { background: none; border: none; color: #8b94a3; cursor: pointer; font-size: 1rem; line-height: 1; padding: 2px 4px; }
+  .gen-close:hover { color: #fff; }
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
+  .mode-btn {
+    font-family: 'Schibsted Grotesk', sans-serif; font-size: .84rem; font-weight: 600;
+    padding: 11px; border-radius: 10px; border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.04); color: #eef1f6; cursor: pointer; transition: .2s;
+  }
+  .mode-btn.active { background: var(--accent); border-color: var(--accent); color: #0a0d13; }
+  .gen-label {
+    font-family: 'JetBrains Mono', monospace; font-size: .66rem; letter-spacing: .1em;
+    text-transform: uppercase; color: #8b94a3; margin-bottom: 10px; display: block;
+  }
+  .palette-row { display: flex; gap: 10px; margin-bottom: 18px; }
+  .swatch {
+    width: 30px; height: 30px; border-radius: 50%; border: 2px solid transparent;
+    cursor: pointer; padding: 0; transition: .15s;
+  }
+  .swatch.active { border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,.35); }
+  .turb-row { display: flex; justify-content: space-between; font-size: .82rem; margin-bottom: 8px; }
+  .turb-row span:last-child { font-family: 'JetBrains Mono', monospace; color: #8b94a3; }
+  input[type=range] {
+    width: 100%; -webkit-appearance: none; appearance: none; height: 3px; border-radius: 3px;
+    background: rgba(255,255,255,.16); outline: none; margin-bottom: 18px;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+    background: #fff; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.4);
+  }
+  input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border: none; border-radius: 50%; background: #fff; cursor: pointer; }
+  .shuffle-btn {
+    width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.05); color: #eef1f6; font-family: 'Schibsted Grotesk', sans-serif;
+    font-weight: 600; font-size: .88rem; cursor: pointer; transition: .2s;
+  }
+  .shuffle-btn:hover { background: rgba(255,255,255,.1); }
+  .gen-pill {
+    position: relative; z-index: 4; display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 18px; border-radius: 100px; background: rgba(14,17,24,.82);
+    backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,.14); color: #eef1f6;
+    font-size: .82rem; font-weight: 500; cursor: pointer; flex-shrink: 0;
+  }
 
-    /* ── SECTION SHARED ── */
-    section {
-      padding: 5rem var(--pad);
-    }
-    .section-inner {
-      max-width: var(--max);
-      margin: 0 auto;
-    }
-    .section-header {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 3rem;
-      gap: 1rem;
-    }
-    .section-title {
-      font-family: var(--serif);
-      font-weight: 300;
-      font-size: clamp(1.75rem, 4vw, 2.75rem);
-      letter-spacing: -0.01em;
-    }
-    .section-link {
-      font-size: 0.8125rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      text-decoration: none;
-      white-space: nowrap;
-      border-bottom: 1px solid var(--ink-light);
-      padding-bottom: 0.1rem;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .section-link:hover { color: var(--accent); border-color: var(--accent); }
+  /* ── MARQUEE ── */
+  .marquee-wrap { overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 18px 0; }
+  .marquee-track { display: flex; white-space: nowrap; animation: marquee 38s linear infinite; }
+  .marquee-track:hover { animation-play-state: paused; }
+  .marquee-item {
+    font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: var(--muted);
+    display: inline-flex; align-items: center; gap: 24px; padding-right: 48px;
+  }
+  .marquee-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 
-    /* ── WORK GRID ── */
-    .work-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.5rem;
-    }
-    @media (max-width: 700px) { .work-grid { grid-template-columns: 1fr; } }
+  /* ── SECTION SHARED ── */
+  section { padding: var(--pad) clamp(20px,4vw,52px); }
+  .section-inner { max-width: 1240px; margin: 0 auto; }
+  .sec-eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: .78rem; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 16px; transition: color .3s;
+  }
+  .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; margin-bottom: 48px; flex-wrap: wrap; }
+  .sec-head h2 { font-weight: 700; font-size: clamp(1.8rem,4vw,2.6rem); letter-spacing: -.01em; }
+  .sec-link {
+    font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: var(--muted);
+    text-decoration: none; white-space: nowrap; transition: color .2s;
+  }
+  .sec-link:hover { color: var(--accent); }
 
-    .work-card {
-      text-decoration: none;
-      color: inherit;
-      display: block;
-      position: relative;
-      overflow: hidden;
-      border-radius: 4px;
-      background: var(--bg-alt);
-    }
-    .work-card:first-child { grid-column: 1 / -1; }
-    .work-card-img {
-      width: 100%;
-      aspect-ratio: 16/9;
-      background: var(--bg-alt);
-      overflow: hidden;
-    }
-    .work-card:first-child .work-card-img { aspect-ratio: 21/9; }
-    .work-card-img-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-      transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
-    }
-    .work-card:hover .work-card-img-placeholder { transform: scale(1.03); }
-    .work-card-body {
-      padding: 1.25rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 1rem;
-    }
-    .work-card-title {
-      font-family: var(--serif);
-      font-weight: 400;
-      font-size: 1.125rem;
-      line-height: 1.3;
-    }
-    .work-card-meta {
-      font-size: 0.75rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-      white-space: nowrap;
-    }
+  /* ── WORK GRID ── */
+  .work-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+  @media (max-width: 700px) { .work-grid { grid-template-columns: 1fr; } }
+  .work-card {
+    text-decoration: none; color: inherit; display: block; position: relative; overflow: hidden;
+    border-radius: 18px; border: 1px solid var(--line); background: var(--card);
+    transition: transform .3s, border-color .3s;
+  }
+  .work-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .work-card:first-child { grid-column: 1 / -1; }
+  .work-card-img { width: 100%; aspect-ratio: 16/9; background: var(--card2); overflow: hidden; }
+  .work-card:first-child .work-card-img { aspect-ratio: 21/9; }
+  .work-card-img-placeholder {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+  }
+  .work-card-body { padding: 18px 22px; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
+  .work-card-title { font-weight: 700; font-size: 1.1rem; line-height: 1.3; }
+  .work-card-meta { font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: var(--muted); white-space: nowrap; }
 
-    /* ── PERSONAL PROJECTS ── */
-    .craft-intro {
-      font-size: 1rem;
-      color: var(--ink-mid);
-      margin-top: -1.75rem;
-      margin-bottom: 2.5rem;
-    }
+  /* ── PERSONAL ── */
+  .sec-intro { font-size: 1rem; color: var(--muted); margin-top: -28px; margin-bottom: 40px; max-width: 60ch; }
+  .sub-label {
+    font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 20px;
+  }
+  .live-tools-strip { margin-bottom: 48px; }
+  .live-tools-row { display: flex; gap: 2px; flex-wrap: wrap; }
+  .live-tool-link {
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    flex: 1; min-width: 180px; padding: 16px 20px; background: var(--card);
+    border: 1px solid var(--line); border-radius: 12px; text-decoration: none; color: var(--fg);
+    transition: border-color .2s;
+  }
+  .live-tool-link:hover { border-color: var(--accent); }
+  .live-tool-name { font-size: .9rem; font-weight: 600; }
+  .live-tool-arrow { font-size: 1rem; color: var(--muted); }
 
-    .live-tools-strip { margin-bottom: 3rem; }
-    .live-tools-row {
-      display: flex; gap: 2px; flex-wrap: wrap;
-    }
-    .live-tool-link {
-      display: flex; align-items: center; justify-content: space-between; gap: 24px;
-      flex: 1; min-width: 180px;
-      padding: 14px 18px;
-      background: var(--bg-alt);
-      border-radius: 4px;
-      text-decoration: none;
-      color: var(--ink);
-      transition: background .2s;
-    }
-    .live-tool-link:hover { background: #e0d8cc; }
-    .live-tool-name { font-size: 0.875rem; font-weight: 500; }
-    .live-tool-arrow { font-size: 1rem; color: var(--ink-mid); }
+  .craft-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  @media (max-width: 800px) { .craft-grid { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 480px) { .craft-grid { grid-template-columns: 1fr; } }
+  .craft-card { position: relative; overflow: hidden; border-radius: 14px; background: var(--card); border: 1px solid var(--line); }
+  .craft-card-img { width: 100%; aspect-ratio: 4/5; background: var(--card2); overflow: hidden; }
+  .craft-card-img img { transition: transform .5s cubic-bezier(.25,.46,.45,.94); }
+  .craft-card:hover .craft-card-img img { transform: scale(1.04); }
+  .craft-card-body { padding: 14px 16px; }
+  .craft-card-title { font-weight: 600; font-size: .95rem; margin-bottom: 2px; }
+  .craft-card-desc { font-family: 'JetBrains Mono', monospace; font-size: .72rem; color: var(--muted); }
 
-    .craft-sub-label {
-      font-family: var(--mono, 'Space Mono', monospace);
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      margin-bottom: 1.25rem;
-    }
+  /* ── ABOUT STRIP ── */
+  .about-section { background: var(--card); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .about-quote {
+    font-weight: 600; font-size: clamp(1.3rem,2.7vw,1.9rem); line-height: 1.5;
+    letter-spacing: -.01em; max-width: 800px;
+  }
+  .about-quote strong { color: var(--accent); font-weight: 700; transition: color .3s; }
+  .about-facts { display: grid; grid-template-columns: repeat(4,1fr); gap: 28px; margin-top: 52px; }
+  @media (max-width: 800px) { .about-facts { grid-template-columns: repeat(2,1fr); gap: 32px; } }
+  .about-fact-label {
+    font-family: 'JetBrains Mono', monospace; font-size: .68rem; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 10px; transition: color .3s;
+  }
+  .about-fact-value { font-size: .92rem; color: var(--muted); line-height: 1.6; }
 
-    /* ── CRAFT ── */
-    .craft-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-    }
-    @media (max-width: 800px) { .craft-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 480px) { .craft-grid { grid-template-columns: 1fr; } }
+  /* ── WRITING ── */
+  .writing-list { display: flex; flex-direction: column; }
+  .writing-row {
+    display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 24px;
+    padding: 26px 0; border-top: 1px solid var(--line); text-decoration: none; color: inherit; transition: opacity .2s;
+  }
+  .writing-row:last-child { border-bottom: 1px solid var(--line); }
+  .writing-row:hover { opacity: .6; }
+  .writing-date { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: var(--muted); white-space: nowrap; }
+  .writing-title { font-weight: 700; font-size: 1.15rem; margin-bottom: 4px; }
+  .writing-desc { font-size: .88rem; color: var(--muted); max-width: 58ch; }
+  .writing-arrow { font-size: 1.1rem; color: var(--muted); transition: color .2s, transform .2s; }
+  .writing-row:hover .writing-arrow { color: var(--accent); transform: translateX(4px); }
+  @media (max-width: 600px) { .writing-row { grid-template-columns: 1fr; gap: 6px; } .writing-date { order: -1; } }
 
-    .craft-card {
-      position: relative;
-      overflow: hidden;
-      border-radius: 4px;
-      background: var(--bg-alt);
-      cursor: default;
-    }
-    .craft-card-img {
-      width: 100%;
-      aspect-ratio: 4/5;
-      background: var(--bg-alt);
-      overflow: hidden;
-      transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
-    }
-    .craft-card:hover .craft-card-img { transform: scale(1.03); }
-    .craft-card-body {
-      padding: 1rem 1.25rem;
-    }
-    .craft-card-title {
-      font-family: var(--serif);
-      font-size: 1rem;
-      font-weight: 400;
-      margin-bottom: 0.2rem;
-    }
-    .craft-card-desc {
-      font-size: 0.8125rem;
-      color: var(--ink-mid);
-    }
+  /* ── FOOTER ── */
+  footer { background: var(--card); border-top: 1px solid var(--line); padding: 80px clamp(20px,4vw,52px) 40px; }
+  .footer-inner { max-width: 1240px; margin: 0 auto; }
+  .footer-eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: .78rem; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 20px; transition: color .3s;
+  }
+  .footer-mail {
+    font-weight: 700; font-size: clamp(2rem,7vw,4.2rem); color: var(--fg); text-decoration: none;
+    display: inline-block; letter-spacing: -.02em; word-break: break-word; transition: color .2s;
+  }
+  .footer-mail:hover { color: var(--accent); }
+  .footer-bottom {
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+    margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line);
+    font-size: .82rem; color: var(--muted);
+  }
+  .footer-links { display: flex; gap: 24px; list-style: none; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: .78rem; letter-spacing: .04em; transition: color .2s; }
+  .footer-links a:hover { color: var(--fg); }
 
-    /* ── ABOUT ── */
-    .about-section { background: var(--bg-alt); }
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: start;
-    }
-    @media (max-width: 800px) { .about-grid { grid-template-columns: 1fr; gap: 2.5rem; } }
-    .about-bio {
-      font-family: var(--serif);
-      font-size: clamp(1.2rem, 2.5vw, 1.6rem);
-      font-weight: 300;
-      line-height: 1.55;
-      letter-spacing: -0.01em;
-    }
-    .about-bio strong { font-weight: 400; }
-    .about-details { display: flex; flex-direction: column; gap: 2.5rem; }
-    .about-detail-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-      margin-bottom: 0.6rem;
-    }
-    .about-detail-value {
-      font-size: 0.9375rem;
-      color: var(--ink-mid);
-      line-height: 1.65;
-    }
-    .about-detail-value a {
-      color: var(--ink);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      text-decoration-color: var(--ink-light);
-      transition: text-decoration-color 0.2s;
-    }
-    .about-detail-value a:hover { text-decoration-color: var(--accent); }
-
-    /* ── WRITING ── */
-    .writing-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-    .writing-card {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      gap: 2rem;
-      padding: 1.75rem 0;
-      border-bottom: 1px solid var(--bg-alt);
-      text-decoration: none;
-      color: inherit;
-      transition: opacity 0.2s;
-    }
-    .writing-card:first-child { border-top: 1px solid var(--bg-alt); }
-    .writing-card:hover { opacity: 0.6; }
-    .writing-card-title {
-      font-family: var(--serif);
-      font-size: 1.25rem;
-      font-weight: 400;
-      margin-bottom: 0.35rem;
-    }
-    .writing-card-desc {
-      font-size: 0.875rem;
-      color: var(--ink-mid);
-      max-width: 55ch;
-    }
-    .writing-card-date {
-      font-size: 0.75rem;
-      letter-spacing: 0.06em;
-      color: var(--ink-light);
-      white-space: nowrap;
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      padding: 3rem var(--pad);
-      border-top: 1px solid var(--bg-alt);
-    }
-    .footer-inner {
-      max-width: var(--max);
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-    .footer-name {
-      font-family: var(--serif);
-      font-size: 1rem;
-      font-weight: 300;
-      color: var(--ink-mid);
-    }
-    .footer-links {
-      display: flex;
-      gap: 1.75rem;
-      list-style: none;
-    }
-    .footer-links a {
-      font-size: 0.8125rem;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .footer-links a:hover { color: var(--ink); }
-
-    /* ── SCROLL FADE IN ── */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
+  /* ── SCROLL FADE IN (existing pattern) ── */
+  .fade-in { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+</style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav id="nav">
-    <a href="index.html" class="nav-logo">Fredrik Påhlman</a>
-    <ul class="nav-links">
-      <li><a href="index.html#work">Work</a></li>
-      <li><a href="index.html#personal">Personal</a></li>
-      <li><a href="writing.html">Writing</a></li>
-      <li><a href="resume.html">Resume</a></li>
-      <li><a href="mailto:fredrikande@gmail.com">Contact</a></li>
-    </ul>
-  </nav>
+<!-- NAV -->
+<nav id="nav">
+  <a href="index.html" class="nav-left">
+    <span class="nav-badge">F</span>
+    <span class="nav-wordmark">Fredrik Påhlman</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html#work">Work</a></li>
+    <li><a href="index.html#personal">Personal</a></li>
+    <li><a href="writing.html">Writing</a></li>
+    <li><a href="resume.html">Resume</a></li>
+    <li><a href="mailto:fredrikande@gmail.com" class="nav-contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="theme-toggle" id="theme-toggle" type="button">☾ Dark</button>
+  </div>
+</nav>
 
-  <!-- HERO -->
-  <header class="hero">
-    <p class="hero-label">Design &amp; Product</p>
-    <h1 class="hero-name">Fredrik<br><em>Påhlman</em></h1>
-    <p class="hero-intro">
-      I work at the intersection of product, design, and organisational change — figuring out what to build and how to build the conditions that make good work possible.
-    </p>
-    <a href="index.html#work" class="hero-cta">View selected work ↓</a>
-  </header>
+<!-- HERO -->
+<header class="hero" id="top">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-scrim-a"></div>
+  <div class="hero-scrim-b"></div>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <p class="hero-eyebrow">Design &amp; Product · Mölndal, Sweden</p>
+      <h1>Fredrik<span class="accent-line">Påhlman</span></h1>
+      <p class="hero-tagline">I work at the intersection of product, design, and organisational change — figuring out what to build, and how to build the conditions that make good work possible.</p>
+      <div class="hero-cta-row">
+        <a href="#work" class="hero-cta">View selected work ↓</a>
+        <p class="hero-helper">↗ This background is rendered live by a generative engine I built with AI. <a href="project-design-tools.html#hero-generator">See how it works →</a></p>
+      </div>
+    </div>
 
-  <!-- MARQUEE -->
-  <div class="marquee-wrap">
-    <div class="marquee-track">
-      <!-- duplicated for seamless loop -->
-      <span class="marquee-item">Product Discovery <span class="marquee-dot"></span></span>
-      <span class="marquee-item">Design Leadership <span class="marquee-dot"></span></span>
-      <span class="marquee-item">Product Strategy <span class="marquee-dot"></span></span>
-      <span class="marquee-item">AI-enabled Workflows <span class="marquee-dot"></span></span>
-      <span class="marquee-item">Org Transformation <span class="marquee-dot"></span></span>
-      <span class="marquee-item">Systems Thinking <span class="marquee-dot"></span></span>
-      <span class="marquee-item">User Research <span class="marquee-dot"></span></span>
-      <span class="marquee-item">Cross-functional Alignment <span class="marquee-dot"></span></span>
-      <span class="marquee-item">Product Discovery <span class="marquee-dot"></span></span>
-      <span class="marquee-item">Design Leadership <span class="marquee-dot"></span></span>
-      <span class="marquee-item">Product Strategy <span class="marquee-dot"></span></span>
-      <span class="marquee-item">AI-enabled Workflows <span class="marquee-dot"></span></span>
-      <span class="marquee-item">Org Transformation <span class="marquee-dot"></span></span>
-      <span class="marquee-item">Systems Thinking <span class="marquee-dot"></span></span>
-      <span class="marquee-item">User Research <span class="marquee-dot"></span></span>
-      <span class="marquee-item">Cross-functional Alignment <span class="marquee-dot"></span></span>
+    <div class="gen-panel" id="gen-panel">
+      <div class="gen-header">
+        <div class="gen-title-row"><span class="gen-dot"></span> Hero Generator</div>
+        <div class="gen-meta">
+          <span class="gen-fps mono" id="gen-fps">60 fps</span>
+          <button class="gen-close" id="gen-close" type="button" aria-label="Collapse panel">✕</button>
+        </div>
+      </div>
+      <div class="mode-grid" id="mode-grid">
+        <button class="mode-btn" data-mode="liquid" type="button">Liquid</button>
+        <button class="mode-btn" data-mode="ink" type="button">Ink</button>
+        <button class="mode-btn" data-mode="dots" type="button">Dots</button>
+        <button class="mode-btn" data-mode="pixel" type="button">Pixel</button>
+      </div>
+      <span class="gen-label">Palette</span>
+      <div class="palette-row" id="palette-row">
+        <button class="swatch" data-palette="slate" type="button" style="background:linear-gradient(135deg,#1b2433,#5a6f8c)" aria-label="Slate"></button>
+        <button class="swatch" data-palette="twilight" type="button" style="background:linear-gradient(135deg,#3a1450,#c0399b 58%,#f6c453)" aria-label="Twilight"></button>
+        <button class="swatch" data-palette="ember" type="button" style="background:linear-gradient(135deg,#3a1405,#e0561c 58%,#ffb648)" aria-label="Ember"></button>
+        <button class="swatch" data-palette="ocean" type="button" style="background:linear-gradient(135deg,#063042,#0e7d99 58%,#7fe3f0)" aria-label="Ocean"></button>
+        <button class="swatch" data-palette="forest" type="button" style="background:linear-gradient(135deg,#0a2614,#1f7a3f 58%,#b6e860)" aria-label="Forest"></button>
+      </div>
+      <div class="turb-row"><span>Turbulence</span><span id="turb-label">3.5</span></div>
+      <input type="range" id="turb-slider" min="1.5" max="5" step="0.1" value="3.5">
+      <button class="shuffle-btn" id="shuffle-btn" type="button">✶ Shuffle the vibe</button>
+    </div>
+    <button class="gen-pill" id="gen-pill" type="button" style="display:none;">
+      <span class="gen-dot"></span> Hero Generator
+    </button>
+  </div>
+</header>
+
+<!-- SKILLS MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">Product Discovery <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Design Leadership <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Product Strategy <span class="marquee-dot"></span></span>
+    <span class="marquee-item">AI-enabled Workflows <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Org Transformation <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Systems Thinking <span class="marquee-dot"></span></span>
+    <span class="marquee-item">User Research <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Cross-functional Alignment <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Product Discovery <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Design Leadership <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Product Strategy <span class="marquee-dot"></span></span>
+    <span class="marquee-item">AI-enabled Workflows <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Org Transformation <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Systems Thinking <span class="marquee-dot"></span></span>
+    <span class="marquee-item">User Research <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Cross-functional Alignment <span class="marquee-dot"></span></span>
+  </div>
+</div>
+
+<!-- WORK — rendered from projects.js -->
+<section id="work">
+  <div class="section-inner">
+    <div class="sec-head fade-in visible">
+      <div>
+        <p class="sec-eyebrow">01 — Selected Work</p>
+        <h2>Selected Work</h2>
+      </div>
+    </div>
+    <div class="work-grid" id="work-grid"></div>
+  </div>
+</section>
+
+<script src="projects.js"></script>
+<script>
+  (function () {
+    const grid = document.getElementById('work-grid');
+    const visible = PROJECTS
+      .filter(p => p.visible && p.category !== 'personal')
+      .sort((a, b) => a.order - b.order);
+
+    visible.forEach((p, i) => {
+      const isFeatured = p.featured && i === 0;
+      const a = document.createElement('a');
+      a.href = p.href;
+      a.className = 'work-card fade-in' + (i === 0 ? ' visible' : '');
+      if (isFeatured) a.style.gridColumn = '1 / -1';
+
+      const mediaEl = p.mediaType === 'video' && p.mediaSrc
+        ? `<video src="${p.mediaSrc}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.92;"></video>`
+        : p.mediaSrc
+          ? `<img src="${p.mediaSrc}" alt="${p.title}" style="width:100%;height:100%;object-fit:cover;">`
+          : `<div class="work-card-img-placeholder">Project Image</div>`;
+
+      a.innerHTML = `
+        <div class="work-card-img">${mediaEl}</div>
+        <div class="work-card-body">
+          <span class="work-card-title">${p.title}</span>
+          <span class="work-card-meta">${p.meta}</span>
+        </div>`;
+      grid.appendChild(a);
+    });
+  })();
+</script>
+
+<!-- PERSONAL PROJECTS -->
+<section id="personal">
+  <div class="section-inner">
+    <div class="sec-head fade-in">
+      <div>
+        <p class="sec-eyebrow">02 — Personal Projects</p>
+        <h2>Personal Projects</h2>
+      </div>
+    </div>
+    <p class="sec-intro fade-in">Tools, experiments, and things made with my hands — outside of client work.</p>
+
+    <p class="sub-label fade-in">Tools &amp; experiments</p>
+    <div class="work-grid" id="tool-grid" style="margin-bottom: 48px;"></div>
+    <script>
+      (function () {
+        const toolGrid = document.getElementById('tool-grid');
+        const personal = PROJECTS
+          .filter(p => p.visible && p.category === 'personal')
+          .sort((a, b) => a.order - b.order);
+        personal.forEach(function (p) {
+          const a = document.createElement('a');
+          a.href = p.href;
+          a.className = 'work-card fade-in';
+          const mediaEl = p.mediaType === 'video' && p.mediaSrc
+            ? '<video src="' + p.mediaSrc + '" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.92;"></video>'
+            : p.mediaSrc
+              ? '<img src="' + p.mediaSrc + '" alt="' + p.title + '" style="width:100%;height:100%;object-fit:cover;">'
+              : '<div class="work-card-img-placeholder">' + p.title + '</div>';
+          a.innerHTML =
+            '<div class="work-card-img">' + mediaEl + '</div>' +
+            '<div class="work-card-body">' +
+              '<span class="work-card-title">' + p.title + '</span>' +
+              '<span class="work-card-meta">' + p.meta + '</span>' +
+            '</div>';
+          toolGrid.appendChild(a);
+        });
+      })();
+    </script>
+
+    <!-- LIVE TOOLS STRIP -->
+    <div class="live-tools-strip fade-in">
+      <p class="sub-label" style="margin-bottom: 12px;">Try the tools</p>
+      <div class="live-tools-row">
+        <a href="https://dazzling-yeot-1dac53.netlify.app/" target="_blank" rel="noopener" class="live-tool-link">
+          <span class="live-tool-name">Bubble Studio</span>
+          <span class="live-tool-arrow">↗</span>
+        </a>
+        <a href="https://astounding-basbousa-8022d9.netlify.app/" target="_blank" rel="noopener" class="live-tool-link">
+          <span class="live-tool-name">Wallpaper Studio</span>
+          <span class="live-tool-arrow">↗</span>
+        </a>
+        <a href="#" class="live-tool-link" style="opacity: 0.4; pointer-events: none;">
+          <span class="live-tool-name">Motion Hero Generator</span>
+          <span class="live-tool-arrow mono" style="font-size: 0.7rem; letter-spacing: .08em;">soon</span>
+        </a>
+      </div>
+    </div>
+
+    <p class="sub-label fade-in">Craft</p>
+    <p class="sec-intro fade-in" style="margin-top: -8px; margin-bottom: 24px;">Wood carving.</p>
+    <div class="craft-grid">
+      <div class="craft-card fade-in">
+        <div class="craft-card-img"><img src="Personal projects/R0005059.JPG" alt="Burl bowl" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="craft-card-body">
+          <div class="craft-card-title">Burl bowl</div>
+          <div class="craft-card-desc">Figured birch · Hand-carved</div>
+        </div>
+      </div>
+      <div class="craft-card fade-in">
+        <div class="craft-card-img"><img src="Personal projects/R0005065.JPG" alt="Bowl interior" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="craft-card-body">
+          <div class="craft-card-title">Interior</div>
+          <div class="craft-card-desc">Birch burl · Thin walls</div>
+        </div>
+      </div>
+      <div class="craft-card fade-in">
+        <div class="craft-card-img"><img src="Personal projects/R0004843.jpeg" alt="Kuksa with coffee" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="craft-card-body">
+          <div class="craft-card-title">Morning kuksa</div>
+          <div class="craft-card-desc">Burl · Natural edge · In use</div>
+        </div>
+      </div>
+      <div class="craft-card fade-in">
+        <div class="craft-card-img"><img src="Personal projects/R0004837.jpeg" alt="Kuksa with natural hole" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="craft-card-body">
+          <div class="craft-card-title">Kuksa</div>
+          <div class="craft-card-desc">Burl · Organic form</div>
+        </div>
+      </div>
+      <div class="craft-card fade-in">
+        <div class="craft-card-img"><img src="Personal projects/R0004798.jpeg" alt="Figurative sculpture in progress" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="craft-card-body">
+          <div class="craft-card-title">Figure</div>
+          <div class="craft-card-desc">Birch log · In progress</div>
+        </div>
+      </div>
+      <div class="craft-card fade-in">
+        <div class="craft-card-img"><img src="Personal projects/Carving.jpeg" alt="Carving in progress" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="craft-card-body">
+          <div class="craft-card-title">In the making</div>
+          <div class="craft-card-desc">Process · Gouge work</div>
+        </div>
+      </div>
+      <a class="craft-card fade-in" href="https://legendary-unicorn-aac069.netlify.app/" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+        <div class="craft-card-img" style="background:#1a1a2e;display:flex;align-items:center;justify-content:center;">
+          <span style="font-size:2rem;letter-spacing:0.1em;color:#e8e3da;opacity:0.85;">🌪</span>
+        </div>
+        <div class="craft-card-body">
+          <div class="craft-card-title">Twister — Desert</div>
+          <div class="craft-card-desc">Browser game · Built with my daughter</div>
+        </div>
+      </a>
     </div>
   </div>
+</section>
 
-  <!-- WORK — rendered from projects.js -->
-  <section id="work">
-    <div class="section-inner">
-      <div class="section-header fade-in visible">
-        <h2 class="section-title">Selected Work</h2>
+<!-- ABOUT STRIP -->
+<section class="about-section" id="about">
+  <div class="section-inner">
+    <p class="sec-eyebrow fade-in">About</p>
+    <p class="about-quote fade-in">I've spent my career at the intersection of design and product — figuring out <strong>what to build</strong> as much as how to make it look and feel right. I care about craft, but I care more about whether the thing actually works for people.</p>
+    <div class="about-facts fade-in">
+      <div>
+        <p class="about-fact-label">Currently</p>
+        <p class="about-fact-value">Open to senior product &amp; design leadership roles</p>
       </div>
-      <div class="work-grid" id="work-grid"></div>
-    </div>
-  </section>
-
-  <script src="projects.js"></script>
-  <script>
-    (function () {
-      const grid = document.getElementById('work-grid');
-      const visible = PROJECTS
-        .filter(p => p.visible && p.category !== 'personal')
-        .sort((a, b) => a.order - b.order);
-
-      visible.forEach((p, i) => {
-        const isFeatured = p.featured && i === 0;
-        const a = document.createElement('a');
-        a.href = p.href;
-        a.className = 'work-card fade-in' + (i === 0 ? ' visible' : '');
-        a.style.background = p.bg;
-        if (isFeatured) a.style.gridColumn = '1 / -1';
-
-        const mediaEl = p.mediaType === 'video' && p.mediaSrc
-          ? `<video src="${p.mediaSrc}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.9;"></video>`
-          : p.mediaSrc
-            ? `<img src="${p.mediaSrc}" alt="${p.title}" style="width:100%;height:100%;object-fit:cover;">`
-            : `<div class="work-card-img-placeholder">Project Image</div>`;
-
-        a.innerHTML = `
-          <div class="work-card-img" style="background:${p.bg};overflow:hidden;position:relative;">
-            ${mediaEl}
-          </div>
-          <div class="work-card-body" style="background:${p.bodyBg};">
-            <span class="work-card-title" style="color:${p.textColor};">${p.title}</span>
-            <span class="work-card-meta">${p.meta}</span>
-          </div>`;
-        grid.appendChild(a);
-      });
-    })();
-  </script>
-
-  <!-- PERSONAL PROJECTS -->
-  <section id="personal">
-    <div class="section-inner">
-      <div class="section-header fade-in">
-        <h2 class="section-title">Personal Projects</h2>
+      <div>
+        <p class="about-fact-label">Based in</p>
+        <p class="about-fact-value">Mölndal, Sweden</p>
       </div>
-      <p class="craft-intro fade-in">Tools, experiments, and things made with my hands — outside of client work.</p>
-
-      <p class="craft-sub-label fade-in">Tools &amp; experiments</p>
-      <div class="work-grid" id="tool-grid" style="margin-bottom: 4rem;"></div>
-      <script>
-        (function () {
-          const toolGrid = document.getElementById('tool-grid');
-          const personal = PROJECTS
-            .filter(p => p.visible && p.category === 'personal')
-            .sort((a, b) => a.order - b.order);
-          personal.forEach(function(p) {
-            const a = document.createElement('a');
-            a.href = p.href;
-            a.className = 'work-card fade-in';
-            a.style.background = p.bg;
-            const mediaEl = p.mediaType === 'video' && p.mediaSrc
-              ? '<video src="' + p.mediaSrc + '" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.9;"></video>'
-              : p.mediaSrc
-                ? '<img src="' + p.mediaSrc + '" alt="' + p.title + '" style="width:100%;height:100%;object-fit:cover;">'
-                : '<div class="work-card-img-placeholder">' + p.title + '</div>';
-            a.innerHTML =
-              '<div class="work-card-img" style="background:' + p.bg + ';overflow:hidden;position:relative;">' +
-                mediaEl +
-              '</div>' +
-              '<div class="work-card-body" style="background:' + p.bodyBg + ';">' +
-                '<span class="work-card-title" style="color:' + p.textColor + ';">' + p.title + '</span>' +
-                '<span class="work-card-meta">' + p.meta + '</span>' +
-              '</div>';
-            toolGrid.appendChild(a);
-          });
-        })();
-      </script>
-
-      <!-- LIVE TOOLS STRIP -->
-      <div class="live-tools-strip fade-in">
-        <p class="craft-sub-label" style="margin-bottom: 0.75rem;">Try the tools</p>
-        <div class="live-tools-row">
-          <a href="https://dazzling-yeot-1dac53.netlify.app/" target="_blank" rel="noopener" class="live-tool-link">
-            <span class="live-tool-name">Bubble Studio</span>
-            <span class="live-tool-arrow">↗</span>
-          </a>
-          <a href="https://astounding-basbousa-8022d9.netlify.app/" target="_blank" rel="noopener" class="live-tool-link">
-            <span class="live-tool-name">Wallpaper Studio</span>
-            <span class="live-tool-arrow">↗</span>
-          </a>
-          <a href="#" class="live-tool-link" style="opacity: 0.4; pointer-events: none;">
-            <span class="live-tool-name">Motion Hero Generator</span>
-            <span class="live-tool-arrow" style="font-size: 0.7rem; letter-spacing: .08em;">soon</span>
-          </a>
-        </div>
+      <div>
+        <p class="about-fact-label">Approach</p>
+        <p class="about-fact-value">Design that earns its place — every decision tied to a reason, every detail considered.</p>
       </div>
-
-      <p class="craft-sub-label fade-in">Craft</p>
-      <p class="craft-intro fade-in" style="margin-top: -1rem;">Wood carving.</p>
-      <div class="craft-grid">
-        <div class="craft-card fade-in">
-          <div class="craft-card-img">
-            <img src="Personal projects/R0005059.JPG" alt="Burl bowl" style="width:100%;height:100%;object-fit:cover;">
-          </div>
-          <div class="craft-card-body">
-            <div class="craft-card-title">Burl bowl</div>
-            <div class="craft-card-desc">Figured birch · Hand-carved</div>
-          </div>
-        </div>
-        <div class="craft-card fade-in">
-          <div class="craft-card-img">
-            <img src="Personal projects/R0005065.JPG" alt="Bowl interior" style="width:100%;height:100%;object-fit:cover;">
-          </div>
-          <div class="craft-card-body">
-            <div class="craft-card-title">Interior</div>
-            <div class="craft-card-desc">Birch burl · Thin walls</div>
-          </div>
-        </div>
-        <div class="craft-card fade-in">
-          <div class="craft-card-img">
-            <img src="Personal projects/R0004843.jpeg" alt="Kuksa with coffee" style="width:100%;height:100%;object-fit:cover;">
-          </div>
-          <div class="craft-card-body">
-            <div class="craft-card-title">Morning kuksa</div>
-            <div class="craft-card-desc">Burl · Natural edge · In use</div>
-          </div>
-        </div>
-        <div class="craft-card fade-in">
-          <div class="craft-card-img">
-            <img src="Personal projects/R0004837.jpeg" alt="Kuksa with natural hole" style="width:100%;height:100%;object-fit:cover;">
-          </div>
-          <div class="craft-card-body">
-            <div class="craft-card-title">Kuksa</div>
-            <div class="craft-card-desc">Burl · Organic form</div>
-          </div>
-        </div>
-        <div class="craft-card fade-in">
-          <div class="craft-card-img">
-            <img src="Personal projects/R0004798.jpeg" alt="Figurative sculpture in progress" style="width:100%;height:100%;object-fit:cover;">
-          </div>
-          <div class="craft-card-body">
-            <div class="craft-card-title">Figure</div>
-            <div class="craft-card-desc">Birch log · In progress</div>
-          </div>
-        </div>
-        <div class="craft-card fade-in">
-          <div class="craft-card-img">
-            <img src="Personal projects/Carving.jpeg" alt="Carving in progress" style="width:100%;height:100%;object-fit:cover;">
-          </div>
-          <div class="craft-card-body">
-            <div class="craft-card-title">In the making</div>
-            <div class="craft-card-desc">Process · Gouge work</div>
-          </div>
-        </div>
-        <a class="craft-card fade-in" href="https://legendary-unicorn-aac069.netlify.app/" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
-          <div class="craft-card-img" style="background:#1a1a2e;display:flex;align-items:center;justify-content:center;">
-            <span style="font-family:monospace;font-size:2rem;letter-spacing:0.1em;color:#e8e3da;opacity:0.85;">🌪</span>
-          </div>
-          <div class="craft-card-body">
-            <div class="craft-card-title">Twister — Desert</div>
-            <div class="craft-card-desc">Browser game · Built with my daughter</div>
-          </div>
-        </a>
+      <div>
+        <p class="about-fact-label">Outside of work</p>
+        <p class="about-fact-value">Wood carving, iOS tinkering, and generative graphics experiments.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ABOUT -->
-  <section class="about-section" id="about">
-    <div class="section-inner">
-      <div class="about-grid">
-        <div class="fade-in">
-          <p class="about-bio">
-            I've spent my career at the intersection of design and product — figuring out <strong>what to build</strong> as much as how to make it look and feel right. I care about craft, but I care more about whether the thing actually works for people.
-          </p>
-        </div>
-        <div class="about-details fade-in">
-          <div>
-            <p class="about-detail-label">Currently</p>
-            <p class="about-detail-value">Open to senior product &amp; design leadership roles</p>
-          </div>
-          <div>
-            <p class="about-detail-label">Based in</p>
-            <p class="about-detail-value">Mölndal, Sweden</p>
-          </div>
-          <div>
-            <p class="about-detail-label">Approach</p>
-            <p class="about-detail-value">Design that earns its place — every decision tied to a reason, every detail considered.</p>
-          </div>
-          <div>
-            <p class="about-detail-label">Outside of work</p>
-            <p class="about-detail-value">Wood carving, iOS tinkering, and generative graphics experiments.</p>
-          </div>
-        </div>
+<!-- WRITING -->
+<section id="writing">
+  <div class="section-inner">
+    <div class="sec-head fade-in">
+      <div>
+        <p class="sec-eyebrow">03 — Writing</p>
+        <h2>Writing</h2>
       </div>
+      <a href="writing.html" class="sec-link">All articles →</a>
     </div>
-  </section>
-
-  <!-- WRITING -->
-  <section id="writing">
-    <div class="section-inner">
-      <div class="section-header fade-in">
-        <h2 class="section-title">Writing</h2>
-        <a href="writing.html" class="section-link">All articles →</a>
-      </div>
-      <div class="writing-list">
-        <a href="article-continuous-discovery.html" class="writing-card fade-in">
-          <div>
-            <div class="writing-card-title">Kicking it off</div>
-            <div class="writing-card-desc">How we got continuous discovery up and running at Sleep Cycle — from sporadic research bursts to weekly user sessions with every product team.</div>
-          </div>
-          <span class="writing-card-date">Jun 2026</span>
-        </a>
-        <a href="writing.html" class="writing-card fade-in">
-          <div>
-            <div class="writing-card-title">Article Title Two</div>
-            <div class="writing-card-desc">Another piece — a short description sitting here to show how this section flows with multiple entries.</div>
-          </div>
-          <span class="writing-card-date">Mar 2025</span>
-        </a>
-        <a href="writing.html" class="writing-card fade-in">
-          <div>
-            <div class="writing-card-title">Article Title Three</div>
-            <div class="writing-card-desc">A third article to round out the section and show the rhythm of the list layout.</div>
-          </div>
-          <span class="writing-card-date">Jan 2025</span>
-        </a>
-      </div>
+    <div class="writing-list">
+      <a href="article-continuous-discovery.html" class="writing-row fade-in">
+        <span class="writing-date">Jun 2026</span>
+        <div>
+          <div class="writing-title">Kicking it off</div>
+          <div class="writing-desc">How we got continuous discovery up and running at Sleep Cycle — from sporadic research bursts to weekly user sessions with every product team.</div>
+        </div>
+        <span class="writing-arrow">→</span>
+      </a>
+      <a href="writing.html" class="writing-row fade-in">
+        <span class="writing-date">Mar 2025</span>
+        <div>
+          <div class="writing-title">Article Title Two</div>
+          <div class="writing-desc">Another piece — a short description sitting here to show how this section flows with multiple entries.</div>
+        </div>
+        <span class="writing-arrow">→</span>
+      </a>
+      <a href="writing.html" class="writing-row fade-in">
+        <span class="writing-date">Jan 2025</span>
+        <div>
+          <div class="writing-title">Article Title Three</div>
+          <div class="writing-desc">A third article to round out the section and show the rhythm of the list layout.</div>
+        </div>
+        <span class="writing-arrow">→</span>
+      </a>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-inner">
-      <span class="footer-name">Fredrik Påhlman — Design &amp; Product</span>
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <p class="footer-eyebrow fade-in">Let's build something</p>
+    <a href="mailto:fredrikande@gmail.com" class="footer-mail fade-in">fredrikande@gmail.com</a>
+    <div class="footer-bottom">
+      <span>© 2026 Fredrik Påhlman — Design &amp; Product</span>
       <ul class="footer-links">
         <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">LinkedIn</a></li>
         <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">Read.cv</a></li>
         <li><a href="mailto:fredrikande@gmail.com">Email</a></li>
       </ul>
     </div>
-  </footer>
+  </div>
+</footer>
 
-  <script>
-    // Nav border on scroll
-    const nav = document.getElementById('nav');
-    window.addEventListener('scroll', () => {
-      nav.classList.toggle('scrolled', window.scrollY > 10);
-    });
+<script>
+(function () {
+  const root = document.documentElement;
+  const PAL_HEX = {
+    slate:    { deep:'#0a1018', mid:'#46566e', hi:'#c4d2e4' },
+    twilight: { deep:'#1a0a24', mid:'#b026a6', hi:'#f6c453' },
+    ember:    { deep:'#1a0900', mid:'#e0561c', hi:'#ffb648' },
+    ocean:    { deep:'#02141f', mid:'#0e7d99', hi:'#7fe3f0' },
+    forest:   { deep:'#04150b', mid:'#1f7a3f', hi:'#b6e860' }
+  };
+  const PALETTES = Object.keys(PAL_HEX);
+  const MODES = ['liquid', 'ink', 'dots', 'pixel'];
+  const MODE_INDEX = { liquid: 0, ink: 1, dots: 2, pixel: 3 };
 
-    // Fade-in on scroll
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
-      { threshold: 0.12 }
-    );
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-  </script>
+  const state = { theme: 'dark', palette: 'twilight', mode: 'liquid', turb: 3.5, panelOpen: true };
 
+  function themeLabel() { return state.theme === 'dark' ? '☾ Dark' : '☀ Light'; }
 
-</body></html>
+  function applyChrome() {
+    root.setAttribute('data-theme', state.theme);
+    root.setAttribute('data-palette', state.palette);
+    document.getElementById('theme-toggle').textContent = themeLabel();
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
+    document.querySelectorAll('.swatch').forEach(b => b.classList.toggle('active', b.dataset.palette === state.palette));
+    document.getElementById('turb-label').textContent = state.turb.toFixed(1);
+    document.getElementById('turb-slider').value = state.turb;
+    document.getElementById('gen-panel').style.display = state.panelOpen ? 'block' : 'none';
+    document.getElementById('gen-pill').style.display = state.panelOpen ? 'none' : 'inline-flex';
+  }
+
+  // ---- interactions ----
+  document.getElementById('theme-toggle').addEventListener('click', function () {
+    state.theme = state.theme === 'dark' ? 'light' : 'dark';
+    applyChrome();
+  });
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', function () { state.mode = btn.dataset.mode; applyChrome(); });
+  });
+  document.querySelectorAll('.swatch').forEach(btn => {
+    btn.addEventListener('click', function () { state.palette = btn.dataset.palette; applyChrome(); });
+  });
+  document.getElementById('turb-slider').addEventListener('input', function (e) {
+    state.turb = parseFloat(e.target.value);
+    applyChrome();
+  });
+  document.getElementById('shuffle-btn').addEventListener('click', function () {
+    state.mode = MODES[Math.floor(Math.random() * MODES.length)];
+    state.palette = PALETTES[Math.floor(Math.random() * PALETTES.length)];
+    state.turb = Math.round((1.8 + Math.random() * 3.2) * 10) / 10;
+    applyChrome();
+  });
+  document.getElementById('gen-close').addEventListener('click', function () { state.panelOpen = false; applyChrome(); });
+  document.getElementById('gen-pill').addEventListener('click', function () { state.panelOpen = true; applyChrome(); });
+
+  applyChrome();
+
+  // ---- WebGL hero generator ----
+  (function initGL() {
+    const canvas = document.getElementById('hero-canvas');
+    const gl = canvas.getContext('webgl', { antialias: false, preserveDrawingBuffer: false }) || canvas.getContext('experimental-webgl');
+    if (!gl) { canvas.style.display = 'none'; return; }
+
+    const VERT = 'attribute vec2 a_pos; void main(){gl_Position=vec4(a_pos,0.,1.);}';
+    const FRAG = [
+      '#ifdef GL_ES',
+      'precision highp float;',
+      '#endif',
+      'uniform float u_time,u_turb,u_grain,u_contrast,u_scale,u_mode,u_grid;',
+      'uniform vec2 u_res; uniform vec3 u_cDeep,u_cMid,u_cHi;',
+      'float h21(vec2 p){p=fract(p*vec2(234.34,435.345));p+=dot(p,p+34.23);return fract(p.x*p.y);}',
+      'float vn(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.-2.*f);return mix(mix(h21(i),h21(i+vec2(1,0)),u.x),mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),u.x),u.y);}',
+      'float fbm(vec2 p,float oct){float v=0.,a=.5;mat2 r=mat2(.8,.6,-.6,.8);for(int i=0;i<8;i++){float b=clamp(oct-float(i),0.,1.);v+=a*vn(p)*b;p=r*p*2.+100.;a*=.5;}return v;}',
+      'vec2 warp(vec2 p,float t,float oct){vec2 q=vec2(fbm(p+t*vec2(1.,.9),oct),fbm(p+t*vec2(.78,1.15)+vec2(5.2,1.3),oct));vec2 r=vec2(fbm(p+1.6*q+vec2(1.7,9.2)+t*.55,oct),fbm(p+1.6*q+vec2(8.3,2.8)+t*.48,oct));return r;}',
+      'float field(vec2 p,float t,float oct){vec2 r=warp(p,t,oct);return fbm(p+2.0*r,oct);}',
+      'vec3 pal(float f){vec3 c=u_cDeep;c=mix(c,u_cMid,smoothstep(.2,.55,f));c=mix(c,u_cHi,smoothstep(.5,.82,f));return c;}',
+      'void main(){',
+      ' float asp=u_res.x/u_res.y; float t=u_time*.18; vec3 col;',
+      ' if(u_mode>2.5){',
+      '   float pN=u_grid; vec2 sp=gl_FragCoord.xy/u_res.y; vec2 id=floor(sp*pN); vec2 cc=(id+.5)/(pN*vec2(asp,1.));',
+      '   vec2 p=(cc-.5)*vec2(asp,1.)*u_scale; float f=field(p,t,u_turb); col=pal(f); float n=3.0; col=floor(col*n+.5)/n;',
+      ' } else if(u_mode>1.5){',
+      '   float pN=u_grid; vec2 sp=gl_FragCoord.xy/u_res.y; vec2 id=floor(sp*pN); vec2 cc=(id+.5)/(pN*vec2(asp,1.));',
+      '   vec2 p=(cc-.5)*vec2(asp,1.)*u_scale; float f=field(p,t,u_turb);',
+      '   vec2 luv=fract(sp*pN)-.5; float rad=sqrt(clamp(f,0.,1.))*0.66; float d=length(luv);',
+      '   float m=smoothstep(rad,rad-0.07,d); col=mix(u_cDeep,pal(f),m);',
+      ' } else if(u_mode>0.5){',
+      '   vec2 uv=(gl_FragCoord.xy/u_res-.5)*vec2(asp,1.); vec2 p=uv*u_scale; float f=field(p,t,u_turb);',
+      '   float b=smoothstep(.40,.45,f)+smoothstep(.60,.65,f); float ff=0.18+b*0.4;',
+      '   col=pal(ff); col*=0.88+0.12*fbm(p*4.0+t,u_turb);',
+      ' } else {',
+      '   vec2 uv=(gl_FragCoord.xy/u_res-.5)*vec2(asp,1.); vec2 p=uv*u_scale; float f=field(p,t,u_turb); col=pal(f);',
+      ' }',
+      ' col=max(col,0.); col=pow(col,vec3(u_contrast));',
+      ' vec2 vd=gl_FragCoord.xy/u_res-.5; vec2 vd2=vd*vec2(1.2,1.4); col*=clamp(1.-dot(vd2,vd2),0.,1.);',
+      ' if(u_grain>.001){float g=h21(gl_FragCoord.xy/u_res*934.7+vec2(fract(t*119.3)));col+=(g*2.-1.)*u_grain;}',
+      ' gl_FragColor=vec4(clamp(col,0.,1.),1.);',
+      '}'
+    ].join('\n');
+
+    function mk(src, ty) { const s = gl.createShader(ty); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+    const prog = gl.createProgram();
+    gl.attachShader(prog, mk(VERT, gl.VERTEX_SHADER));
+    gl.attachShader(prog, mk(FRAG, gl.FRAGMENT_SHADER));
+    gl.linkProgram(prog); gl.useProgram(prog);
+    const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]), gl.STATIC_DRAW);
+    const ap = gl.getAttribLocation(prog, 'a_pos');
+    gl.enableVertexAttribArray(ap); gl.vertexAttribPointer(ap, 2, gl.FLOAT, false, 0, 0);
+
+    const U = {};
+    ['u_time','u_res','u_cDeep','u_cMid','u_cHi','u_turb','u_grain','u_contrast','u_scale','u_mode','u_grid'].forEach(n => U[n] = gl.getUniformLocation(prog, n));
+
+    function h3(h) { return [parseInt(h.slice(1,3),16)/255, parseInt(h.slice(3,5),16)/255, parseInt(h.slice(5,7),16)/255]; }
+
+    function resize() {
+      const d = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(canvas.clientWidth * d);
+      canvas.height = Math.floor(canvas.clientHeight * d);
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const t0 = performance.now();
+    let frames = 0, lastFps = t0, raf = null;
+    const fpsEl = document.getElementById('gen-fps');
+
+    function renderFrame() {
+      const now = performance.now();
+      const t = (now - t0) / 1000;
+      const pal = PAL_HEX[state.palette];
+      gl.uniform1f(U.u_time, t);
+      gl.uniform2f(U.u_res, canvas.width, canvas.height);
+      gl.uniform3fv(U.u_cDeep, h3(pal.deep));
+      gl.uniform3fv(U.u_cMid, h3(pal.mid));
+      gl.uniform3fv(U.u_cHi, h3(pal.hi));
+      gl.uniform1f(U.u_mode, MODE_INDEX[state.mode] || 0);
+      gl.uniform1f(U.u_grid, state.mode === 'pixel' ? 26 : (state.mode === 'dots' ? 46 : 1));
+      gl.uniform1f(U.u_turb, state.turb);
+      gl.uniform1f(U.u_contrast, 0.85);
+      gl.uniform1f(U.u_scale, 2.0);
+      gl.uniform1f(U.u_grain, 0.0);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      frames++;
+      if (now - lastFps > 500) {
+        fpsEl.textContent = Math.round(frames * 1000 / (now - lastFps)) + ' fps';
+        frames = 0; lastFps = now;
+      }
+    }
+
+    if (reduceMotion) {
+      renderFrame();
+    } else {
+      (function loop() { renderFrame(); raf = requestAnimationFrame(loop); })();
+    }
+  })();
+
+  // ---- nav border on scroll ----
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.style.borderBottomColor = window.scrollY > 10 ? 'var(--line)' : 'transparent';
+  });
+
+  // ---- fade-in on scroll ----
+  const observer = new IntersectionObserver(
+    (entries) => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
+    { threshold: 0.12 }
+  );
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+})();
+</script>
+
+</body>
+</html>
