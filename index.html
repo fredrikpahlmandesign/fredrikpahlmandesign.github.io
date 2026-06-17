@@ -86,6 +86,11 @@
     border: 1px solid var(--line); border-radius: 100px;
     padding: 8px 16px; font-weight: 600; color: var(--fg) !important;
   }
+  .nav-resume-pill {
+    border: 1px solid var(--accent); border-radius: 100px;
+    padding: 8px 16px; font-size: .8rem; font-weight: 600;
+    color: var(--accent) !important; text-decoration: none; white-space: nowrap;
+  }
   .nav-right { display: flex; align-items: center; gap: 14px; }
   .theme-toggle {
     font-family: 'JetBrains Mono', monospace; font-size: .68rem; letter-spacing: .06em;
@@ -438,32 +443,74 @@
 <script src="projects.js"></script>
 <script>
   (function () {
+    const SUPABASE_URL = "https://nsnkcsuqguhkfrpdwfgt.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zbmtjc3VxZ3Voa2ZycGR3Zmd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxMzg2ODUsImV4cCI6MjA5MzcxNDY4NX0.SiM0QUikOXLVUuCm4MSsc4ITqPKpgtWKKN0zEatHkrw";
     const grid = document.getElementById('work-grid');
-    const visible = PROJECTS
+
+    function renderWork(list) {
+      grid.innerHTML = '';
+      list.forEach((p, i) => {
+        const isFeatured = p.featured && i === 0;
+        const a = document.createElement('a');
+        a.href = p.href;
+        a.className = 'work-card fade-in' + (i === 0 ? ' visible' : '');
+        if (isFeatured) a.style.gridColumn = '1 / -1';
+
+        const mediaEl = p.mediaType === 'video' && p.mediaSrc
+          ? `<video src="${p.mediaSrc}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.92;"></video>`
+          : p.mediaSrc
+            ? `<img src="${p.mediaSrc}" alt="${p.title}" style="width:100%;height:100%;object-fit:cover;">`
+            : `<div class="work-card-img-placeholder">Project Image</div>`;
+
+        a.innerHTML = `
+          <div class="work-card-img">${mediaEl}</div>
+          <div class="work-card-body">
+            <span class="work-card-title">${p.title}</span>
+            <span class="work-card-meta">${p.meta}</span>
+          </div>`;
+        grid.appendChild(a);
+      });
+    }
+
+    const defaultVisible = PROJECTS
       .filter(p => p.visible && p.category !== 'personal')
       .sort((a, b) => a.order - b.order);
+    renderWork(defaultVisible);
 
-    visible.forEach((p, i) => {
-      const isFeatured = p.featured && i === 0;
-      const a = document.createElement('a');
-      a.href = p.href;
-      a.className = 'work-card fade-in' + (i === 0 ? ' visible' : '');
-      if (isFeatured) a.style.gridColumn = '1 / -1';
+    // Tailored job-application link: ?ref=<code> swaps in a custom case
+    // selection/order (and surfaces an adapted resume link), defined in admin.html.
+    let ref = null;
+    try { ref = new URLSearchParams(window.location.search).get('ref'); } catch (e) {}
 
-      const mediaEl = p.mediaType === 'video' && p.mediaSrc
-        ? `<video src="${p.mediaSrc}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.92;"></video>`
-        : p.mediaSrc
-          ? `<img src="${p.mediaSrc}" alt="${p.title}" style="width:100%;height:100%;object-fit:cover;">`
-          : `<div class="work-card-img-placeholder">Project Image</div>`;
-
-      a.innerHTML = `
-        <div class="work-card-img">${mediaEl}</div>
-        <div class="work-card-body">
-          <span class="work-card-title">${p.title}</span>
-          <span class="work-card-meta">${p.meta}</span>
-        </div>`;
-      grid.appendChild(a);
-    });
+    if (ref) {
+      fetch(`${SUPABASE_URL}/rest/v1/job_links?ref=eq.${encodeURIComponent(ref)}&select=*`, {
+        headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }
+      })
+        .then(r => r.ok ? r.json() : [])
+        .then(rows => {
+          const link = rows && rows[0];
+          if (!link) return;
+          if (Array.isArray(link.visible_ids) && link.visible_ids.length) {
+            const custom = link.visible_ids
+              .map(id => PROJECTS.find(p => p.id === id))
+              .filter(Boolean);
+            if (custom.length) renderWork(custom);
+          }
+          if (link.resume_url) {
+            const navRight = document.querySelector('.nav-right');
+            if (navRight) {
+              const pill = document.createElement('a');
+              pill.href = link.resume_url;
+              pill.target = '_blank';
+              pill.rel = 'noopener';
+              pill.className = 'nav-resume-pill';
+              pill.textContent = 'Tailored resume ↗';
+              navRight.insertBefore(pill, navRight.firstChild);
+            }
+          }
+        })
+        .catch(() => {});
+    }
   })();
 </script>
 
@@ -866,5 +913,6 @@
 })();
 </script>
 
+  <script src="analytics.js"></script>
 </body>
 </html>

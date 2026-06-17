@@ -290,6 +290,92 @@
       z-index: 200;
     }
     .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* PANELS (Job links / Analytics) */
+    .panel {
+      background: #fff;
+      border: 1px solid var(--bg-alt);
+      border-radius: 6px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .panel h3 { font-size: 0.9375rem; font-weight: 500; margin-bottom: 0.5rem; }
+
+    .field-row { margin-bottom: 1rem; }
+    .field-row label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      margin-bottom: 0.4rem;
+    }
+    .field-row input[type="text"] {
+      width: 100%;
+      font-family: var(--sans);
+      font-size: 0.875rem;
+      padding: 0.6rem 0.75rem;
+      border: 1.5px solid var(--bg-alt);
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    .field-row input:focus { outline: none; border-color: var(--accent); }
+
+    .case-picker { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+    .case-picker-row {
+      display: flex; align-items: center; gap: 0.6rem;
+      background: var(--bg); border: 1px solid var(--bg-alt); border-radius: 4px;
+      padding: 0.5rem 0.75rem; font-size: 0.85rem;
+      cursor: default; user-select: none;
+    }
+    .case-picker-row.excluded { opacity: 0.45; }
+    .case-picker-row .drag-handle { cursor: grab; color: var(--ink-light); }
+    .case-picker-row .cp-title { flex: 1; }
+
+    .generated-link-box {
+      display: none;
+      background: var(--green-bg);
+      border-radius: 4px;
+      padding: 0.875rem 1rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      word-break: break-all;
+    }
+    .generated-link-box.show { display: block; }
+    .generated-link-box code { font-family: monospace; }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: #fff;
+      border: 1px solid var(--bg-alt);
+      border-radius: 6px;
+      padding: 1rem;
+    }
+    .stat-num { font-family: var(--serif); font-size: 1.6rem; font-weight: 400; }
+    .stat-label { font-size: 0.7rem; color: var(--ink-mid); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.2rem; }
+
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.825rem; margin-bottom: 1rem; }
+    .data-table th, .data-table td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--bg-alt); }
+    .data-table th { color: var(--ink-mid); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .data-table td.num { text-align: right; font-family: monospace; }
+    .data-table .row-actions { text-align: right; white-space: nowrap; }
+    .data-table .link-btn { font-size: 0.75rem; color: var(--accent); background: none; border: none; cursor: pointer; padding: 0; }
+    .data-table .link-btn.danger { color: #B3261E; }
+
+    .ip-banner {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+      background: #fff; border: 1px solid var(--bg-alt); border-radius: 6px;
+      padding: 0.875rem 1.1rem; margin-bottom: 1.5rem; font-size: 0.85rem;
+    }
+    .ip-banner code { font-family: monospace; }
+    .empty-note { font-size: 0.825rem; color: var(--ink-light); padding: 0.25rem 0 1rem; }
   </style>
 </head>
 <body>
@@ -324,6 +410,75 @@
         <button class="btn btn-save" onclick="saveAndDownload()">↓ Download projects.js</button>
       </div>
     </div>
+
+    <hr class="divider">
+
+    <h1 class="page-heading" style="font-size:1.4rem;">Job application links</h1>
+    <p class="page-sub">Create a tailored link for a specific job — pick which cases show (and in what order), optionally attach an adapted resume, and get one shareable URL. Visits to each link are tracked below.</p>
+
+    <div class="panel">
+      <h3>New link</h3>
+      <div class="field-row">
+        <label for="jl-label">Label</label>
+        <input type="text" id="jl-label" placeholder="e.g. Acme Corp — Senior Product Designer">
+      </div>
+      <div class="field-row">
+        <label>Cases to include (drag to reorder, uncheck to hide)</label>
+        <div class="case-picker" id="case-picker"></div>
+      </div>
+      <div class="field-row">
+        <label for="jl-resume">Adapted resume (filename in this folder, or full URL — optional)</label>
+        <input type="text" id="jl-resume" placeholder="resumes/acme-corp.html">
+      </div>
+      <div class="field-row">
+        <label for="jl-notes">Notes (private, optional)</label>
+        <input type="text" id="jl-notes" placeholder="e.g. applied 2026-06-17, referred by Jane">
+      </div>
+      <button class="btn btn-primary" onclick="createJobLink()">Create link</button>
+      <div class="generated-link-box" id="generated-link-box">
+        Shareable link: <code id="generated-link-text"></code>
+        <button class="btn btn-outline" style="margin-left:0.75rem;" onclick="copyGeneratedLink()">Copy</button>
+      </div>
+    </div>
+
+    <p class="section-label">Existing links</p>
+    <table class="data-table" id="job-links-table">
+      <thead>
+        <tr><th>Label</th><th>Cases</th><th>Resume</th><th class="num">Visits</th><th></th></tr>
+      </thead>
+      <tbody id="job-links-tbody"></tbody>
+    </table>
+    <p class="empty-note" id="job-links-empty" style="display:none;">No job links yet — create one above.</p>
+
+    <hr class="divider">
+
+    <h1 class="page-heading" style="font-size:1.4rem;">Analytics</h1>
+    <p class="page-sub">Visit counts across the whole site. Register your own IP below to separate your visits from outside visitors. Heads up: since this page has no login, anyone who finds it (or its embedded key) can also see this data — fine for personal-portfolio stats, but worth knowing.</p>
+
+    <div class="ip-banner">
+      <span>Your current IP: <code id="my-ip">detecting…</code></span>
+      <button class="btn btn-outline" id="register-ip-btn" onclick="registerOwnerIp()">This is me — remember this IP</button>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Total visits</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-owner">—</div><div class="stat-label">Your visits</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-other">—</div><div class="stat-label">Other visitors</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-7d">—</div><div class="stat-label">Last 7 days</div></div>
+    </div>
+
+    <p class="section-label">Registered owner IPs</p>
+    <table class="data-table" id="owner-ips-table">
+      <thead><tr><th>IP</th><th>Label</th><th>Added</th><th></th></tr></thead>
+      <tbody id="owner-ips-tbody"></tbody>
+    </table>
+    <p class="empty-note" id="owner-ips-empty" style="display:none;">No owner IPs registered yet.</p>
+
+    <p class="section-label" style="margin-top:1.5rem;">Visits by page</p>
+    <table class="data-table" id="by-path-table">
+      <thead><tr><th>Page</th><th class="num">Total</th><th class="num">Others</th></tr></thead>
+      <tbody id="by-path-tbody"></tbody>
+    </table>
   </main>
 
   <div class="toast" id="toast"></div>
@@ -454,8 +609,283 @@
       t._timer = setTimeout(() => t.classList.remove('show'), 3000);
     }
 
+    // ── Supabase (analytics + job links backend) ────
+    const SUPABASE_URL = "https://nsnkcsuqguhkfrpdwfgt.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zbmtjc3VxZ3Voa2ZycGR3Zmd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxMzg2ODUsImV4cCI6MjA5MzcxNDY4NX0.SiM0QUikOXLVUuCm4MSsc4ITqPKpgtWKKN0zEatHkrw";
+
+    function sbHeaders(extra) {
+      return Object.assign({
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      }, extra || {});
+    }
+    async function sbSelect(table, query) {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { headers: sbHeaders() });
+      if (!res.ok) throw new Error('select failed: ' + table);
+      return res.json();
+    }
+    async function sbInsert(table, row) {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+        method: 'POST',
+        headers: sbHeaders({ Prefer: 'return=representation' }),
+        body: JSON.stringify(row)
+      });
+      if (!res.ok) throw new Error('insert failed: ' + table);
+      return res.json();
+    }
+    async function sbDelete(table, query) {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, {
+        method: 'DELETE',
+        headers: sbHeaders()
+      });
+      if (!res.ok) throw new Error('delete failed: ' + table);
+    }
+
+    function siteBaseUrl() {
+      if (window.location.protocol.indexOf('http') === 0) return window.location.origin + '/';
+      return 'https://fredrikpahlmandesign.github.io/';
+    }
+
+    // ── Job links: case picker ──────────────────────
+    let jobLinks = [];
+    let jlCases = projects
+      .filter(p => p.id !== 'placeholder')
+      .map(p => ({
+        id: p.id,
+        title: p.title,
+        included: !!(p.visible && p.category !== 'personal'),
+        _order: p.order
+      }));
+
+    function renderCasePicker() {
+      jlCases.sort((a, b) => a._order - b._order);
+      const wrap = document.getElementById('case-picker');
+      wrap.innerHTML = '';
+      let dragSrc = null;
+      jlCases.forEach((c) => {
+        const row = document.createElement('div');
+        row.className = 'case-picker-row' + (c.included ? '' : ' excluded');
+        row.setAttribute('draggable', 'true');
+        row.dataset.id = c.id;
+        row.innerHTML = `
+          <span class="drag-handle" title="Drag to reorder">⠿</span>
+          <input type="checkbox" ${c.included ? 'checked' : ''} onchange="toggleCaseIncluded('${c.id}', this.checked)">
+          <span class="cp-title">${c.title}</span>
+        `;
+        row.addEventListener('dragstart', () => { dragSrc = c.id; });
+        row.addEventListener('dragover', e => e.preventDefault());
+        row.addEventListener('drop', e => {
+          e.preventDefault();
+          if (dragSrc && dragSrc !== c.id) {
+            const srcIdx = jlCases.findIndex(x => x.id === dragSrc);
+            const dstIdx = jlCases.findIndex(x => x.id === c.id);
+            const tmp = jlCases[srcIdx]._order;
+            jlCases[srcIdx]._order = jlCases[dstIdx]._order;
+            jlCases[dstIdx]._order = tmp;
+            renderCasePicker();
+          }
+        });
+        wrap.appendChild(row);
+      });
+    }
+
+    function toggleCaseIncluded(id, checked) {
+      const c = jlCases.find(x => x.id === id);
+      if (c) c.included = checked;
+      renderCasePicker();
+    }
+
+    function slugify(s) {
+      return (s || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+
+    async function createJobLink() {
+      const label = document.getElementById('jl-label').value.trim();
+      if (!label) { showToast('Add a label first'); return; }
+      const included = jlCases.filter(c => c.included).map(c => c.id);
+      if (!included.length) { showToast('Include at least one case'); return; }
+
+      let ref = slugify(label) || 'job';
+      const existingRefs = new Set(jobLinks.map(j => j.ref));
+      if (existingRefs.has(ref)) ref = ref + '-' + Date.now().toString(36).slice(-4);
+
+      const resumeRaw = document.getElementById('jl-resume').value.trim();
+      const notes = document.getElementById('jl-notes').value.trim();
+      let resume_url = null;
+      if (resumeRaw) {
+        resume_url = /^https?:\/\//i.test(resumeRaw) ? resumeRaw : siteBaseUrl() + resumeRaw.replace(/^\/+/, '');
+      }
+
+      try {
+        await sbInsert('job_links', {
+          ref, label,
+          visible_ids: included,
+          resume_url,
+          resume_filename: resumeRaw || null,
+          notes: notes || null
+        });
+        showToast('Link created');
+        document.getElementById('jl-label').value = '';
+        document.getElementById('jl-resume').value = '';
+        document.getElementById('jl-notes').value = '';
+        const url = `${siteBaseUrl()}index.html?ref=${encodeURIComponent(ref)}`;
+        const box = document.getElementById('generated-link-box');
+        document.getElementById('generated-link-text').textContent = url;
+        box.classList.add('show');
+        box.dataset.url = url;
+        await loadJobLinks();
+      } catch (e) {
+        showToast('Could not create link — check your connection');
+      }
+    }
+
+    function copyGeneratedLink() {
+      const box = document.getElementById('generated-link-box');
+      if (box.dataset.url) navigator.clipboard.writeText(box.dataset.url).then(() => showToast('Link copied'));
+    }
+
+    function copyJobLinkUrl(btn) {
+      navigator.clipboard.writeText(btn.dataset.url).then(() => showToast('Link copied'));
+    }
+
+    async function loadJobLinks() {
+      try {
+        jobLinks = await sbSelect('job_links', 'select=*&order=created_at.desc');
+      } catch (e) { jobLinks = []; }
+
+      let visitCounts = {};
+      try {
+        const views = await sbSelect('page_views', 'select=ref&ref=not.is.null');
+        views.forEach(v => { visitCounts[v.ref] = (visitCounts[v.ref] || 0) + 1; });
+      } catch (e) {}
+
+      const tbody = document.getElementById('job-links-tbody');
+      tbody.innerHTML = '';
+      document.getElementById('job-links-empty').style.display = jobLinks.length ? 'none' : 'block';
+      jobLinks.forEach(j => {
+        const tr = document.createElement('tr');
+        const url = `${siteBaseUrl()}index.html?ref=${encodeURIComponent(j.ref)}`;
+        tr.innerHTML = `
+          <td>${j.label}</td>
+          <td>${(j.visible_ids || []).length}</td>
+          <td>${j.resume_url ? '✓' : '—'}</td>
+          <td class="num">${visitCounts[j.ref] || 0}</td>
+          <td class="row-actions">
+            <button class="link-btn" data-url="${url}" onclick="copyJobLinkUrl(this)">Copy link</button>
+            &nbsp;·&nbsp;
+            <button class="link-btn danger" onclick="deleteJobLink('${j.ref}')">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function deleteJobLink(ref) {
+      if (!confirm('Delete this job link? Past visit history for it is kept either way.')) return;
+      try {
+        await sbDelete('job_links', `ref=eq.${encodeURIComponent(ref)}`);
+        showToast('Link deleted');
+        await loadJobLinks();
+      } catch (e) { showToast('Could not delete link'); }
+    }
+
+    // ── Analytics ────────────────────────────────────
+    let myIp = null;
+
+    async function detectMyIp() {
+      try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        myIp = data.ip;
+        document.getElementById('my-ip').textContent = myIp || 'unknown';
+      } catch (e) {
+        document.getElementById('my-ip').textContent = 'unavailable';
+      }
+    }
+
+    async function registerOwnerIp() {
+      if (!myIp) { showToast('IP not detected yet'); return; }
+      const label = prompt('Label for this IP (e.g. "Home wifi")', '') || 'My device';
+      try {
+        await sbInsert('owner_ips', { ip: myIp, label });
+        showToast('IP registered');
+        await loadOwnerIps();
+        await loadAnalytics();
+      } catch (e) {
+        showToast('Could not register — it may already be registered');
+      }
+    }
+
+    async function loadOwnerIps() {
+      let ips = [];
+      try { ips = await sbSelect('owner_ips', 'select=*&order=added_at.desc'); } catch (e) {}
+      const tbody = document.getElementById('owner-ips-tbody');
+      tbody.innerHTML = '';
+      document.getElementById('owner-ips-empty').style.display = ips.length ? 'none' : 'block';
+      ips.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><code>${o.ip}</code></td>
+          <td>${o.label || ''}</td>
+          <td>${new Date(o.added_at).toLocaleDateString()}</td>
+          <td class="row-actions"><button class="link-btn danger" onclick="deleteOwnerIp('${o.ip}')">Remove</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function deleteOwnerIp(ip) {
+      try {
+        await sbDelete('owner_ips', `ip=eq.${encodeURIComponent(ip)}`);
+        showToast('Removed');
+        await loadOwnerIps();
+        await loadAnalytics();
+      } catch (e) { showToast('Could not remove'); }
+    }
+
+    async function loadAnalytics() {
+      let views = [];
+      try { views = await sbSelect('page_views', 'select=path,ip,ref,created_at&order=created_at.desc&limit=5000'); } catch (e) {}
+      let ownerIps = [];
+      try { ownerIps = await sbSelect('owner_ips', 'select=ip'); } catch (e) {}
+      const ownerSet = new Set(ownerIps.map(o => o.ip));
+
+      const total = views.length;
+      const ownerCount = views.filter(v => v.ip && ownerSet.has(v.ip)).length;
+      const otherCount = total - ownerCount;
+      const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const last7 = views.filter(v => new Date(v.created_at).getTime() >= sevenDaysAgo).length;
+
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-owner').textContent = ownerCount;
+      document.getElementById('stat-other').textContent = otherCount;
+      document.getElementById('stat-7d').textContent = last7;
+
+      const byPath = {};
+      views.forEach(v => {
+        const key = v.path || '(unknown)';
+        if (!byPath[key]) byPath[key] = { total: 0, other: 0 };
+        byPath[key].total++;
+        if (!(v.ip && ownerSet.has(v.ip))) byPath[key].other++;
+      });
+      const rows = Object.entries(byPath).sort((a, b) => b[1].total - a[1].total);
+      const tbody = document.getElementById('by-path-tbody');
+      tbody.innerHTML = '';
+      rows.forEach(([path, c]) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${path}</td><td class="num">${c.total}</td><td class="num">${c.other}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
     // ── Init ───────────────────────────────────────
     render();
+    renderCasePicker();
+    loadJobLinks();
+    detectMyIp();
+    loadOwnerIps();
+    loadAnalytics();
   </script>
 
 </body>
