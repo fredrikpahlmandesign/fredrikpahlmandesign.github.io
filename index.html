@@ -38,6 +38,7 @@
   [data-palette="ember"]    { --accent:#f0823a; --p-deep:#1a0900; --p-mid:#e0561c; --p-hi:#ffb648; }
   [data-palette="ocean"]    { --accent:#2aa5c2; --p-deep:#02141f; --p-mid:#0e7d99; --p-hi:#7fe3f0; }
   [data-palette="forest"]   { --accent:#3aa55f; --p-deep:#04150b; --p-mid:#1f7a3f; --p-hi:#b6e860; }
+  [data-palette="custom"]   { --accent:#e08a3a; --p-deep:#11091b; --p-mid:#e06113; --p-hi:#abf9a4; }
 
   html { scroll-behavior: smooth; }
   body {
@@ -376,9 +377,10 @@
         <button class="swatch" data-palette="ember" type="button" style="background:linear-gradient(135deg,#3a1405,#e0561c 58%,#ffb648)" aria-label="Ember"></button>
         <button class="swatch" data-palette="ocean" type="button" style="background:linear-gradient(135deg,#063042,#0e7d99 58%,#7fe3f0)" aria-label="Ocean"></button>
         <button class="swatch" data-palette="forest" type="button" style="background:linear-gradient(135deg,#0a2614,#1f7a3f 58%,#b6e860)" aria-label="Forest"></button>
+        <button class="swatch" data-palette="custom" type="button" style="background:linear-gradient(135deg,#11091b,#e06113 58%,#abf9a4)" aria-label="Custom"></button>
       </div>
-      <div class="turb-row"><span>Turbulence</span><span id="turb-label">3.5</span></div>
-      <input type="range" id="turb-slider" min="1.5" max="5" step="0.1" value="3.5">
+      <div class="turb-row"><span>Turbulence</span><span id="turb-label">8.0</span></div>
+      <input type="range" id="turb-slider" min="1.5" max="8" step="0.1" value="8">
       <button class="shuffle-btn" id="shuffle-btn" type="button">✶ Shuffle the vibe</button>
     </div>
     <button class="gen-pill" id="gen-pill" type="button" style="display:none;">
@@ -652,13 +654,14 @@
     twilight: { deep:'#1a0a24', mid:'#b026a6', hi:'#f6c453' },
     ember:    { deep:'#1a0900', mid:'#e0561c', hi:'#ffb648' },
     ocean:    { deep:'#02141f', mid:'#0e7d99', hi:'#7fe3f0' },
-    forest:   { deep:'#04150b', mid:'#1f7a3f', hi:'#b6e860' }
+    forest:   { deep:'#04150b', mid:'#1f7a3f', hi:'#b6e860' },
+    custom:   { deep:'#11091b', mid:'#e06113', hi:'#abf9a4' }
   };
   const PALETTES = Object.keys(PAL_HEX);
   const MODES = ['liquid', 'ink', 'dots', 'pixel'];
   const MODE_INDEX = { liquid: 0, ink: 1, dots: 2, pixel: 3 };
 
-  const state = { theme: 'dark', palette: 'twilight', mode: 'liquid', turb: 3.5, panelOpen: true };
+  const state = { theme: 'dark', palette: 'custom', mode: 'pixel', turb: 8, panelOpen: true };
 
   function themeLabel() { return state.theme === 'dark' ? '☾ Dark' : '☀ Light'; }
 
@@ -723,7 +726,7 @@
       ' float asp=u_res.x/u_res.y; float t=u_time*.18; vec3 col;',
       ' if(u_mode>2.5){',
       '   float pN=u_grid; vec2 sp=gl_FragCoord.xy/u_res.y; vec2 id=floor(sp*pN); vec2 cc=(id+.5)/(pN*vec2(asp,1.));',
-      '   vec2 p=(cc-.5)*vec2(asp,1.)*u_scale; float f=field(p,t,u_turb); col=pal(f); float n=3.0; col=floor(col*n+.5)/n;',
+      '   vec2 p=(cc-.5)*vec2(asp,1.)*u_scale; float f=field(p,t,u_turb); col=pal(f); float n=7.0; col=floor(col*n+.5)/n;',
       ' } else if(u_mode>1.5){',
       '   float pN=u_grid; vec2 sp=gl_FragCoord.xy/u_res.y; vec2 id=floor(sp*pN); vec2 cc=(id+.5)/(pN*vec2(asp,1.));',
       '   vec2 p=(cc-.5)*vec2(asp,1.)*u_scale; float f=field(p,t,u_turb);',
@@ -782,11 +785,11 @@
       gl.uniform3fv(U.u_cMid, h3(pal.mid));
       gl.uniform3fv(U.u_cHi, h3(pal.hi));
       gl.uniform1f(U.u_mode, MODE_INDEX[state.mode] || 0);
-      gl.uniform1f(U.u_grid, state.mode === 'pixel' ? 26 : (state.mode === 'dots' ? 46 : 1));
+      gl.uniform1f(U.u_grid, state.mode === 'pixel' ? 83 : (state.mode === 'dots' ? 46 : 1));
       gl.uniform1f(U.u_turb, state.turb);
-      gl.uniform1f(U.u_contrast, 0.85);
-      gl.uniform1f(U.u_scale, 2.0);
-      gl.uniform1f(U.u_grain, 0.0);
+      gl.uniform1f(U.u_contrast, state.mode === 'pixel' ? 0.79 : 0.85);
+      gl.uniform1f(U.u_scale, state.mode === 'pixel' ? 1.65 : 2.0);
+      gl.uniform1f(U.u_grain, state.mode === 'pixel' ? 0.012 : 0.0);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       frames++;
       if (now - lastFps > 500) {
