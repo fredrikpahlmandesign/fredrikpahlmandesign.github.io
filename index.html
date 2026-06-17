@@ -189,6 +189,16 @@
     backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,.14); color: #eef1f6;
     font-size: .82rem; font-weight: 500; cursor: pointer; flex-shrink: 0;
   }
+  .gen-toast {
+    position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(10px);
+    z-index: 5; max-width: min(90vw, 420px); display: flex; align-items: center; gap: 9px;
+    padding: 11px 20px; border-radius: 100px; background: rgba(14,17,24,.88);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,.14); color: #eef1f6; font-size: .82rem; font-weight: 500;
+    opacity: 0; pointer-events: none; transition: opacity .35s ease, transform .35s ease;
+  }
+  .gen-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .gen-toast .gen-dot { flex-shrink: 0; }
 
   /* ── MARQUEE ── */
   .marquee-wrap { overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 18px 0; }
@@ -387,6 +397,7 @@
       <span class="gen-dot"></span> Hero Generator
     </button>
   </div>
+  <div class="gen-toast" id="gen-toast"><span class="gen-dot"></span><span id="gen-toast-text"></span></div>
 </header>
 
 <!-- SKILLS MARQUEE -->
@@ -663,6 +674,37 @@
 
   const state = { theme: 'dark', palette: 'custom', mode: 'pixel', turb: 8, panelOpen: true };
 
+  // ---- "designing together" feedback toast ----
+  // Fires on interaction 1, 4, 9, 16 ... (perfect squares) so it celebrates
+  // engagement without nagging on every single tweak.
+  const TOAST_MESSAGES = [
+    'Great, we’re already designing things together!',
+    'Now you’re cooking with shaders.',
+    'Good eye, that combo works.',
+    'You’ve got the controls now. Keep going.',
+    'That’s the kind of choice a designer makes.'
+  ];
+  let toastInteractions = 0;
+  let toastStep = 0;
+  let toastTimer = null;
+
+  function showToast(msg) {
+    const el = document.getElementById('gen-toast');
+    document.getElementById('gen-toast-text').textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+  }
+
+  function registerDesignInteraction() {
+    toastInteractions++;
+    const nextMilestone = (toastStep + 1) * (toastStep + 1); // 1, 4, 9, 16 ...
+    if (toastInteractions === nextMilestone) {
+      showToast(TOAST_MESSAGES[toastStep % TOAST_MESSAGES.length]);
+      toastStep++;
+    }
+  }
+
   function themeLabel() { return state.theme === 'dark' ? '☾ Dark' : '☀ Light'; }
 
   function applyChrome() {
@@ -683,20 +725,24 @@
     applyChrome();
   });
   document.querySelectorAll('.mode-btn').forEach(btn => {
-    btn.addEventListener('click', function () { state.mode = btn.dataset.mode; applyChrome(); });
+    btn.addEventListener('click', function () { state.mode = btn.dataset.mode; applyChrome(); registerDesignInteraction(); });
   });
   document.querySelectorAll('.swatch').forEach(btn => {
-    btn.addEventListener('click', function () { state.palette = btn.dataset.palette; applyChrome(); });
+    btn.addEventListener('click', function () { state.palette = btn.dataset.palette; applyChrome(); registerDesignInteraction(); });
   });
   document.getElementById('turb-slider').addEventListener('input', function (e) {
     state.turb = parseFloat(e.target.value);
     applyChrome();
+  });
+  document.getElementById('turb-slider').addEventListener('change', function () {
+    registerDesignInteraction();
   });
   document.getElementById('shuffle-btn').addEventListener('click', function () {
     state.mode = MODES[Math.floor(Math.random() * MODES.length)];
     state.palette = PALETTES[Math.floor(Math.random() * PALETTES.length)];
     state.turb = Math.round((1.8 + Math.random() * 3.2) * 10) / 10;
     applyChrome();
+    registerDesignInteraction();
   });
   document.getElementById('gen-close').addEventListener('click', function () { state.panelOpen = false; applyChrome(); });
   document.getElementById('gen-pill').addEventListener('click', function () { state.panelOpen = true; applyChrome(); });
