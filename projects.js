@@ -125,7 +125,7 @@ const PROJECTS = [
     bg: "#0F1C12",
     bodyBg: "#0F1C12",
     textColor: "#D8EBD8",
-    mediaSrc: "Portfolio Assets/CarbonCloud/Product-page-Portfolio-.webp",
+    mediaSrc: "Portfolio Assets/CarbonCloud/CarbonCloud tool.png",
     mediaType: "image",
     order: 4
   },

@@ -108,6 +108,20 @@
         radial-gradient(ellipse at 15% 80%, rgba(45,90,61,0.12) 0%, transparent 45%);
       pointer-events: none;
     }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('Portfolio%20Assets/CarbonCloud/CarbonCloud%20tool.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.3;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, #0F1C12 5%, rgba(15,28,18,0.55) 45%, rgba(15,28,18,0.15) 100%);
+    }
     .hero-inner {
       position: relative;
       max-width: var(--max);
@@ -495,6 +509,7 @@
 
   <!-- HERO -->
   <header class="hero" id="hero">
+    <div class="hero-bg"></div>
     <div class="hero-inner">
       <div>
         <img src="Portfolio%20Assets/CarbonCloud/CarbonCloud%20Logo.webp" alt="CarbonCloud" style="height:28px;opacity:0.55;margin-bottom:1.75rem;filter:invert(1);display:block;">
