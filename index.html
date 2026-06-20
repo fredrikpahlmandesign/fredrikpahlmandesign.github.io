@@ -70,9 +70,10 @@
   }
   .nav-left { display: flex; align-items: center; gap: 10px; text-decoration: none; }
   .nav-badge {
-    width: 26px; height: 26px; border-radius: 7px; background: var(--accent);
+    width: 26px; height: 26px; border-radius: 50%; background: var(--accent);
     color: #fff; font-weight: 700; font-size: .8rem;
     display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    object-fit: cover;
     transition: background .3s;
   }
   .nav-wordmark { font-weight: 600; font-size: .95rem; color: var(--fg); }
@@ -340,7 +341,7 @@
 <!-- NAV -->
 <nav id="nav">
   <a href="index.html" class="nav-left">
-    <span class="nav-badge">F</span>
+    <img class="nav-badge" src="Fredrik%20portr%C3%A4tt%20cropped.jpeg" alt="Fredrik Påhlman">
     <span class="nav-wordmark">Fredrik Påhlman</span>
   </a>
   <ul class="nav-links">

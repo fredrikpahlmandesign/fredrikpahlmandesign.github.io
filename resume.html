@@ -127,6 +127,18 @@
       margin-bottom: 3.5rem;
     }
     @media (max-width: 600px) { .resume-head { grid-template-columns: 1fr; } }
+    .resume-head-top {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .resume-photo {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
     .resume-head-name {
       font-family: var(--serif);
       font-weight: 300;
@@ -230,11 +242,13 @@
       font-size: 0.875rem;
       font-weight: 500;
       color: var(--ink);
+      background: transparent;
       text-decoration: none;
       border: 1.5px solid var(--ink);
       padding: 0.6rem 1.25rem;
       border-radius: 3px;
       margin-top: 3rem;
+      cursor: pointer;
       transition: background 0.2s, color 0.2s;
     }
     .resume-download:hover { background: var(--ink); color: var(--bg); }
@@ -260,6 +274,7 @@
         margin-bottom: 2rem;
       }
       .resume-head-name { font-size: 2.25rem; }
+      .resume-photo { width: 60px; height: 60px; }
       .resume-section { margin-bottom: 1.75rem; }
       .resume-entry { padding: 1rem 0; }
       .resume-entry-desc { font-size: 0.875rem; }
@@ -457,9 +472,12 @@
   function renderHead(v) {
     const head = document.getElementById('resume-head');
     head.innerHTML = `
-      <div>
-        <h1 class="resume-head-name">Fredrik<br>Påhlman</h1>
-        <p class="resume-head-title">${v.headTitle}</p>
+      <div class="resume-head-top">
+        <img src="Fredrik%20portr%C3%A4tt%20cropped.jpeg" alt="Fredrik Påhlman" class="resume-photo">
+        <div>
+          <h1 class="resume-head-name">Fredrik<br>Påhlman</h1>
+          <p class="resume-head-title">${v.headTitle}</p>
+        </div>
       </div>
       <div class="resume-head-contact">
         <a href="mailto:fredrikande@gmail.com">fredrikande@gmail.com</a>
