@@ -1,11 +1,11 @@
 // ── Visit tracker ────────────────────────────────────────────────────────
-// Fire-and-forget pageview logger. Logs to Supabase so admin.html can show
+// Fire-and-forget pageview logger. Logs to Supabase so nätmästare.html can show
 // visit counts (total, your own vs. other visitors, and per job-link ref).
 // Never throws, never blocks rendering — a failed/slow request just means
 // one missed log entry, nothing else on the page is affected.
 (function () {
   var SUPABASE_URL = "https://nsnkcsuqguhkfrpdwfgt.supabase.co";
-  var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zbmtjc3VxZ3Voa2ZycGR3Zmd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxMzg2ODUsImV4cCI6MjA5MzcxNDY4NX0.SiM0QUikOXLVUuCm4MSsc4ITqPKpgtWKKN0zEatHkrw";
+  var SUPABASE_ANON_KEY = "sb_publishable_X__6nXH2SDs0q6cPvj8B-w_ZI0EVZFl";
 
   function getRef() {
     try {

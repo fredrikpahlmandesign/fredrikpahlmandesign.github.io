@@ -1,5 +1,5 @@
 // ── Portfolio project config ──────────────────────────────────────────────
-// Edit here or use admin.html to manage projects without touching code.
+// Edit here or use nätmästare.html to manage projects without touching code.
 //
 // Fields:
 //   id         – unique slug (no spaces)
@@ -99,7 +99,7 @@ const PROJECTS = [
     textColor: "#E8F0F5",
     mediaSrc: "Portfolio Assets/Astra Zeneca turbu plus.png",
     mediaType: "image",
-    order: 2
+    order: 6
   },
   {
     id: "ascom",
@@ -113,7 +113,7 @@ const PROJECTS = [
     textColor: "#F0EBE0",
     mediaSrc: "Portfolio Assets/Ascom Myco.png",
     mediaType: "image",
-    order: 3
+    order: 7
   },
   {
     id: "carboncloud",

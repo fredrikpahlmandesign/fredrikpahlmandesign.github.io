@@ -32,6 +32,26 @@
       min-height: 100vh;
     }
 
+    /* PASSWORD GATE */
+    html.gate-locked body > *:not(#gate-overlay) { display: none !important; }
+    html:not(.gate-locked) #gate-overlay { display: none !important; }
+    #gate-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #gate-overlay .gate-box { width: 100%; max-width: 300px; padding: 2rem; text-align: center; }
+    #gate-overlay h1 { font-family: var(--serif); font-size: 1.125rem; font-weight: 400; margin-bottom: 1.5rem; }
+    #gate-overlay input {
+      width: 100%; padding: 0.7rem 0.9rem; border: 1px solid var(--bg-alt); border-radius: 4px;
+      font-family: var(--sans); font-size: 0.9375rem; margin-bottom: 0.75rem; background: #fff; color: var(--ink);
+    }
+    #gate-overlay button {
+      width: 100%; padding: 0.7rem 0.9rem; border: none; border-radius: 4px;
+      background: var(--ink); color: var(--bg); font-family: var(--sans); font-size: 0.875rem; cursor: pointer;
+    }
+    #gate-overlay .gate-error { color: var(--accent); font-size: 0.8125rem; margin-top: 0.75rem; min-height: 1.2em; }
+
     /* TOP BAR */
     .topbar {
       position: sticky;
@@ -377,8 +397,41 @@
     .ip-banner code { font-family: monospace; }
     .empty-note { font-size: 0.825rem; color: var(--ink-light); padding: 0.25rem 0 1rem; }
   </style>
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem('nm_auth') === '1') return;
+      } catch (e) {}
+      document.documentElement.classList.add('gate-locked');
+    })();
+  </script>
 </head>
 <body>
+
+  <div id="gate-overlay">
+    <div class="gate-box">
+      <h1>Enter password</h1>
+      <form id="gate-form" autocomplete="off">
+        <input type="password" id="gate-input" placeholder="Password" autofocus>
+        <button type="submit">Unlock</button>
+        <p class="gate-error" id="gate-error"></p>
+      </form>
+    </div>
+  </div>
+  <script>
+    document.getElementById('gate-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const val = document.getElementById('gate-input').value;
+      if (val === 'kollochkontroll') {
+        try { localStorage.setItem('nm_auth', '1'); } catch (e) {}
+        document.documentElement.classList.remove('gate-locked');
+      } else {
+        document.getElementById('gate-error').textContent = 'Incorrect password.';
+        document.getElementById('gate-input').value = '';
+        document.getElementById('gate-input').focus();
+      }
+    });
+  </script>
 
   <div class="topbar">
     <div class="topbar-left">
@@ -558,7 +611,7 @@
       sorted.forEach((p, i) => p.order = i);
       const lines = [
         '// ── Portfolio project config ──────────────────────────────────────────────',
-        '// Edit here or use admin.html to manage projects without touching code.',
+        '// Edit here or use nätmästare.html to manage projects without touching code.',
         '//',
         '// Fields:',
         '//   id         – unique slug (no spaces)',
@@ -611,7 +664,7 @@
 
     // ── Supabase (analytics + job links backend) ────
     const SUPABASE_URL = "https://nsnkcsuqguhkfrpdwfgt.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zbmtjc3VxZ3Voa2ZycGR3Zmd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxMzg2ODUsImV4cCI6MjA5MzcxNDY4NX0.SiM0QUikOXLVUuCm4MSsc4ITqPKpgtWKKN0zEatHkrw";
+    const SUPABASE_ANON_KEY = "sb_publishable_X__6nXH2SDs0q6cPvj8B-w_ZI0EVZFl";
 
     function sbHeaders(extra) {
       return Object.assign({
