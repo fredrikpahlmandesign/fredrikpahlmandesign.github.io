@@ -97,7 +97,7 @@ const PROJECTS = [
     bg: "#0A1626",
     bodyBg: "#0A1626",
     textColor: "#E8F0F5",
-    mediaSrc: "Portfolio Assets/Astra Zeneca turbu plus.png",
+    mediaSrc: "Portfolio Assets/Turbu hero.png",
     mediaType: "image",
     order: 6
   },
