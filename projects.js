@@ -116,6 +116,20 @@ const PROJECTS = [
     order: 7
   },
   {
+    id: "vasttrafik",
+    title: "Västtrafik — Ticket Validators",
+    meta: "UX Designer · Public Transport",
+    href: "project-vasttrafik.html",
+    visible: true,
+    featured: false,
+    bg: "#1C232C",
+    bodyBg: "#1C232C",
+    textColor: "#E8EDF2",
+    mediaSrc: "Portfolio Assets/V\u00e4sttrafik/devices-full.png",
+    mediaType: "image",
+    order: 8
+  },
+  {
     id: "carboncloud",
     title: "CarbonCloud — Head of Product",
     meta: "Product & UX Lead · Climate Tech",
