@@ -467,20 +467,20 @@
     <hr class="divider">
 
     <h1 class="page-heading" style="font-size:1.4rem;">Job application links</h1>
-    <p class="page-sub">Create a tailored link for a specific job — pick which cases show (and in what order), optionally attach an adapted resume, and get one shareable URL. Visits to each link are tracked below.</p>
+    <p class="page-sub">Create a tailored link for a specific job, pick which cases show (and in what order), optionally attach an adapted resume, and get one shareable URL. Visits to each link are tracked below.</p>
 
     <div class="panel">
       <h3>New link</h3>
       <div class="field-row">
         <label for="jl-label">Label</label>
-        <input type="text" id="jl-label" placeholder="e.g. Acme Corp — Senior Product Designer">
+        <input type="text" id="jl-label" placeholder="e.g. Acme Corp, Senior Product Designer">
       </div>
       <div class="field-row">
         <label>Cases to include (drag to reorder, uncheck to hide)</label>
         <div class="case-picker" id="case-picker"></div>
       </div>
       <div class="field-row">
-        <label for="jl-resume">Adapted resume (filename in this folder, or full URL — optional)</label>
+        <label for="jl-resume">Adapted resume (filename in this folder, or full URL, optional)</label>
         <input type="text" id="jl-resume" placeholder="resumes/acme-corp.html">
       </div>
       <div class="field-row">
@@ -501,16 +501,16 @@
       </thead>
       <tbody id="job-links-tbody"></tbody>
     </table>
-    <p class="empty-note" id="job-links-empty" style="display:none;">No job links yet — create one above.</p>
+    <p class="empty-note" id="job-links-empty" style="display:none;">No job links yet, create one above.</p>
 
     <hr class="divider">
 
     <h1 class="page-heading" style="font-size:1.4rem;">Analytics</h1>
-    <p class="page-sub">Visit counts across the whole site. Register your own IP below to separate your visits from outside visitors. Heads up: since this page has no login, anyone who finds it (or its embedded key) can also see this data — fine for personal-portfolio stats, but worth knowing.</p>
+    <p class="page-sub">Visit counts across the whole site. Register your own IP below to separate your visits from outside visitors. Heads up: since this page has no login, anyone who finds it (or its embedded key) can also see this data, fine for personal-portfolio stats, but worth knowing.</p>
 
     <div class="ip-banner">
       <span>Your current IP: <code id="my-ip">detecting…</code></span>
-      <button class="btn btn-outline" id="register-ip-btn" onclick="registerOwnerIp()">This is me — remember this IP</button>
+      <button class="btn btn-outline" id="register-ip-btn" onclick="registerOwnerIp()">This is me, remember this IP</button>
     </div>
 
     <div class="stat-grid">
@@ -562,7 +562,7 @@
             <div class="project-href">${p.href}</div>
           </div>
           ${p.featured ? '<span class="featured-badge">Featured</span>' : ''}
-          <label class="toggle" title="${p.visible ? 'Visible — click to hide' : 'Hidden — click to show'}">
+          <label class="toggle" title="${p.visible ? 'Visible, click to hide' : 'Hidden, click to show'}">
             <input type="checkbox" ${p.visible ? 'checked' : ''} onchange="toggleVisible('${p.id}', this.checked)">
             <div class="toggle-track"></div>
             <div class="toggle-thumb"></div>
@@ -618,7 +618,7 @@
         '//   title      – card title',
         '//   meta       – small label below title',
         '//   href       – project page URL',
-        '//   visible    – true/false — hidden projects don\'t appear on the home page',
+        '//   visible    – true/false, hidden projects don\'t appear on the home page',
         '//   featured   – true = full-width card (first position); only one at a time',
         '//   bg         – card background color',
         '//   bodyBg     – card footer/body background',
@@ -651,7 +651,7 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(a.href);
-      showToast('projects.js downloaded — replace the file and commit');
+      showToast('projects.js downloaded, replace the file and commit');
     }
 
     function showToast(msg) {
@@ -789,7 +789,7 @@
         box.dataset.url = url;
         await loadJobLinks();
       } catch (e) {
-        showToast('Could not create link — check your connection');
+        showToast('Could not create link, check your connection');
       }
     }
 
@@ -866,7 +866,7 @@
         await loadOwnerIps();
         await loadAnalytics();
       } catch (e) {
-        showToast('Could not register — it may already be registered');
+        showToast('Could not register, it may already be registered');
       }
     }
 

@@ -5,3 +5,10 @@ Thumbs.db
 # Files exceeding GitHub's 100MB limit — keep locally only
 Portfolio Assets/Sleep Cycle/Frame 1739329434_2.mov
 Portfolio Assets/Sleep Cycle/Onboarding AI video.mov
+
+# Local-only working files, not part of the live site
+_originals_backup_*/
+test-write-probe.html
+Skärmavbild*.png
+Portfolio Assets/Hero area studio/
+design_handoff_portfolio_hero/

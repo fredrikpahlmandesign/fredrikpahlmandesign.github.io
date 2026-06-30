@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fredrik Påhlman — Design &amp; Product</title>
+<title>Fredrik Påhlman, Design &amp; Product</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -341,7 +341,7 @@
 <!-- NAV -->
 <nav id="nav">
   <a href="index.html" class="nav-left">
-    <img class="nav-badge" src="Fredrik%20portr%C3%A4tt%20cropped.jpeg" alt="Fredrik Påhlman">
+    <img class="nav-badge" src="Portfolio%20Assets/fredrik-portratt-cropped.jpeg" alt="Fredrik Påhlman">
     <span class="nav-wordmark">Fredrik Påhlman</span>
   </a>
   <ul class="nav-links">
@@ -365,7 +365,7 @@
     <div class="hero-copy">
       <p class="hero-eyebrow">Design &amp; Product · Mölndal, Sweden</p>
       <h1>Fredrik<span class="accent-line">Påhlman</span></h1>
-      <p class="hero-tagline">I work at the intersection of product, design, and organisational change — figuring out what to build, and how to build the conditions that make good work possible.</p>
+      <p class="hero-tagline">I work at the intersection of product, design, and organisational change, figuring out what to build, and how to build the conditions that make good work possible.</p>
       <div class="hero-cta-row">
         <a href="#work" class="hero-cta">View selected work ↓</a>
         <p class="hero-helper">↗ This background is rendered live by a generative engine I built with AI. <a href="project-design-tools.html#hero-generator">See how it works →</a></p>
@@ -428,12 +428,12 @@
   </div>
 </div>
 
-<!-- WORK — rendered from projects.js -->
+<!-- WORK, rendered from projects.js -->
 <section id="work">
   <div class="section-inner">
     <div class="sec-head fade-in visible">
       <div>
-        <p class="sec-eyebrow">01 — Selected Work</p>
+        <p class="sec-eyebrow">01, Selected Work</p>
         <h2>Selected Work</h2>
       </div>
     </div>
@@ -457,10 +457,11 @@
         a.className = 'work-card fade-in' + (i === 0 ? ' visible' : '');
         if (isFeatured) a.style.gridColumn = '1 / -1';
 
+        const lazyAttrs = i === 0 ? '' : ' loading="lazy"';
         const mediaEl = p.mediaType === 'video' && p.mediaSrc
-          ? `<video src="${p.mediaSrc}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.92;"></video>`
+          ? `<video src="${p.mediaSrc}" autoplay muted loop playsinline preload="${i === 0 ? 'auto' : 'none'}"${lazyAttrs} style="width:100%;height:100%;object-fit:cover;opacity:0.92;"></video>`
           : p.mediaSrc
-            ? `<img src="${p.mediaSrc}" alt="${p.title}" style="width:100%;height:100%;object-fit:cover;">`
+            ? `<img src="${p.mediaSrc}" alt="${p.title}"${lazyAttrs} style="width:100%;height:100%;object-fit:cover;">`
             : `<div class="work-card-img-placeholder">Project Image</div>`;
 
         a.innerHTML = `
@@ -520,11 +521,11 @@
   <div class="section-inner">
     <div class="sec-head fade-in">
       <div>
-        <p class="sec-eyebrow">02 — Personal Projects</p>
+        <p class="sec-eyebrow">02, Personal Projects</p>
         <h2>Personal Projects</h2>
       </div>
     </div>
-    <p class="sec-intro fade-in">Tools, experiments, and things made with my hands — outside of client work.</p>
+    <p class="sec-intro fade-in">Tools, experiments, and things made with my hands, outside of client work.</p>
 
     <p class="sub-label fade-in">Tools &amp; experiments</p>
     <div class="work-grid" id="tool-grid" style="margin-bottom: 48px;"></div>
@@ -539,9 +540,9 @@
           a.href = p.href;
           a.className = 'work-card fade-in';
           const mediaEl = p.mediaType === 'video' && p.mediaSrc
-            ? '<video src="' + p.mediaSrc + '" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.92;"></video>'
+            ? '<video src="' + p.mediaSrc + '" autoplay muted loop playsinline preload="none" loading="lazy" style="width:100%;height:100%;object-fit:cover;opacity:0.92;"></video>'
             : p.mediaSrc
-              ? '<img src="' + p.mediaSrc + '" alt="' + p.title + '" style="width:100%;height:100%;object-fit:cover;">'
+              ? '<img src="' + p.mediaSrc + '" alt="' + p.title + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;">'
               : '<div class="work-card-img-placeholder">' + p.title + '</div>';
           a.innerHTML =
             '<div class="work-card-img">' + mediaEl + '</div>' +
@@ -577,42 +578,42 @@
     <p class="sec-intro fade-in" style="margin-top: -8px; margin-bottom: 24px;">Wood carving.</p>
     <div class="craft-grid">
       <div class="craft-card fade-in">
-        <div class="craft-card-img"><img src="Personal projects/R0005059.JPG" alt="Burl bowl" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="craft-card-img"><img src="Personal projects/R0005059.JPG" alt="Burl bowl" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div>
         <div class="craft-card-body">
           <div class="craft-card-title">Burl bowl</div>
           <div class="craft-card-desc">Figured birch · Hand-carved</div>
         </div>
       </div>
       <div class="craft-card fade-in">
-        <div class="craft-card-img"><img src="Personal projects/R0005065.JPG" alt="Bowl interior" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="craft-card-img"><img src="Personal projects/R0005065.JPG" alt="Bowl interior" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div>
         <div class="craft-card-body">
           <div class="craft-card-title">Interior</div>
           <div class="craft-card-desc">Birch burl · Thin walls</div>
         </div>
       </div>
       <div class="craft-card fade-in">
-        <div class="craft-card-img"><img src="Personal projects/R0004843.jpeg" alt="Kuksa with coffee" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="craft-card-img"><img src="Personal projects/R0004843.jpeg" alt="Kuksa with coffee" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div>
         <div class="craft-card-body">
           <div class="craft-card-title">Morning kuksa</div>
           <div class="craft-card-desc">Burl · Natural edge · In use</div>
         </div>
       </div>
       <div class="craft-card fade-in">
-        <div class="craft-card-img"><img src="Personal projects/R0004837.jpeg" alt="Kuksa with natural hole" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="craft-card-img"><img src="Personal projects/R0004837.jpeg" alt="Kuksa with natural hole" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div>
         <div class="craft-card-body">
           <div class="craft-card-title">Kuksa</div>
           <div class="craft-card-desc">Burl · Organic form</div>
         </div>
       </div>
       <div class="craft-card fade-in">
-        <div class="craft-card-img"><img src="Personal projects/R0004798.jpeg" alt="Figurative sculpture in progress" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="craft-card-img"><img src="Personal projects/R0004798.jpeg" alt="Figurative sculpture in progress" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div>
         <div class="craft-card-body">
           <div class="craft-card-title">Figure</div>
           <div class="craft-card-desc">Birch log · In progress</div>
         </div>
       </div>
       <div class="craft-card fade-in">
-        <div class="craft-card-img"><img src="Personal projects/Carving.jpeg" alt="Carving in progress" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="craft-card-img"><img src="Personal projects/Carving.jpeg" alt="Carving in progress" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div>
         <div class="craft-card-body">
           <div class="craft-card-title">In the making</div>
           <div class="craft-card-desc">Process · Gouge work</div>
@@ -623,7 +624,7 @@
           <span style="font-size:2rem;letter-spacing:0.1em;color:#e8e3da;opacity:0.85;">🌪</span>
         </div>
         <div class="craft-card-body">
-          <div class="craft-card-title">Twister — Desert</div>
+          <div class="craft-card-title">Twister, Desert</div>
           <div class="craft-card-desc">Browser game · Built with my daughter</div>
         </div>
       </a>
@@ -644,7 +645,7 @@
 <section class="about-section" id="about">
   <div class="section-inner">
     <p class="sec-eyebrow fade-in">About</p>
-    <p class="about-quote fade-in">I've spent my career at the intersection of design and product — figuring out <strong>what to build</strong> as much as how to make it look and feel right. I care about craft, but I care more about whether the thing actually works for people.</p>
+    <p class="about-quote fade-in">I've spent my career at the intersection of design and product, figuring out <strong>what to build</strong> as much as how to make it look and feel right. I care about craft, but I care more about whether the thing actually works for people.</p>
     <div class="about-facts fade-in">
       <div>
         <p class="about-fact-label">Currently</p>
@@ -656,7 +657,7 @@
       </div>
       <div>
         <p class="about-fact-label">Approach</p>
-        <p class="about-fact-value">Design that earns its place — every decision tied to a reason, every detail considered.</p>
+        <p class="about-fact-value">Design that earns its place, every decision tied to a reason, every detail considered.</p>
       </div>
       <div>
         <p class="about-fact-label">Outside of work</p>
@@ -671,7 +672,7 @@
   <div class="section-inner">
     <div class="sec-head fade-in">
       <div>
-        <p class="sec-eyebrow">03 — Writing</p>
+        <p class="sec-eyebrow">03, Writing</p>
         <h2>Writing</h2>
       </div>
       <a href="writing.html" class="sec-link">All articles →</a>
@@ -681,7 +682,7 @@
         <span class="writing-date">Jun 2026</span>
         <div>
           <div class="writing-title">Kicking it off</div>
-          <div class="writing-desc">How we got continuous discovery up and running at Sleep Cycle — from sporadic research bursts to weekly user sessions with every product team.</div>
+          <div class="writing-desc">How we got continuous discovery up and running at Sleep Cycle, from sporadic research bursts to weekly user sessions with every product team.</div>
         </div>
         <span class="writing-arrow">→</span>
       </a>
@@ -695,7 +696,7 @@
     <p class="footer-eyebrow fade-in">Let's build something</p>
     <a href="mailto:fredrikande@gmail.com" class="footer-mail fade-in">fredrikande@gmail.com</a>
     <div class="footer-bottom">
-      <span>© 2026 Fredrik Påhlman — Design &amp; Product</span>
+      <span>© 2026 Fredrik Påhlman, Design &amp; Product</span>
       <ul class="footer-links">
         <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">LinkedIn</a></li>
         <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">Read.cv</a></li>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resume — Fredrik Påhlman</title>
+  <title>Resume, Fredrik Påhlman</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -339,22 +339,22 @@
       <a href="resume.html" class="variant-link">View general version →</a>
     </div>
 
-    <!-- Header — populated by JS -->
+    <!-- Header, populated by JS -->
     <div class="resume-head" id="resume-head"></div>
 
-    <!-- Experience — populated by JS -->
+    <!-- Experience, populated by JS -->
     <div class="resume-section" id="section-experience">
       <div class="resume-section-label">Experience</div>
       <div class="resume-entries" id="entries-experience"></div>
     </div>
 
-    <!-- Education — populated by JS -->
+    <!-- Education, populated by JS -->
     <div class="resume-section" id="section-education">
       <div class="resume-section-label">Education</div>
       <div class="resume-entries" id="entries-education"></div>
     </div>
 
-    <!-- Skills — populated by JS -->
+    <!-- Skills, populated by JS -->
     <div class="resume-section" id="section-skills">
       <div class="resume-section-label">Skills</div>
       <div class="skills-grid" id="skills-grid"></div>
@@ -366,7 +366,7 @@
 
   <footer>
     <div class="footer-inner">
-      <span class="footer-name">Fredrik Påhlman — Design &amp; Product</span>
+      <span class="footer-name">Fredrik Påhlman, Design &amp; Product</span>
       <ul class="footer-links">
         <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">LinkedIn</a></li>
         <li><a href="https://read.cv/fredrik" target="_blank">Read.cv</a></li>
@@ -473,7 +473,7 @@
     const head = document.getElementById('resume-head');
     head.innerHTML = `
       <div class="resume-head-top">
-        <img src="Fredrik%20portr%C3%A4tt%20cropped.jpeg" alt="Fredrik Påhlman" class="resume-photo">
+        <img src="Portfolio%20Assets/fredrik-portratt-cropped.jpeg" alt="Fredrik Påhlman" class="resume-photo">
         <div>
           <h1 class="resume-head-name">Fredrik<br>Påhlman</h1>
           <p class="resume-head-title">${v.headTitle}</p>
@@ -531,9 +531,9 @@
     const variant = VARIANTS[token] || VARIANTS.default;
     const isVariant = token !== 'default' && VARIANTS[token];
 
-    // Update page title — use label, never the token
+    // Update page title, use label, never the token
     if (isVariant && variant.label) {
-      document.title = `Resume — Fredrik Påhlman`;
+      document.title = `Resume, Fredrik Påhlman`;
     }
 
     // Show variant banner (you see it; recipient just sees the resume)
@@ -541,7 +541,7 @@
       const banner = document.getElementById('variant-banner');
       banner.classList.add('visible');
       document.getElementById('variant-badge').textContent = variant.label || 'Variant';
-      document.getElementById('variant-label').textContent = 'Tailored version — only you see this banner';
+      document.getElementById('variant-label').textContent = 'Tailored version, only you see this banner';
     }
 
     renderHead(variant);

@@ -6,7 +6,7 @@
 //   title      – card title
 //   meta       – small label below title
 //   href       – project page URL
-//   visible    – true/false — hidden projects don't appear on the home page
+//   visible    – true/false, hidden projects don't appear on the home page
 //   featured   – true = full-width card (first position); only one at a time
 //   bg         – card background color
 //   bodyBg     – card footer/body background
@@ -89,7 +89,7 @@ const PROJECTS = [
   },
   {
     id: "astrazeneca",
-    title: "AstraZeneca — Turbu+",
+    title: "AstraZeneca, Turbu+",
     meta: "UX Design Lead · Healthcare",
     href: "project-astrazeneca.html",
     visible: true,
@@ -103,7 +103,7 @@ const PROJECTS = [
   },
   {
     id: "ascom",
-    title: "Ascom — Myco Handset",
+    title: "Ascom, Myco Handset",
     meta: "UX Lead · Medical Device",
     href: "project-ascom.html",
     visible: true,
@@ -111,13 +111,13 @@ const PROJECTS = [
     bg: "#2C2E33",
     bodyBg: "#2C2E33",
     textColor: "#F0EBE0",
-    mediaSrc: "Portfolio Assets/Ascom Myco.png",
+    mediaSrc: "Portfolio Assets/Ascom Myco.jpg",
     mediaType: "image",
     order: 7
   },
   {
     id: "vasttrafik",
-    title: "Västtrafik — Ticket Validators",
+    title: "Västtrafik, Ticket Validators",
     meta: "UX Designer · Public Transport",
     href: "project-vasttrafik.html",
     visible: true,
@@ -131,7 +131,7 @@ const PROJECTS = [
   },
   {
     id: "carboncloud",
-    title: "CarbonCloud — Head of Product",
+    title: "CarbonCloud, Head of Product",
     meta: "Product & UX Lead · Climate Tech",
     href: "project-carboncloud.html",
     visible: true,

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Design Tools — Fredrik Påhlman</title>
+  <title>Design Tools, Fredrik Påhlman</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -186,7 +186,7 @@
           <span class="mono-soft">2024–2025</span>
         </div>
         <h1>Design<br><em>Tools</em></h1>
-        <p class="thesis">Three parametric generators — bubbles, wallpapers, motion heroes — built by asking AI to build the tool, not produce the output.</p>
+        <p class="thesis">Three parametric generators, bubbles, wallpapers, motion heroes, built by asking AI to build the tool, not produce the output.</p>
       </div>
     </div>
   </header>
@@ -199,7 +199,7 @@
           <p class="kicker">The approach</p>
           <h2 style="font-size: clamp(24px, 3vw, 36px);">Parametric tools instead of prompt iteration</h2>
           <p>The common thread across all three: instead of generating an output with AI and reprompting until it's right, I describe the visual system and ask Claude to build a tool with sliders. Then I play the tool.</p>
-          <p>This shifts the creative work to where it belongs — with the designer — and removes the bottleneck of prompt negotiation. You explore a much wider design space, and you get exactly where you want to go.</p>
+          <p>This shifts the creative work to where it belongs, with the designer, and removes the bottleneck of prompt negotiation. You explore a much wider design space, and you get exactly where you want to go.</p>
         </div>
         <div class="insight">
           <p>If you can describe the controls of a visual system, you can explore it far more efficiently than iterating prompts. The tool becomes the creative interface.</p>
@@ -209,7 +209,7 @@
   </div>
 
   <!-- ────────────────────────────────
-       TOOL 01 — BUBBLE STUDIO
+       TOOL 01, BUBBLE STUDIO
   ──────────────────────────────── -->
   <section id="bubble-studio">
     <div class="wrap">
@@ -223,9 +223,9 @@
         <div>
           <p class="kicker">Asset generator</p>
           <h2>Generative bubble animations</h2>
-          <p class="lead">The first in the series. I needed a distinctive animated visual system for a design asset — not a stock video, something that felt generated and alive.</p>
+          <p class="lead">The first in the series. I needed a distinctive animated visual system for a design asset, not a stock video, something that felt generated and alive.</p>
           <p>Rather than prompt Midjourney or RunwayML until something looked right, I asked Claude to build a WebGL renderer with controls for: sphere count, size variance, velocity, attraction forces, colour palette, glow, and bloom.</p>
-          <p>The output is a looping .webm — ready to drop into any hero, cover, or presentation background. Export at 1024×1024 or 2048×2048.</p>
+          <p>The output is a looping .webm, ready to drop into any hero, cover, or presentation background. Export at 1024×1024 or 2048×2048.</p>
           <a href="https://dazzling-yeot-1dac53.netlify.app/" target="_blank" rel="noopener" class="tool-link">Try Bubble Studio →</a>
         </div>
         <div class="pin">
@@ -234,7 +234,7 @@
               <source src="Portfolio Assets/Bubble Studio/bubble_1024_30fps_1780781789029.webm" type="video/webm">
             </video>
           </div>
-          <figcaption>Live export — bubble animation</figcaption>
+          <figcaption>Live export, bubble animation</figcaption>
         </div>
       </div>
 
@@ -253,7 +253,7 @@
   </section>
 
   <!-- ────────────────────────────────
-       TOOL 02 — WALLPAPER STUDIO
+       TOOL 02, WALLPAPER STUDIO
   ──────────────────────────────── -->
   <section id="wallpaper-studio" class="band-light">
     <div class="wrap">
@@ -268,12 +268,12 @@
           <div class="phone-frame" style="max-width: 280px;">
             <img src="Portfolio Assets/Wall paper studio/IMG_0033.PNG" alt="Wallpaper Studio presets">
           </div>
-          <figcaption style="color: var(--soft);">Presets — Titanium, Obsidian, Sahara, Slate</figcaption>
+          <figcaption style="color: var(--soft);">Presets, Titanium, Obsidian, Sahara, Slate</figcaption>
         </div>
         <div>
           <p class="kicker">Phone wallpaper generator</p>
           <h2>Procedural ridge textures</h2>
-          <p class="lead">A refurbished iPhone arrived with a wallpaper from a few years back — wavy, grainy, tactile. I wanted to recreate it and then some.</p>
+          <p class="lead">A refurbished iPhone arrived with a wallpaper from a few years back, wavy, grainy, tactile. I wanted to recreate it and then some.</p>
           <p>I described the visual system to Claude: ridges, lighting model, grain, curve shapes. Claude built the Canvas renderer and the controls panel. I played the controls until the texture felt right, then kept going.</p>
           <p>Controls: ridge count, amplitude, center position, tilt, curve shape (cubic / wave / arch), organic warp, edge sharpness, shadow depth, light direction, light elevation. Four named presets. Shuffle. Export at full phone resolution.</p>
           <a href="https://astounding-basbousa-8022d9.netlify.app/" target="_blank" rel="noopener" class="tool-link">Try Wallpaper Studio →</a>
@@ -294,7 +294,7 @@
   </section>
 
   <!-- ────────────────────────────────
-       TOOL 03 — MOTION HERO GENERATOR
+       TOOL 03, MOTION HERO GENERATOR
   ──────────────────────────────── -->
   <section id="hero-generator">
     <div class="wrap">
@@ -308,9 +308,9 @@
         <div>
           <p class="kicker">Animated hero backgrounds</p>
           <h2>Four rendering modes, one export</h2>
-          <p class="lead">Web hero areas are often stuck between stock footage and static gradients. This generates something in between — animated, branded, and fully controlled.</p>
+          <p class="lead">Web hero areas are often stuck between stock footage and static gradients. This generates something in between, animated, branded, and fully controlled.</p>
           <p>The tool has four distinct rendering engines: Liquid (fluid simulation with warp depth), Ink (diffusion-based bleed), Dots (noise-driven halftone grid), and Pixel (quantised noise blocks). Each mode has its own parameter set plus shared post-processing: contrast, grain, colour.</p>
-          <p>Eight colour presets — Ocean, Twilight, Forest, Ember, Aurora, Cosmos, Rose, Slate — plus custom. Shuffle Vibe randomises everything at once. Export as .webm loop or as a self-contained Hero HTML file that embeds directly into any codebase.</p>
+          <p>Eight colour presets, Ocean, Twilight, Forest, Ember, Aurora, Cosmos, Rose, Slate, plus custom. Shuffle Vibe randomises everything at once. Export as .webm loop or as a self-contained Hero HTML file that embeds directly into any codebase.</p>
           <a href="https://sage-paletas-24dd7b.netlify.app/" target="_blank" rel="noopener" class="tool-link" id="hero-live-link">Try Hero Generator →</a>
         </div>
         <div class="pin">
@@ -319,7 +319,7 @@
               <source src="Portfolio Assets/Hero Generator/hero-liquid-1781557107344.webm" type="video/webm">
             </video>
           </div>
-          <figcaption>Liquid mode — Twilight preset</figcaption>
+          <figcaption>Liquid mode, Twilight preset</figcaption>
         </div>
       </div>
 
@@ -333,7 +333,7 @@
                 <source src="Portfolio Assets/Hero Generator/hero-pixel-1781557087467.webm" type="video/webm">
               </video>
             </div>
-            <figcaption style="margin-top: 10px;">Pixel mode — Custom yellow</figcaption>
+            <figcaption style="margin-top: 10px;">Pixel mode, Custom yellow</figcaption>
           </div>
           <div>
             <div class="media-frame">
@@ -341,13 +341,13 @@
                 <source src="Portfolio Assets/Hero Generator/hero-halftone-1781557160640.webm" type="video/webm">
               </video>
             </div>
-            <figcaption style="margin-top: 10px;">Dots mode — halftone grid</figcaption>
+            <figcaption style="margin-top: 10px;">Dots mode, halftone grid</figcaption>
           </div>
           <div>
             <div class="media-frame">
               <img src="Portfolio Assets/Hero Generator/hero-pixel-custom-preset.jpg" alt="Pixel mode, custom ember and mint preset" style="width: 100%; display: block;">
             </div>
-            <figcaption style="margin-top: 10px;">Pixel mode — Ember &amp; mint custom (turbulence 8, pixel size 83)</figcaption>
+            <figcaption style="margin-top: 10px;">Pixel mode, Ember &amp; mint custom (turbulence 8, pixel size 83)</figcaption>
           </div>
         </div>
       </div>
@@ -361,7 +361,7 @@
     <div class="wrap">
       <p class="kicker fade-in">The pattern</p>
       <h2 class="fade-in">Same method, different materials</h2>
-      <p class="lead fade-in">Each tool started from a specific visual itch — an animation I couldn't find, a texture I wanted to recreate, a hero background that didn't exist yet. The method was the same each time: describe the system, build the controls, explore.</p>
+      <p class="lead fade-in">Each tool started from a specific visual itch, an animation I couldn't find, a texture I wanted to recreate, a hero background that didn't exist yet. The method was the same each time: describe the system, build the controls, explore.</p>
 
       <div class="tool-cards fade-in">
         <div class="tool-card">
