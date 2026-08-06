@@ -32,6 +32,21 @@ const PROJECTS = [
     order: 0
   },
   {
+    id: "machine-kitchen",
+    title: "Machine Kitchen",
+    meta: "Personal Projects · Browser game, factory builder",
+    href: "machine-kitchen.html",
+    visible: true,
+    featured: false,
+    category: "personal",
+    bg: "#0e1216",
+    bodyBg: "#141a20",
+    textColor: "#F2EFE6",
+    mediaSrc: "Portfolio Assets/Machine Kitchen/machine-kitchen-cover.png",
+    mediaType: "image",
+    order: 1
+  },
+  {
     id: "sleep-cycle-discovery",
     title: "Building the Research Practice",
     meta: "UX & Research Lead · Sleep Cycle",

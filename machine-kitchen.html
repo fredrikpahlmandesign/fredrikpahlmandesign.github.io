@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Machine Kitchen, build a food factory</title>
+<meta name="description" content="A browser game about assembling kitchen machines. Lay belts, bolt on slicers, fryers and mixers, and serve the order.">
+<meta name="theme-color" content="#0e1216">
+<meta property="og:title" content="Machine Kitchen">
+<meta property="og:description" content="Build a kitchen assembly line, serve the order, buy better machines.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --steel-900:#0e1216;
+  --steel-850:#141a20;
+  --steel-800:#1a222a;
+  --steel-700:#232e38;
+  --steel-600:#2f3d49;
+  --steel-400:#5d7285;
+  --steel-300:#93a7b7;
+  --cream:#f2efe6;
+  --flame:#ff8a1f;
+  --flame-dim:#a5541a;
+  --pilot:#3ec9c0;
+  --warn:#e0464b;
+  --r:10px;
+  --tick:520ms;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--steel-900);color:var(--cream);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;overscroll-behavior:none}
+body{
+  background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.035) 1px,transparent 0);
+  background-size:14px 14px;
+}
+.app{max-width:520px;margin:0 auto;padding:10px 12px 28px;display:flex;flex-direction:column;gap:10px}
+.backlink{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--steel-400);text-decoration:none;padding:2px 0}
+.backlink:hover{color:var(--flame)}
+
+/* ---------- control panel header ---------- */
+.panel{
+  background:linear-gradient(180deg,var(--steel-800),var(--steel-850));
+  border:1px solid var(--steel-600);border-radius:var(--r);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+}
+header.hdr{display:flex;align-items:center;gap:8px;padding:9px 11px}
+.brand{font-family:Archivo,system-ui,sans-serif;font-weight:800;font-size:15px;letter-spacing:.02em;
+  line-height:1;text-transform:uppercase}
+.brand span{color:var(--flame)}
+.spacer{flex:1}
+.readout{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:13px;
+  background:#0a0e11;border:1px solid var(--steel-600);border-radius:6px;padding:5px 8px;
+  color:var(--flame);box-shadow:inset 0 0 12px rgba(255,138,31,.14)}
+.iconbtn{background:var(--steel-700);border:1px solid var(--steel-600);color:var(--cream);
+  border-radius:8px;padding:6px 9px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer}
+.iconbtn:active{transform:translateY(1px)}
+.iconbtn:focus-visible,button:focus-visible{outline:2px solid var(--pilot);outline-offset:2px}
+
+/* ---------- order ticket ---------- */
+.ticket{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.ticket .row{display:flex;align-items:center;gap:10px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--steel-400)}
+.lvname{font-family:Archivo,sans-serif;font-weight:800;font-size:17px;line-height:1.1}
+.target{display:flex;align-items:center;gap:7px;margin-left:auto}
+.chip{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:19px;
+  border:1px solid rgba(0,0,0,.35);box-shadow:inset 0 -6px 10px rgba(0,0,0,.22)}
+.count{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:15px}
+.count b{color:var(--pilot)}
+.bar{height:5px;background:#0a0e11;border-radius:3px;overflow:hidden;border:1px solid var(--steel-700)}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--flame-dim),var(--flame));width:0;
+  transition:width .3s ease}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:11px;color:var(--steel-300)}
+.chain .m{background:var(--steel-700);border-radius:6px;padding:2px 6px}
+.chain .arw{color:var(--steel-400)}
+
+/* ---------- board ---------- */
+.board{position:relative;padding:9px;border-radius:var(--r);
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.02) 0 1px,transparent 1px 9px),
+    linear-gradient(180deg,#1b232b,#131a20);
+  border:1px solid var(--steel-600);
+  box-shadow:0 10px 24px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05)}
+.cells{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:3px;width:100%}
+.cell{aspect-ratio:1;border-radius:7px;background:#10161b;border:1px solid #1e2830;
+  position:relative;display:grid;place-items:center;cursor:pointer;min-width:0;min-height:0;
+  font-size:var(--cg,17px);transition:background .12s,border-color .12s}
+.cell:active{border-color:var(--flame)}
+.cell.filled{background:linear-gradient(180deg,#293743,#1e2a33);border-color:#38495a}
+.cell.belt{background:linear-gradient(180deg,#1a232b,#141c22)}
+.cell.locked{background:linear-gradient(180deg,#2a2118,#191b20);border-color:#4a3a25}
+.cell .glyph{line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
+.cell .arw{position:absolute;font-size:calc(var(--cg,17px)*.55);color:var(--flame);opacity:.85;line-height:1}
+.cell.hot{animation:hot .9s ease-in-out infinite}
+@keyframes hot{0%,100%{box-shadow:inset 0 0 0 0 rgba(255,138,31,0)}50%{box-shadow:inset 0 0 14px 1px rgba(255,138,31,.45)}}
+.cell .buf{position:absolute;bottom:3px;display:flex;gap:2px}
+.cell .buf i{width:4px;height:4px;flex:0 0 auto;border-radius:50%;background:var(--pilot)}
+.itemlayer{position:absolute;inset:0;pointer-events:none}
+.food{position:absolute;left:0;top:0;width:var(--fw,26px);height:var(--fw,26px);
+  margin:calc(var(--fw,26px) / -2) 0 0 calc(var(--fw,26px) / -2);border-radius:calc(var(--fw,26px)*.3);
+  display:grid;place-items:center;font-size:calc(var(--fw,26px)*.58);border:1px solid rgba(0,0,0,.4);
+  box-shadow:0 2px 6px rgba(0,0,0,.5);transition:transform var(--tick) linear;will-change:transform;z-index:2}
+.food.busy{animation:wob .5s ease-in-out infinite}
+@keyframes wob{0%,100%{filter:brightness(1)}50%{filter:brightness(1.5)}}
+.pop{position:absolute;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;
+  color:var(--pilot);animation:pop .7s ease-out forwards;pointer-events:none;z-index:5}
+@keyframes pop{to{transform:translateY(-26px);opacity:0}}
+
+/* ---------- parts tray ---------- */
+.tray{padding:9px 9px 10px}
+.parts{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.parts::-webkit-scrollbar{display:none}
+.part{flex:0 0 auto;width:56px;padding:7px 3px 5px;border-radius:9px;background:var(--steel-800);
+  border:1px solid var(--steel-600);cursor:pointer;text-align:center;font-family:inherit;color:var(--cream)}
+.part.on{background:linear-gradient(180deg,#3a2a15,#2a1e10);border-color:var(--flame);
+  box-shadow:0 0 0 1px rgba(255,138,31,.35)}
+.part.lockd{opacity:.42}
+.part .pe{font-size:19px;line-height:1.15}
+.part .pn{font-size:9px;color:var(--steel-300);margin-top:2px;line-height:1.15}
+.part .pp{font-family:"IBM Plex Mono",monospace;font-size:9px;color:var(--flame)}
+
+.dirrow{display:flex;align-items:center;gap:6px;margin-top:9px}
+.dirlbl{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;color:var(--steel-400);
+  text-transform:uppercase}
+.dirs{display:flex;gap:5px;margin-left:auto}
+.dir{width:34px;height:30px;border-radius:8px;background:var(--steel-800);border:1px solid var(--steel-600);
+  color:var(--steel-300);font-size:14px;cursor:pointer;display:grid;place-items:center;font-family:inherit}
+.dir.on{background:var(--steel-700);border-color:var(--pilot);color:var(--pilot)}
+
+.ctrls{display:flex;gap:7px}
+.btn{flex:1;padding:11px 8px;border-radius:var(--r);border:1px solid var(--steel-600);
+  background:var(--steel-800);color:var(--cream);font-family:Archivo,sans-serif;font-weight:600;
+  font-size:13px;letter-spacing:.02em;cursor:pointer;text-transform:uppercase}
+.btn.go{background:linear-gradient(180deg,#ff9a34,#e0700c);border-color:#ffab55;color:#1a1206}
+.btn.stop{background:linear-gradient(180deg,#31424f,#233039)}
+.btn:active{transform:translateY(1px)}
+
+/* ---------- modals ---------- */
+.scrim{position:fixed;inset:0;background:rgba(6,9,11,.78);display:none;align-items:center;
+  justify-content:center;padding:16px;z-index:40;backdrop-filter:blur(3px)}
+.scrim.open{display:flex}
+.sheet{width:100%;max-width:440px;max-height:86vh;overflow:auto;padding:15px;
+  background:linear-gradient(180deg,var(--steel-800),var(--steel-850));
+  border:1px solid var(--steel-600);border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.sheet h2{font-family:Archivo,sans-serif;font-weight:800;font-size:18px;margin:0 0 3px;text-transform:uppercase}
+.sheet p.sub{margin:0 0 12px;font-size:12px;color:var(--steel-300)}
+.item{display:flex;gap:10px;align-items:center;padding:9px;border-radius:10px;background:var(--steel-850);
+  border:1px solid var(--steel-700);margin-bottom:7px}
+.item .ie{font-size:22px;width:30px;text-align:center}
+.item .it{flex:1;min-width:0}
+.item .it b{font-size:13px;display:block}
+.item .it small{font-size:11px;color:var(--steel-300);display:block;line-height:1.35}
+.buy{padding:7px 10px;border-radius:8px;border:1px solid var(--flame);background:var(--flame);
+  color:#1a1206;font-weight:700;font-size:12px;font-family:"IBM Plex Mono",monospace;cursor:pointer}
+.buy[disabled]{background:transparent;color:var(--steel-400);border-color:var(--steel-600);cursor:default}
+.owned{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--pilot)}
+.lvitem{cursor:pointer}
+.lvitem.lock{opacity:.45;cursor:default}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#0a0e11;
+  border:1px solid var(--steel-600);color:var(--cream);padding:9px 14px;border-radius:20px;font-size:12px;
+  z-index:60;opacity:0;transition:opacity .25s;pointer-events:none}
+.toast.show{opacity:1}
+.win .big{font-family:Archivo,sans-serif;font-weight:800;font-size:26px;text-transform:uppercase;
+  color:var(--flame);text-align:center;margin:4px 0}
+.win .stat{text-align:center;font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--steel-300);
+  margin-bottom:12px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <a class="backlink" href="index.html">← Fredrik Påhlman</a>
+
+  <header class="panel hdr">
+    <div class="brand">Machine<span>·</span>Kitchen</div>
+    <div class="spacer"></div>
+    <div class="readout" id="coins">⬤ 0</div>
+    <button class="iconbtn" id="btnShop">Parts</button>
+    <button class="iconbtn" id="btnLevels">Orders</button>
+  </header>
+
+  <section class="panel ticket">
+    <div class="row">
+      <div>
+        <div class="eyebrow" id="lvNum">Order 01</div>
+        <div class="lvname" id="lvName">—</div>
+      </div>
+      <div class="target">
+        <div class="chip" id="goalChip">🥔</div>
+        <div class="count"><b id="made">0</b>/<span id="need">3</span></div>
+      </div>
+    </div>
+    <div class="bar"><i id="progress"></i></div>
+    <div class="chain" id="chain"></div>
+  </section>
+
+  <div class="board" id="board">
+    <div class="cells" id="cells"></div>
+    <div class="itemlayer" id="itemlayer"></div>
+  </div>
+
+  <section class="panel tray">
+    <div class="parts" id="parts"></div>
+    <div class="dirrow">
+      <div class="dirlbl">Output side</div>
+      <div class="dirs" id="dirs">
+        <button class="dir" data-d="3">↑</button>
+        <button class="dir on" data-d="0">→</button>
+        <button class="dir" data-d="1">↓</button>
+        <button class="dir" data-d="2">←</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="ctrls">
+    <button class="btn go" id="btnRun">Run</button>
+    <button class="btn stop" id="btnSpeed">1×</button>
+    <button class="btn stop" id="btnClear">Clear</button>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   MACHINE KITCHEN — data
+   ============================================================ */
+const GW=8, GH=6;
+const DIRS=[[1,0],[0,1],[-1,0],[0,-1]];
+const ARROW=['→','↓','←','↑'];
+
+const FOOD={
+  potato:{n:'Potato',e:'🥔',c:'#b98c3f'},
+  sticks:{n:'Cut Potato',e:'🍟',c:'#e6dcb8'},
+  fries:{n:'Golden Fries',e:'🍟',c:'#f0a830'},
+  wheat:{n:'Wheat',e:'🌾',c:'#d8bd7e'},
+  flour:{n:'Flour',e:'🥣',c:'#efe7d6'},
+  water:{n:'Water',e:'💧',c:'#6fb3d9'},
+  dough:{n:'Dough',e:'🫓',c:'#e2cfa4'},
+  bread:{n:'Bread',e:'🍞',c:'#c98b4b'},
+  beef:{n:'Beef',e:'🥩',c:'#c05a5a'},
+  mince:{n:'Ground Beef',e:'🍖',c:'#a9484f'},
+  patty:{n:'Raw Patty',e:'🍪',c:'#cf9a92'},
+  cpatty:{n:'Grilled Patty',e:'🍪',c:'#6f4227'},
+  bun:{n:'Bun',e:'🥯',c:'#d9a86c'},
+  burger:{n:'Burger',e:'🍔',c:'#f0a830'},
+  tomato:{n:'Tomato',e:'🍅',c:'#d9483b'},
+  sauce:{n:'Sauce',e:'🥫',c:'#b03a2e'},
+  base:{n:'Pizza Base',e:'🫓',c:'#e8d7ae'},
+  rawpizza:{n:'Raw Pizza',e:'🍕',c:'#dfae7f'},
+  pizza:{n:'Pizza',e:'🍕',c:'#f0a830'},
+  milk:{n:'Milk',e:'🥛',c:'#eef2f5'},
+  icecream:{n:'Ice Cream',e:'🍨',c:'#cfe6f0'},
+  berry:{n:'Berries',e:'🫐',c:'#7b6bdc'},
+  puree:{n:'Berry Purée',e:'🥤',c:'#9a6fe0'},
+  sundae:{n:'Berry Sundae',e:'🍧',c:'#e9a9d6'},
+  burnt:{n:'Burnt Mess',e:'💀',c:'#4a4340'}
+};
+
+const MODULES={
+  belt   :{n:'Belt',    e:'➤', time:0, price:0,   start:true,
+           d:'Carries food one square each beat, in the direction you point it.'},
+  slicer :{n:'Slicer',  e:'🔪', time:1, price:0,  start:true,
+           d:'Cuts a potato into raw sticks.'},
+  fryer  :{n:'Fryer',   e:'🍳', time:2, price:60,
+           d:'Fries raw sticks and grills raw patties. Anything sent through twice comes out burnt.'},
+  mill   :{n:'Mill',    e:'⚙️', time:2, price:60,
+           d:'Grinds wheat into flour and beef into mince.'},
+  oven   :{n:'Oven',    e:'🔥', time:3, price:80,
+           d:'Bakes dough into bread and raw pizza into pizza. Slow but worth it.'},
+  press  :{n:'Press',   e:'🗜️', time:1, price:100,
+           d:'Shapes mince into a patty and dough into a pizza base.'},
+  mixer  :{n:'Mixer',   e:'🌀', time:2, price:100,
+           d:'Holds two ingredients, then pushes out the combined result.'},
+  blender:{n:'Blender', e:'🥤', time:2, price:140,
+           d:'Purées tomatoes into sauce and berries into purée.'},
+  chiller:{n:'Chiller', e:'❄️', time:2, price:160,
+           d:'Churns milk into ice cream.'},
+  source :{n:'Supply',  e:'📦', time:0, price:0, hidden:true, d:'Feeds ingredients in.'},
+  tray   :{n:'Serving Tray', e:'🍽️', time:0, price:0, hidden:true, d:'Send finished food here.'}
+};
+
+const RECIPES={
+  slicer :{potato:'sticks'},
+  fryer  :{sticks:'fries', patty:'cpatty', fries:'burnt', cpatty:'burnt'},
+  mill   :{wheat:'flour', beef:'mince'},
+  oven   :{dough:'bread', rawpizza:'pizza', bread:'burnt', pizza:'burnt'},
+  press  :{mince:'patty', dough:'base'},
+  blender:{tomato:'sauce', berry:'puree'},
+  chiller:{milk:'icecream'}
+};
+const PAIRS={
+  'flour+water':'dough',
+  'base+sauce':'rawpizza',
+  'bun+cpatty':'burger',
+  'icecream+puree':'sundae'
+};
+
+const LEVELS=[
+  {name:'Spud Sticks', goal:'sticks', need:3, reward:100,
+   src:[{x:0,y:2,f:'potato',iv:4}], tray:{x:7,y:2},
+   chain:['potato','slicer','sticks'],
+   tip:'Point belts from the supply crate to the tray. Put the slicer somewhere along the way.'},
+
+  {name:'Golden Fries', goal:'fries', need:4, reward:160,
+   src:[{x:0,y:2,f:'potato',iv:4}], tray:{x:7,y:2},
+   chain:['potato','slicer','sticks','fryer','fries'],
+   tip:'Slice first, then fry. Frying twice burns them.'},
+
+  {name:'Daily Bread', goal:'bread', need:3, reward:220,
+   src:[{x:0,y:1,f:'wheat',iv:4},{x:0,y:4,f:'water',iv:4}], tray:{x:7,y:2},
+   chain:['wheat','mill','flour','mixer','dough','oven','bread'],
+   tip:'Feed flour into one side of the mixer and water into the other.'},
+
+  {name:'Burger Rush', goal:'burger', need:3, reward:300,
+   src:[{x:0,y:1,f:'beef',iv:5},{x:0,y:4,f:'bun',iv:5}], tray:{x:7,y:2},
+   chain:['beef','mill','mince','press','patty','fryer','cpatty','mixer','burger'],
+   tip:'Grill the patty before it meets the bun in the mixer.'},
+
+  {name:'Pizza Night', goal:'pizza', need:3, reward:380,
+   src:[{x:0,y:1,f:'dough',iv:5},{x:0,y:4,f:'tomato',iv:5}], tray:{x:7,y:2},
+   chain:['dough','press','base','mixer','rawpizza','oven','pizza'],
+   tip:'Press the dough, blend the tomato, combine, then bake.'},
+
+  {name:'Sundae Service', goal:'sundae', need:3, reward:500,
+   src:[{x:0,y:1,f:'milk',iv:5},{x:0,y:4,f:'berry',iv:5}], tray:{x:7,y:2},
+   chain:['milk','chiller','icecream','mixer','sundae'],
+   tip:'Chill the milk, blend the berries, then bring them together.'}
+];
+
+const PAY=12;           // coins per correct plate
+const REPLAY=0.25;      // share of reward on a repeat clear
+
+/* ============================================================
+   state
+   ============================================================ */
+let S={coins:40, owned:{belt:1,slicer:1}, done:{}, layouts:{}, seen:0, balv:2};
+let lv=0, grid={}, items=[], nextId=1;
+let running=false, tick=0, made=0, spilled=0, speed=1, timer=null, farming=false;
+let tool='belt', dir=0, domReady=false, cellRects=[], pendingNote='';
+
+const key=(x,y)=>x+','+y;
+const inB=(x,y)=>x>=0&&y>=0&&x<GW&&y<GH;
+const at=(x,y)=>grid[key(x,y)];
+const isLocked=t=>t&&(t.t==='source'||t.t==='tray');
+const occupied=(x,y)=>items.some(i=>i.x===x&&i.y===y);
+
+/* ============================================================
+   simulation
+   ============================================================ */
+function transform(type,food){
+  const r=RECIPES[type];
+  if(!r) return food;
+  return r[food]!==undefined ? r[food] : food;
+}
+function pairOut(buf){
+  const k=[...buf].sort().join('+');
+  return PAIRS[k]||'burnt';
+}
+function score(food){
+  if(food===LEVELS[lv].goal){ made++; S.coins+=PAY; return 'good'; }
+  spilled++; return 'bad';
+}
+/* place a food into the cell in front of (x,y). returns true if it left. */
+function tryOutput(x,y,d,food){
+  const [dx,dy]=DIRS[d], nx=x+dx, ny=y+dy;
+  if(!inB(nx,ny)) return false;
+  const nt=at(nx,ny);
+  if(!nt) return false;
+  if(nt.t==='tray'){ const r=score(food); flash(nx,ny,r,food); return true; }
+  if(nt.t==='source') return false;
+  if(nt.t==='mixer'){
+    if(nt.buf.length<2 && nt.out===null){
+      nt.buf.push(food);
+      if(nt.buf.length===2) nt.timer=MODULES.mixer.time;
+      return true;
+    }
+    return false;
+  }
+  if(occupied(nx,ny)) return false;
+  items.push({id:nextId++,x:nx,y:ny,food,timer:MODULES[nt.t].time||0,moved:true,fresh:true});
+  return true;
+}
+
+function stepSim(){
+  tick++;
+  // 1 — machines chew
+  for(const it of items){
+    it.moved=false;
+    if(it.timer>0){
+      it.timer--;
+      if(it.timer===0){
+        const t=at(it.x,it.y);
+        if(t) it.food=transform(t.t,it.food);
+      }
+    }
+  }
+  // 2 — everything that can move, moves (repeat so queues shuffle forward)
+  let changed=true, guard=0;
+  while(changed && guard++<GW*GH){
+    changed=false;
+    for(let i=items.length-1;i>=0;i--){
+      const it=items[i];
+      if(it.moved||it.timer>0) continue;
+      const t=at(it.x,it.y);
+      if(!t){ items.splice(i,1); spilled++; changed=true; continue; }
+      const [dx,dy]=DIRS[t.d], nx=it.x+dx, ny=it.y+dy;
+      const nt=inB(nx,ny)?at(nx,ny):null;
+      if(!nt){ items.splice(i,1); spilled++; changed=true; continue; }   // falls off the end
+      if(nt.t==='source') continue;                                      // blocked
+      if(nt.t==='tray'){ const r=score(it.food); flash(nx,ny,r,it.food); items.splice(i,1); changed=true; continue; }
+      if(nt.t==='mixer'){
+        if(nt.buf.length<2 && nt.out===null){
+          nt.buf.push(it.food);
+          if(nt.buf.length===2) nt.timer=MODULES.mixer.time;
+          items.splice(i,1); changed=true;
+        }
+        continue;
+      }
+      if(occupied(nx,ny)) continue;
+      it.x=nx; it.y=ny; it.moved=true; it.timer=MODULES[nt.t].time||0; changed=true;
+    }
+  }
+  // 3 — mixers combine and push out
+  for(const k in grid){
+    const t=grid[k];
+    if(t.t!=='mixer') continue;
+    if(t.out!==null){
+      if(tryOutput(t.x,t.y,t.d,t.out)) t.out=null;
+    } else if(t.buf.length===2 && t.timer>0){
+      t.timer--;
+      if(t.timer===0){ t.out=pairOut(t.buf); t.buf=[]; }
+    }
+  }
+  // 4 — supplies feed in
+  for(const s of LEVELS[lv].src){
+    if(tick % s.iv === 0){
+      const t=at(s.x,s.y);
+      if(t) tryOutput(s.x,s.y,t.d,s.f);
+    }
+  }
+}
+
+/* ============================================================
+   level setup
+   ============================================================ */
+function setupLevel(i,useSaved=true){
+  lv=i; grid={}; items=[]; tick=0; made=0; spilled=0; nextId=1;
+  const L=LEVELS[i];
+  for(const s of L.src) grid[key(s.x,s.y)]={t:'source',d:0,x:s.x,y:s.y,buf:[],out:null,timer:0};
+  grid[key(L.tray.x,L.tray.y)]={t:'tray',d:0,x:L.tray.x,y:L.tray.y,buf:[],out:null,timer:0};
+  const saved=useSaved?S.layouts[i]:null;
+  if(saved) for(const c of saved){
+    if(isLocked(at(c.x,c.y))) continue;
+    grid[key(c.x,c.y)]={t:c.t,d:c.d,x:c.x,y:c.y,buf:[],out:null,timer:0};
+  }
+}
+function saveLayout(){
+  const out=[];
+  for(const k in grid){ const t=grid[k]; if(!isLocked(t)) out.push({x:t.x,y:t.y,t:t.t,d:t.d}); }
+  S.layouts[lv]=out; save();
+}
+function placeTile(x,y,type,d){
+  const cur=at(x,y);
+  if(isLocked(cur)) return 'locked';
+  if(type===null){ delete grid[key(x,y)]; return 'erased'; }
+  if(cur && cur.t===type){ cur.d=(cur.d+1)%4; return 'rotated'; }
+  grid[key(x,y)]={t:type,d,x,y,buf:[],out:null,timer:0};
+  return 'placed';
+}
+
+/* ============================================================
+   storage
+   ============================================================ */
+const KEY='machinekitchen:save';
+async function save(){
+  try{ localStorage.setItem(KEY,JSON.stringify(S)); return; }catch(e){}
+  try{ await window.storage.set(KEY,JSON.stringify(S)); }catch(e){}
+}
+async function load(){
+  let raw=null;
+  try{ raw=localStorage.getItem(KEY); }catch(e){}
+  if(!raw){ try{ const r=await window.storage.get(KEY); if(r&&r.value) raw=r.value; }catch(e){} }
+  try{
+    if(raw){
+      const p=JSON.parse(raw);
+      const patch = p.balv!==2;
+      S=Object.assign(S,p);
+      if(patch){ S.coins+=180; S.balv=2; save(); pendingNote='Prices dropped and plates pay more, 180 coins added.'; }
+    }
+  }catch(e){}
+}
+
+/* ============================================================
+   rendering
+   ============================================================ */
+const $=id=>document.getElementById(id);
+
+function buildGrid(){
+  const c=$('cells'); c.innerHTML='';
+  for(let y=0;y<GH;y++) for(let x=0;x<GW;x++){
+    const d=document.createElement('div');
+    d.className='cell'; d.dataset.x=x; d.dataset.y=y;
+    d.addEventListener('click',()=>onCell(x,y));
+    c.appendChild(d);
+  }
+  measure();
+}
+function measure(){
+  const board=$('board'), b=board.getBoundingClientRect();
+  cellRects=[];
+  const kids=[...$('cells').children];
+  kids.forEach(el=>{
+    const r=el.getBoundingClientRect();
+    cellRects.push({x:r.left-b.left+r.width/2, y:r.top-b.top+r.height/2});
+  });
+  const w=kids.length?kids[0].getBoundingClientRect().width:34;
+  board.style.setProperty('--fw',Math.round(w*0.74)+'px');
+  board.style.setProperty('--cg',Math.max(11,Math.round(w*0.46))+'px');
+}
+function renderGrid(){
+  if(!domReady) return;
+  const cells=$('cells').children;
+  for(let y=0;y<GH;y++) for(let x=0;x<GW;x++){
+    const el=cells[y*GW+x], t=at(x,y);
+    el.className='cell';
+    if(!t){ el.innerHTML=''; continue; }
+    const M=MODULES[t.t];
+    if(t.t==='belt') el.classList.add('belt');
+    else if(isLocked(t)) el.classList.add('locked');
+    else el.classList.add('filled');
+    let inner='';
+    if(t.t==='belt'){
+      inner=`<span class="glyph" style="color:#7d93a6;transform:rotate(${t.d*90}deg)">➤</span>`;
+    } else {
+      inner=`<span class="glyph">${M.e}</span>`;
+      if(t.t!=='tray') inner+=arrowBadge(t.d);
+    }
+    if(t.t==='source'){
+      const f=LEVELS[lv].src.find(s=>s.x===x&&s.y===y);
+      if(f) inner=`<span class="glyph">${FOOD[f.f].e}</span>`+arrowBadge(t.d);
+    }
+    if(t.t==='mixer'&&(t.buf.length||t.out)){
+      inner+=`<span class="buf">${'<i></i>'.repeat(t.out?2:t.buf.length)}</span>`;
+    }
+    if(t.timer>0 || items.some(i=>i.x===x&&i.y===y&&i.timer>0)) el.classList.add('hot');
+    el.innerHTML=inner;
+  }
+}
+function arrowBadge(d){
+  const style=['top:50%;left:92%;transform:translate(-50%,-50%)',
+               'top:92%;left:50%;transform:translate(-50%,-50%)',
+               'top:50%;left:8%;transform:translate(-50%,-50%)',
+               'top:8%;left:50%;transform:translate(-50%,-50%)'][d];
+  return `<span class="arw" style="${style}">${ARROW[d]}</span>`;
+}
+function renderItems(){
+  if(!domReady) return;
+  const layer=$('itemlayer');
+  const seen=new Set();
+  for(const it of items){
+    seen.add(it.id);
+    let el=layer.querySelector('[data-i="'+it.id+'"]');
+    const p=cellRects[it.y*GW+it.x]||{x:0,y:0};
+    if(!el){
+      el=document.createElement('div');
+      el.className='food'; el.dataset.i=it.id;
+      el.style.transition='none';
+      el.style.transform=`translate(${p.x}px,${p.y}px)`;
+      layer.appendChild(el);
+      requestAnimationFrame(()=>{ el.style.transition=''; });
+    }
+    el.style.background=FOOD[it.food].c;
+    el.style.color='#1a1206';
+    el.innerHTML=FOOD[it.food].e;
+    el.style.transform=`translate(${p.x}px,${p.y}px)`;
+    el.classList.toggle('busy',it.timer>0);
+  }
+  [...layer.querySelectorAll('.food')].forEach(el=>{
+    if(!seen.has(+el.dataset.i)) el.remove();
+  });
+}
+function flash(x,y,kind,food){
+  if(!domReady) return;
+  const p=cellRects[y*GW+x]; if(!p) return;
+  const s=document.createElement('span');
+  s.className='pop';
+  s.textContent = kind==='good' ? '+'+PAY : '✕';
+  s.style.color = kind==='good' ? 'var(--pilot)' : 'var(--warn)';
+  s.style.left=p.x+'px'; s.style.top=(p.y-14)+'px';
+  $('itemlayer').appendChild(s);
+  setTimeout(()=>s.remove(),700);
+}
+function renderHUD(){
+  const L=LEVELS[lv];
+  $('coins').textContent='⬤ '+S.coins;
+  $('lvNum').textContent='Order '+String(lv+1).padStart(2,'0');
+  $('lvName').textContent=L.name;
+  $('goalChip').textContent=FOOD[L.goal].e;
+  $('goalChip').style.background=FOOD[L.goal].c;
+  $('made').textContent=made;
+  $('need').textContent=L.need;
+  $('made').style.color = made>=L.need ? 'var(--flame)' : '';
+  $('progress').style.width=Math.min(100,made/L.need*100)+'%';
+  $('chain').innerHTML=L.chain.map((s,i)=>{
+    const isM=!!MODULES[s];
+    const label=isM?`${MODULES[s].e} ${MODULES[s].n}`:`${FOOD[s].e} ${FOOD[s].n}`;
+    return (i?'<span class="arw">›</span>':'')+`<span class="m"${isM?' style="color:#ff8a1f"':''}>${label}</span>`;
+  }).join('');
+  $('btnRun').textContent=running?'Pause':'Run';
+  $('btnRun').classList.toggle('go',!running);
+  $('btnRun').classList.toggle('stop',running);
+}
+function renderParts(){
+  const p=$('parts'); p.innerHTML='';
+  for(const id in MODULES){
+    const M=MODULES[id]; if(M.hidden) continue;
+    const owned=!!S.owned[id];
+    const b=document.createElement('button');
+    b.className='part'+(tool===id?' on':'')+(owned?'':' lockd');
+    b.innerHTML=`<div class="pe">${M.e}</div><div class="pn">${M.n}</div>`+
+      (owned?'':`<div class="pp">⬤${M.price}</div>`);
+    b.addEventListener('click',()=>{
+      if(!owned){ openShop(); return; }
+      tool=id; renderParts();
+    });
+    p.appendChild(b);
+  }
+  const e=document.createElement('button');
+  e.className='part'+(tool===null?' on':'');
+  e.innerHTML='<div class="pe">🧹</div><div class="pn">Remove</div>';
+  e.addEventListener('click',()=>{ tool=null; renderParts(); });
+  p.appendChild(e);
+}
+function toast(msg){
+  const t=$('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),1500);
+}
+
+/* ============================================================
+   interaction
+   ============================================================ */
+function onCell(x,y){
+  if(running){ toast('Pause the line before rebuilding.'); return; }
+  const r=placeTile(x,y,tool,dir);
+  if(r==='locked'){ toast('That part is bolted down.'); return; }
+  saveLayout(); renderGrid();
+}
+function loop(){
+  stepSim();
+  renderGrid(); renderItems(); renderHUD();
+  if(made>=LEVELS[lv].need && !farming){ finish(); return; }
+  timer=setTimeout(loop,520/speed);
+}
+function setRun(on){
+  running=on;
+  document.documentElement.style.setProperty('--tick',(520/speed)+'ms');
+  clearTimeout(timer);
+  if(on) timer=setTimeout(loop,120);
+  renderHUD();
+}
+function finish(){
+  clearTimeout(timer); running=false;
+  const L=LEVELS[lv];
+  const first=!S.done[lv];
+  const bonus=Math.round(first?L.reward:L.reward*REPLAY);
+  S.coins+=bonus; S.done[lv]=1; save();
+  renderHUD();
+  const next=lv+1<LEVELS.length;
+  openSheet(`
+    <div class="win">
+      <div class="eyebrow" style="text-align:center">Order complete</div>
+      <div class="big">${L.name}</div>
+      <div class="stat">${made} served · ${spilled} wasted · ${tick} beats<br>
+        <span style="color:var(--flame)">+${bonus} coins</span>${first?' (first clear bonus)':''}</div>
+      <div style="display:flex;gap:8px">
+        ${next?'<button class="btn go" id="wNext">Next order</button>':''}
+        <button class="btn stop" id="wStay">Keep cooking</button>
+      </div>
+      <button class="btn stop" id="wShop" style="width:100%;margin-top:8px">Buy parts</button>
+    </div>`);
+  if(next) $('wNext').onclick=()=>{ closeSheet(); go(lv+1); };
+  $('wStay').onclick=()=>{ closeSheet(); farming=true; setRun(true); };
+  $('wShop').onclick=()=>{ closeSheet(); openShop(); };
+}
+function go(i){
+  clearTimeout(timer); running=false; farming=false;
+  setupLevel(i);
+  document.querySelector('#itemlayer').innerHTML='';
+  renderGrid(); renderItems(); renderHUD();
+  toast(LEVELS[i].tip);
+}
+
+/* ============================================================
+   sheets
+   ============================================================ */
+function openSheet(html){ $('sheet').innerHTML=html; $('scrim').classList.add('open'); }
+function closeSheet(){ $('scrim').classList.remove('open'); }
+
+function needed(){ return LEVELS[lv].chain.filter(c=>MODULES[c]&&!S.owned[c]); }
+function openShop(){
+  const need=needed();
+  const short=need.reduce((a,id)=>a+MODULES[id].price,0)-S.coins;
+  let h='<h2>Parts counter</h2><p class="sub">Every plate you serve pays '+PAY+' coins, replay a cleared order to stock up.</p>';
+  if(need.length) h+=`<div class="item" style="border-color:var(--flame)"><div class="ie">🧾</div>
+    <div class="it"><b>${LEVELS[lv].name} needs ${need.map(i=>MODULES[i].n).join(' + ')}</b>
+    <small>${short>0?`You're ${short} coins short. Keep cooking a cleared order to make it up.`:'You can afford all of them right now.'}</small></div></div>`;
+  const list=Object.keys(MODULES).sort((a,b)=>(need.includes(b)?1:0)-(need.includes(a)?1:0));
+  for(const id of list){
+    const M=MODULES[id]; if(M.hidden||M.price===0) continue;
+    const owned=!!S.owned[id];
+    h+=`<div class="item"${need.includes(id)?' style="border-color:var(--flame)"':''}><div class="ie">${M.e}</div>
+       <div class="it"><b>${M.n}${need.includes(id)?' <span style="color:var(--flame);font-size:10px">· needed now</span>':''}</b><small>${M.d}</small></div>`+
+       (owned?'<span class="owned">Owned</span>':
+        `<button class="buy" data-b="${id}" ${S.coins<M.price?'disabled':''}>⬤ ${M.price}</button>`)+
+       '</div>';
+  }
+  h+='<button class="btn stop" id="close" style="width:100%;margin-top:6px">Back to the line</button>';
+  openSheet(h);
+  $('sheet').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{
+    const id=b.dataset.b, M=MODULES[id];
+    if(S.coins<M.price) return;
+    S.coins-=M.price; S.owned[id]=1; save();
+    tool=id; renderParts(); renderHUD(); openShop();
+    toast(M.n+' added to your parts.');
+  });
+  $('close').onclick=closeSheet;
+}
+function openLevels(){
+  let h='<h2>Orders</h2><p class="sub">Clear an order to unlock the next one. Replays pay a quarter of the bonus.</p>';
+  LEVELS.forEach((L,i)=>{
+    const unlocked = i===0 || S.done[i-1];
+    h+=`<div class="item lvitem ${unlocked?'':'lock'}" data-l="${unlocked?i:''}">
+      <div class="ie">${FOOD[L.goal].e}</div>
+      <div class="it"><b>${String(i+1).padStart(2,'0')} · ${L.name}</b>
+      <small>${unlocked?`Serve ${L.need} × ${FOOD[L.goal].n}`:'Locked, finish the order above'}</small></div>
+      ${S.done[i]?'<span class="owned">✓</span>':`<span class="owned" style="color:var(--flame)">⬤${L.reward}</span>`}
+    </div>`;
+  });
+  h+='<button class="btn stop" id="close" style="width:100%;margin-top:6px">Back to the line</button>';
+  openSheet(h);
+  $('sheet').querySelectorAll('[data-l]').forEach(el=>{
+    if(el.dataset.l==='') return;
+    el.onclick=()=>{ closeSheet(); go(+el.dataset.l); };
+  });
+  $('close').onclick=closeSheet;
+}
+function openIntro(){
+  openSheet(`<h2>Build the machine</h2>
+    <p class="sub">You're assembling the line, not cooking by hand.</p>
+    <div class="item"><div class="ie">1</div><div class="it"><small>
+      Pick a part below the board, choose which way it faces, then tap a square to drop it in.
+      Tap the same part again on a square to spin it.</small></div></div>
+    <div class="item"><div class="ie">2</div><div class="it"><small>
+      Belts carry food one square per beat. Machines change whatever passes through them.
+      Food that runs off the end of a belt is lost.</small></div></div>
+    <div class="item"><div class="ie">3</div><div class="it"><small>
+      Get the right dish to the tray 🍽️ to fill the order. Coins buy stronger machines.</small></div></div>
+    <button class="btn go" id="close" style="width:100%">Start the line</button>`);
+  $('close').onclick=()=>{ closeSheet(); S.seen=1; save(); };
+}
+
+/* ============================================================
+   boot
+   ============================================================ */
+async function init(){
+  await load();
+  domReady=true;
+  buildGrid();
+  const first=LEVELS.findIndex((L,i)=>!S.done[i]);
+  setupLevel(first<0?LEVELS.length-1:first);
+  renderGrid(); renderItems(); renderHUD(); renderParts();
+
+  $('btnRun').onclick=()=>{ setRun(!running); };
+  $('btnSpeed').onclick=()=>{
+    speed = speed===1?2:speed===2?4:1;
+    $('btnSpeed').textContent=speed+'×';
+    document.documentElement.style.setProperty('--tick',(520/speed)+'ms');
+  };
+  $('btnClear').onclick=()=>{
+    if(running) setRun(false);
+    for(const k in grid) if(!isLocked(grid[k])) delete grid[k];
+    items=[]; made=0; spilled=0; tick=0; farming=false;
+    saveLayout(); renderGrid(); renderItems(); renderHUD();
+    toast('Board cleared.');
+  };
+  $('btnShop').onclick=openShop;
+  $('btnLevels').onclick=openLevels;
+  $('scrim').onclick=e=>{ if(e.target===$('scrim')) closeSheet(); };
+  document.addEventListener('keydown',e=>{
+    if(e.key==='r'||e.key==='R') setDir((dir+1)%4);
+    if(e.key===' '){ e.preventDefault(); setRun(!running); }
+  });
+  $('dirs').querySelectorAll('.dir').forEach(b=>b.onclick=()=>setDir(+b.dataset.d));
+  window.addEventListener('resize',()=>{ measure(); renderItems(); });
+
+  if(!S.seen) openIntro(); else toast(pendingNote||LEVELS[lv].tip);
+}
+function setDir(d){
+  dir=d;
+  $('dirs').querySelectorAll('.dir').forEach(b=>b.classList.toggle('on',+b.dataset.d===d));
+}
+if(typeof document!=='undefined') document.addEventListener('DOMContentLoaded',init);
+globalThis.KM={setupLevel,placeTile,stepSim,state:()=>({items,made,spilled,tick,grid}),LEVELS};
+</script>
+
+<script src="analytics.js"></script>
+</body>
+</html>
