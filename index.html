@@ -540,7 +540,7 @@
           a.href = p.href;
           a.className = 'work-card fade-in';
           const mediaEl = p.mediaType === 'video' && p.mediaSrc
-            ? '<video src="' + p.mediaSrc + '" autoplay muted loop playsinline preload="none" loading="lazy" style="width:100%;height:100%;object-fit:cover;opacity:0.92;"></video>'
+            ? '<video src="' + p.mediaSrc + '"' + (p.poster ? ' poster="' + p.poster + '"' : '') + ' autoplay muted loop playsinline preload="none" loading="lazy" style="width:100%;height:100%;object-fit:cover;opacity:0.92;"></video>'
             : p.mediaSrc
               ? '<img src="' + p.mediaSrc + '" alt="' + p.title + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;">'
               : '<div class="work-card-img-placeholder">' + p.title + '</div>';

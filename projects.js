@@ -27,8 +27,9 @@ const PROJECTS = [
     bg: "#182925",
     bodyBg: "#182925",
     textColor: "#E8EDF2",
-    mediaSrc: "Portfolio Assets/Line Lift/cover-ink-lift.jpg",
-    mediaType: "image",
+    mediaSrc: "Portfolio Assets/Line Lift/paper-to-paint.mp4",
+    mediaType: "video",
+    poster: "Portfolio Assets/Line Lift/paper-to-paint-poster.jpg",
     order: -1
   },
   {
