@@ -17,6 +17,21 @@
 
 const PROJECTS = [
   {
+    id: "line-lift",
+    title: "Line Lift",
+    meta: "Personal Projects · Watercolour app, on the App Store",
+    href: "project-line-lift.html",
+    visible: true,
+    featured: false,
+    category: "personal",
+    bg: "#182925",
+    bodyBg: "#182925",
+    textColor: "#E8EDF2",
+    mediaSrc: "Portfolio Assets/Line Lift/cover-ink-lift.jpg",
+    mediaType: "image",
+    order: -1
+  },
+  {
     id: "design-tools",
     title: "Design Tools",
     meta: "Personal Projects · AI-built parametric generators",

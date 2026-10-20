@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Line Lift, Fredrik Påhlman</title>
+  <meta name="description" content="Line Lift is a watercolour app for iPhone and iPad, designed, built and shipped to the App Store by one person.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0d13;
+      --bg-alt: #161b26;
+      --ink: #eef1f6;
+      --ink-mid: #8b94a3;
+      --ink-light: rgba(255,255,255,0.35);
+      --accent: #C8562A;
+      --slate: #3A4A5C;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+      --max: 1200px;
+      --pad: clamp(1.5rem, 5vw, 4rem);
+    }
+    /* Hero tone #182925 is sampled from the app's own cutting-mat green (#416c62) and darkened.
+       Distinct from the personal-grid neighbours (#050401 design tools, #0e1216 machine kitchen). */
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem var(--pad);
+      background: rgba(24, 41, 37, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.4s, border-color 0.4s;
+    }
+    nav.light {
+      background: var(--bg);
+      border-color: var(--bg-alt);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 9px;
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1rem;
+      color: #E8EDF2;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    nav.light .nav-logo { color: var(--ink); }
+    .nav-badge {
+      width: 22px; height: 22px; border-radius: 6px;
+      background: var(--accent); color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700; font-size: 0.68rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-wordmark { font-family: 'Schibsted Grotesk', sans-serif; font-weight: 600; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(232,237,242,0.5);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    nav.light .nav-links a { color: var(--ink-mid); }
+    .nav-links a:hover { color: #E8EDF2; }
+    nav.light .nav-links a:hover { color: var(--ink); }
+    .nav-contact { border: 1px solid currentColor; border-radius: 100px; padding: 5px 12px; }
+
+    /* HERO */
+    .hero {
+      background: #182925;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: var(--pad);
+      padding-top: 7rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('Portfolio%20Assets/Line%20Lift/hero-wash.jpg');
+      background-size: cover;
+      background-position: center 40%;
+      opacity: 0.38;
+    }
+
+    .hero-inner {
+      position: relative;
+      max-width: var(--max);
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(2.5rem, 7vw, 5.5rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: #E8EDF2;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: rgba(232,237,242,0.35);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 3rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(232,237,242,0.07);
+      flex-wrap: wrap;
+    }
+    .hero-stat-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(200,86,42,0.85);
+      margin-bottom: 0.3rem;
+    }
+    .hero-stat-value {
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      font-weight: 300;
+      color: rgba(232,237,242,0.65);
+    }
+
+    .hero-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: flex-end;
+      padding-bottom: 0.2rem;
+    }
+    .hero-tag {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(232,237,242,0.38);
+      border: 1px solid rgba(232,237,242,0.1);
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+    }
+
+    .hero-cta {
+      display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;
+      margin-top: 2.25rem;
+    }
+    .store-btn {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.7rem 1.25rem 0.7rem 1rem;
+      border-radius: 100px;
+      background: #E8EDF2; color: #0f1a17;
+      font-family: 'Schibsted Grotesk', var(--sans);
+      font-weight: 600; font-size: 0.9375rem; letter-spacing: 0.01em;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .store-btn:hover { background: #fff; transform: translateY(-1px); }
+    .store-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .store-btn-sub { display: block; font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.04em; opacity: 0.6; line-height: 1; margin-bottom: 2px; }
+    .store-btn-main { display: block; line-height: 1.1; }
+    .hero-site-link {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; letter-spacing: 0.04em;
+      color: rgba(232,237,242,0.6); text-decoration: none;
+      border-bottom: 1px solid rgba(200,86,42,0.5); padding-bottom: 2px;
+      transition: color 0.2s;
+    }
+    .hero-site-link:hover { color: #E8EDF2; }
+    .outcome-cta { margin-top: 3rem; display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+
+    /* CONTENT SECTIONS */
+    .section { padding: 5rem var(--pad); }
+    .section-inner { max-width: var(--max); margin: 0 auto; }
+    .divider { border: none; border-top: 1px solid var(--bg-alt); margin: 0; }
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 2.5rem;
+    }
+
+    /* OVERVIEW */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .overview-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .overview-meta { display: flex; flex-direction: column; gap: 1.75rem; }
+    .meta-block-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.4rem;
+    }
+    .meta-block-value {
+      font-size: 0.9375rem;
+      color: var(--ink-mid);
+      line-height: 1.6;
+    }
+    .overview-text {
+      font-family: var(--serif);
+      font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+      font-weight: 300;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+    .overview-text p + p { margin-top: 1.25em; }
+
+    /* BODY TEXT */
+    .body-text {
+      font-size: 1rem;
+      color: var(--ink-mid);
+      line-height: 1.8;
+      max-width: 66ch;
+    }
+    .body-text p + p { margin-top: 1.1em; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      border-left: 2px solid var(--slate);
+      padding-left: 1.5rem;
+      margin: 3rem 0;
+      max-width: 54ch;
+    }
+
+    /* PRODUCT DISPLAY */
+    .product-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    @media (max-width: 800px) { .product-split { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+    .img-caption {
+      font-size: 0.75rem;
+      color: var(--ink-light);
+      margin-top: 0.6rem;
+      letter-spacing: 0.02em;
+    }
+
+    .screen-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3.5rem;
+    }
+    @media (max-width: 900px) { .screen-grid { grid-template-columns: repeat(2, 1fr); } }
+    .screen-grid img { width: 100%; border-radius: 6px; display: block; background: #182925; }
+
+    /* PROCESS STEPS */
+    .process-steps {
+      display: flex;
+      flex-direction: column;
+      border-top: 1px solid var(--bg-alt);
+      margin-top: 2.5rem;
+    }
+    .process-step {
+      display: grid;
+      grid-template-columns: 3rem 1fr;
+      gap: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--bg-alt);
+      align-items: start;
+    }
+    .process-step-num {
+      font-family: var(--serif);
+      font-size: 1.75rem;
+      font-weight: 300;
+      color: var(--ink-light);
+      line-height: 1;
+      padding-top: 0.1rem;
+    }
+    .process-step-title {
+      font-weight: 500;
+      font-size: 1rem;
+      margin-bottom: 0.6rem;
+    }
+    .process-step-text {
+      font-size: 0.9375rem;
+      color: var(--ink-mid);
+      line-height: 1.75;
+      max-width: 60ch;
+    }
+
+    /* CONTEXT BAND */
+    .context-band {
+      background: var(--bg-alt);
+      padding: 5rem var(--pad);
+    }
+    .context-band-inner { max-width: var(--max); margin: 0 auto; }
+    .context-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      margin-top: 2.5rem;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .context-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .context-heading {
+      font-family: var(--serif);
+      font-size: clamp(1.2rem, 3vw, 1.75rem);
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      line-height: 1.4;
+      margin-bottom: 1.25rem;
+    }
+
+    /* OUTCOME BAND */
+    .outcome-band {
+      background: #182925;
+      padding: 5rem var(--pad);
+    }
+    .outcome-band-inner { max-width: var(--max); margin: 0 auto; }
+    .outcome-band .section-label { color: rgba(200,86,42,0.8); }
+    .outcome-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+      margin-top: 3rem;
+    }
+    @media (max-width: 700px) { .outcome-stat-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .outcome-stat-num {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 300;
+      color: #E8EDF2;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .outcome-stat-label {
+      font-size: 0.875rem;
+      color: rgba(232,237,242,0.4);
+      line-height: 1.6;
+    }
+
+    /* REFLECTION */
+    .reflection-section { background: var(--bg-alt); }
+    .reflection-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+      margin-top: 2.5rem;
+    }
+    @media (max-width: 700px) { .reflection-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .reflection-card-num {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--ink-light);
+      margin-bottom: 0.75rem;
+    }
+    .reflection-card-title {
+      font-weight: 500;
+      font-size: 0.9375rem;
+      margin-bottom: 0.5rem;
+    }
+    .reflection-card-text {
+      font-size: 0.875rem;
+      color: var(--ink-mid);
+      line-height: 1.7;
+    }
+
+    /* PROJECT NAV */
+    .project-nav { padding: 3rem var(--pad); border-top: 1px solid var(--bg-alt); }
+    .project-nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .project-nav a {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .project-nav a:hover { color: var(--accent); }
+
+    /* FOOTER */
+    footer { padding: 3rem var(--pad); border-top: 1px solid var(--bg-alt); }
+    .footer-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-name { font-family: 'Schibsted Grotesk', sans-serif; font-size: 1rem; font-weight: 600; color: var(--ink-mid); }
+    .footer-links { display: flex; gap: 1.75rem; list-style: none; }
+    .footer-links a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+
+    /* FADE IN */
+    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="index.html" class="nav-logo"><span class="nav-badge">F</span><span class="nav-wordmark">Fredrik Påhlman</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="index.html#personal">Personal</a></li>
+      <li><a href="writing.html">Writing</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="mailto:fredrikande@gmail.com" class="nav-contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero" id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-inner">
+      <div>
+        <h1 class="hero-title">Line Lift<br><em>/ the app I wanted to exist</em></h1>
+        <div class="hero-stats">
+          <div>
+            <p class="hero-stat-label">Role</p>
+            <p class="hero-stat-value">Designer and developer, solo</p>
+          </div>
+          <div>
+            <p class="hero-stat-label">Platform</p>
+            <p class="hero-stat-value">iPhone and iPad, SwiftUI</p>
+          </div>
+          <div>
+            <p class="hero-stat-label">Status</p>
+            <p class="hero-stat-value">Live on the App Store</p>
+          </div>
+          <div>
+            <p class="hero-stat-label">Product type</p>
+            <p class="hero-stat-value">Consumer creative tool</p>
+          </div>
+        </div>
+        <div class="hero-cta">
+          <a href="https://apps.apple.com/app/id6792545860" target="_blank" rel="noopener" class="store-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.7c-.02-2.3 1.88-3.4 1.96-3.45-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.48.83-.72 0-1.83-.81-3-.79-1.55.02-2.97.9-3.77 2.28-1.61 2.79-.41 6.92 1.16 9.18.77 1.11 1.68 2.35 2.88 2.31 1.16-.05 1.6-.75 3-.75s1.79.75 3.01.72c1.24-.02 2.03-1.13 2.79-2.24.88-1.29 1.24-2.53 1.26-2.6-.03-.01-2.42-.93-2.49-3.69zM14.1 5.96c.64-.78 1.07-1.85.95-2.93-.92.04-2.04.61-2.7 1.39-.59.68-1.11 1.78-.97 2.83 1.03.08 2.08-.52 2.72-1.29z"/></svg>
+            <span><span class="store-btn-sub">Download on the</span><span class="store-btn-main">App Store</span></span>
+          </a>
+          <a href="https://fredrikpahlmandesign.github.io/linelift-site/" target="_blank" rel="noopener" class="hero-site-link">Product site →</a>
+        </div>
+      </div>
+      <div class="hero-tags">
+        <span class="hero-tag">SwiftUI</span>
+        <span class="hero-tag">Watercolour simulation</span>
+        <span class="hero-tag">AI-assisted build</span>
+        <span class="hero-tag">Shipped 2026</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- OVERVIEW -->
+  <section class="section" id="overview">
+    <div class="section-inner">
+      <div class="overview-grid fade-in">
+        <div class="overview-meta">
+          <div>
+            <p class="meta-block-label">Project</p>
+            <p class="meta-block-value">Independent. Designed, coded and submitted by one person.</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Product</p>
+            <p class="meta-block-value">A digital watercolour app that lifts the linework off a photographed paper sketch so you can paint underneath it.</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Users</p>
+            <p class="meta-block-value">People who sketch and paint, on paper or on a phone. Free on the App Store for iPhone and iPad, no account needed.</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Scope</p>
+            <p class="meta-block-value">Product and interaction design, visual design, the watercolour engine, SwiftUI implementation, App Store release and the updates since.</p>
+          </div>
+          <div>
+            <p class="meta-block-label">Get the app</p>
+            <p class="meta-block-value"><a href="https://apps.apple.com/app/id6792545860" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(200,86,42,0.4);">App Store →</a><br><a href="https://fredrikpahlmandesign.github.io/linelift-site/" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(200,86,42,0.4);">Product site →</a></p>
+          </div>
+        </div>
+        <div class="overview-text">
+          <p>I have painted and sketched as a hobby for as long as I can remember, and I carry a mini watercolour kit, a sketchbook and pens more or less everywhere. Since the iPhone launched I have also used every digital sketching tool I came across, and loved and hated different parts of all of them.</p>
+          <p>Line Lift is the app I wanted to exist. What changed is that one person can now build it. Working with Claude, I could develop my own drawing and painting practice and get a finished product to market at the same time, instead of choosing between the two.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- PRODUCT -->
+  <section class="section">
+    <div class="section-inner">
+      <p class="section-label fade-in">The product</p>
+      <div class="product-split fade-in">
+        <div>
+          <img src="Portfolio%20Assets/Line%20Lift/02-ink-lift.jpg"
+               alt="A flamingo drawn in ink on paper, lifted off its background and sitting over loose watercolour blooms"
+               style="width:100%;max-width:360px;border-radius:6px;display:block;object-fit:cover;background:#182925;">
+          <p class="img-caption" style="max-width:360px;">The ink is the original paper drawing, lifted off the page. The colour underneath was painted in the app.</p>
+        </div>
+        <div class="body-text">
+          <p>The workflow is paper first. You draw with whatever you have to hand, photograph the page, and the app separates the marks from the paper they were made on. There is no retracing and no cleaning up a background, and the character of the original line survives the trip.</p>
+          <p>Underneath that lifted line you paint in watercolour. Pigment flows while the paper is wet, wet meets wet and blooms, edges stay soft where the surface has not dried, colours mix on the page, and the texture of the paper is part of the result rather than a filter applied afterwards.</p>
+          <p>The tools sit around the edge of a cutting mat rather than in a toolbar. There is a palette, a glass of water, washi tape for masking, and a sketchbook you flip through. Tilting the device moves pigment across the wet surface. A drying tool ends a wash when you want it ended.</p>
+        </div>
+      </div>
+
+      <div class="screen-grid fade-in">
+        <div>
+          <img src="Portfolio%20Assets/Line%20Lift/08-paper-first.jpg" loading="lazy" alt="A pencil sketch of two chickens on paper, taped down on the desk and ready to paint">
+          <p class="img-caption">Draw on paper, paint in here</p>
+        </div>
+        <div>
+          <img src="Portfolio%20Assets/Line%20Lift/05-studio-desk.jpg" loading="lazy" alt="Tools arranged around the edge of a cutting mat like a physical desk">
+          <p class="img-caption">The supplies are the interface</p>
+        </div>
+        <div>
+          <img src="Portfolio%20Assets/Line%20Lift/03-broad-washes.jpg" loading="lazy" alt="A broad wash blooming between masking tape edges">
+          <p class="img-caption">Broad washes, true blooms</p>
+        </div>
+        <div>
+          <img src="Portfolio%20Assets/Line%20Lift/04-washi-tape.jpg" loading="lazy" alt="Washi tape masking the edges of a painting, peeled back to reveal a clean border">
+          <p class="img-caption">Tape it off, peel it back</p>
+        </div>
+        <div>
+          <img src="Portfolio%20Assets/Line%20Lift/06-page-flip.jpg" loading="lazy" alt="A sketchbook page being flipped to reveal the painting beneath">
+          <p class="img-caption">Sketchbooks you can flip</p>
+        </div>
+        <div>
+          <img src="Portfolio%20Assets/Line%20Lift/09-finger-first.jpg" loading="lazy" alt="A painting made with a finger rather than a stylus">
+          <p class="img-caption">Finger first, anywhere</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTEXT BAND -->
+  <div class="context-band">
+    <div class="context-band-inner">
+      <p class="section-label fade-in">The challenge</p>
+      <div class="context-grid fade-in">
+        <div>
+          <h2 class="context-heading">An app that sits alongside the paper, not instead of it</h2>
+          <div class="body-text">
+            <p>Line Lift is built to work together with drawing and painting on paper rather than to replace it. That decision is why the interaction stays as close as it does to physical metaphors. The tools are the supplies. There is a palette, a glass of water, tape for masking, and a sketchbook you flip through, all arranged on a cutting mat instead of collapsed into a toolbar.</p>
+            <p>Tilting the device moves pigment across the wet surface the way tilting a real sheet of paper does. It is the one gesture in the app that needs no explanation to anyone who has held a wet painting at an angle to see where the colour runs.</p>
+          </div>
+        </div>
+        <div>
+          <div class="pull-quote" style="margin-top:0;">
+            I stayed close to physical metaphors because that is what keeps the flow when I sketch and paint on my phone. I wanted the best parts of the creative experience to survive the move to a screen.
+          </div>
+          <div class="body-text">
+            <p>The hard part underneath is that watercolour is difficult to fake, because people who paint already know what it does. Pigment spreads differently into a wet edge than a dry one, two colours meeting on damp paper do something no colour picker can describe, and a wash that dries at the wrong moment is simply a different painting.</p>
+          </div>
+          <div class="body-text">
+            <p>Most of the engine work went into when the paper is wet and how quickly it stops being wet, because that is what decides whether a mark blooms, feathers or simply sits there. A drying tool exists so a wash can be ended deliberately rather than waited out.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- PROCESS -->
+  <section class="section">
+    <div class="section-inner">
+      <p class="section-label fade-in">How I worked</p>
+      <div class="process-steps fade-in">
+        <div class="process-step">
+          <span class="process-step-num">01</span>
+          <div>
+            <p class="process-step-title">Design and code as one activity</p>
+            <p class="process-step-text">Working alone means designing and building are not two stages. A question about how paint should behave gets answered by changing the engine and running it, rather than by drawing a picture of the answer and handing it over. Line Lift has been native iOS since the first version, so there was never a prototype that had to be thrown away and rebuilt.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="process-step-num">02</span>
+          <div>
+            <p class="process-step-title">Claude in the loop, throughout</p>
+            <p class="process-step-text">The model is part of the working method rather than a tool I reach for occasionally, across design exploration and code both. The practical effect is that improving my own painting practice and shipping a product stopped being a choice between two things. What would otherwise have stayed a hobby prototype became something on the App Store, with releases going out most weeks.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="process-step-num">03</span>
+          <div>
+            <p class="process-step-title">Tested with people who paint</p>
+            <p class="process-step-text">The app went through sessions with people who actually paint, then a TestFlight group before the first release, and the beta group still gets each build ahead of the store. Those sessions keep finding things I had stopped being able to see. Whether the tools read as tools, and what a blank first page tells someone who has just opened the app, have both come back more than once.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUTCOME BAND -->
+  <div class="outcome-band">
+    <div class="outcome-band-inner">
+      <p class="section-label fade-in">Outcome</p>
+      <div class="outcome-stat-grid fade-in">
+        <div>
+          <p class="outcome-stat-num">Live</p>
+          <p class="outcome-stat-label">Released on the App Store on 5 September 2026. Free, no account, iPhone and iPad. Designed, coded and shipped by one person.</p>
+        </div>
+        <div>
+          <p class="outcome-stat-num">1.4</p>
+          <p class="outcome-stat-label">Five versions in the first month. 1.4 added the Drafting Set, a ruler, folding rule, ellipse guide and French curve for the ink pens, and the first thing for sale in the app.</p>
+        </div>
+        <div>
+          <p class="outcome-stat-num">3 languages</p>
+          <p class="outcome-stat-label">English, Japanese and Korean, in the app and on the store pages since 1.3. Still changing because of what testers and the analytics say.</p>
+        </div>
+      </div>
+      <div class="outcome-cta fade-in">
+        <a href="https://apps.apple.com/app/id6792545860" target="_blank" rel="noopener" class="store-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.7c-.02-2.3 1.88-3.4 1.96-3.45-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.48.83-.72 0-1.83-.81-3-.79-1.55.02-2.97.9-3.77 2.28-1.61 2.79-.41 6.92 1.16 9.18.77 1.11 1.68 2.35 2.88 2.31 1.16-.05 1.6-.75 3-.75s1.79.75 3.01.72c1.24-.02 2.03-1.13 2.79-2.24.88-1.29 1.24-2.53 1.26-2.6-.03-.01-2.42-.93-2.49-3.69zM14.1 5.96c.64-.78 1.07-1.85.95-2.93-.92.04-2.04.61-2.7 1.39-.59.68-1.11 1.78-.97 2.83 1.03.08 2.08-.52 2.72-1.29z"/></svg>
+            <span><span class="store-btn-sub">Download on the</span><span class="store-btn-main">App Store</span></span>
+          </a>
+        <a href="https://fredrikpahlmandesign.github.io/linelift-site/" target="_blank" rel="noopener" class="hero-site-link">Product site →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFLECTION -->
+  <section class="section reflection-section">
+    <div class="section-inner">
+      <p class="section-label fade-in">What I took from this</p>
+      <div class="reflection-grid">
+        <div class="fade-in">
+          <div class="reflection-card-num">01</div>
+          <div class="reflection-card-title">One person can now ship a real product</div>
+          <p class="reflection-card-text">Not a prototype and not a demo, but something on the App Store with people using it, and updates going out. That was not true a few years ago for a designer working alone, and it changes what is worth starting.</p>
+        </div>
+        <div class="fade-in">
+          <div class="reflection-card-num">02</div>
+          <div class="reflection-card-title">The user I know best is me</div>
+          <p class="reflection-card-text">I paint most days, so I am the first user of everything I build here. That shortens the feedback loop to nothing, which is the advantage. It also means I stop noticing what is confusing, which is the cost, and the second half is much easier to forget than the first.</p>
+        </div>
+        <div class="fade-in">
+          <div class="reflection-card-num">03</div>
+          <div class="reflection-card-title">Testers see the first run, I never will</div>
+          <p class="reflection-card-text">The sessions kept returning to things I had solved so long ago that I could no longer see them. Whether the tools read as tools, and what a blank first page says to someone who has just opened the app for the first time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECT NAV -->
+  <div class="project-nav">
+    <div class="project-nav-inner">
+      <a href="project-design-tools.html">← Design Tools</a>
+      <a href="index.html#personal">All work</a>
+      <a href="machine-kitchen.html">Machine Kitchen →</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-name">Fredrik Påhlman, Design &amp; Product</span>
+      <ul class="footer-links">
+        <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">LinkedIn</a></li>
+        <li><a href="https://read.cv/fredrik" target="_blank">Read.cv</a></li>
+        <li><a href="mailto:fredrikande@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    const hero = document.getElementById('hero');
+    function checkNav() {
+      nav.classList.toggle('light', hero.getBoundingClientRect().bottom <= 80);
+    }
+    window.addEventListener('scroll', checkNav, { passive: true });
+    checkNav();
+
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      }),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+  <script src="analytics.js"></script>
+</body>
+</html>

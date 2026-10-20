@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wood carving, Fredrik Påhlman</title>
+<meta name="description" content="Bowls, kuksas and figures carved by hand from birch and burl.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14110d;
+    --bg-alt: #1c1813;
+    --fg: #efe9dd;
+    --muted: #9a9080;
+    --line: rgba(255,255,255,.09);
+    --card: #1c1813;
+    --accent: #C8562A;
+    --pad: clamp(20px,4vw,52px);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--fg); font-family: 'Schibsted Grotesk', system-ui, sans-serif; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px var(--pad);
+    background: rgba(20,17,13,.86); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-left { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-badge { width: 22px; height: 22px; border-radius: 6px; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: .68rem; display: flex; align-items: center; justify-content: center; }
+  .nav-wordmark { font-weight: 600; font-size: .95rem; }
+  .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+  .nav-links a { font-family: 'JetBrains Mono', monospace; font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; color: var(--muted); transition: color .2s; }
+  .nav-links a:hover { color: var(--fg); }
+  @media (max-width: 760px) { .nav-links { display: none; } }
+
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 var(--pad); }
+  header.intro { padding: clamp(64px,10vh,120px) 0 48px; }
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+  h1 { font-weight: 700; font-size: clamp(2.2rem,5vw,3.6rem); letter-spacing: -.02em; line-height: 1.05; max-width: 14ch; }
+  .lede { margin-top: 22px; font-size: 1.05rem; color: var(--muted); max-width: 58ch; }
+
+  .gallery { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; padding-bottom: 96px; }
+  @media (max-width: 800px) { .gallery { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 480px) { .gallery { grid-template-columns: 1fr; } }
+  .piece { border-radius: 14px; overflow: hidden; background: var(--card); border: 1px solid var(--line); }
+  .piece-img { aspect-ratio: 4/5; overflow: hidden; background: var(--bg-alt); }
+  .piece-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.25,.46,.45,.94); }
+  .piece:hover .piece-img img { transform: scale(1.04); }
+  .piece.wide { grid-column: span 2; }
+  .piece.wide .piece-img { aspect-ratio: 8/5; }
+  @media (max-width: 480px) { .piece.wide { grid-column: span 1; } .piece.wide .piece-img { aspect-ratio: 4/5; } }
+  .piece-body { padding: 14px 16px; }
+  .piece-title { font-weight: 600; font-size: .95rem; margin-bottom: 2px; }
+  .piece-desc { font-family: 'JetBrains Mono', monospace; font-size: .72rem; color: var(--muted); }
+
+  .page-nav { border-top: 1px solid var(--line); padding: 32px 0; }
+  .page-nav-inner { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .page-nav a { font-family: 'JetBrains Mono', monospace; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; text-decoration: none; color: var(--muted); transition: color .2s; }
+  .page-nav a:hover { color: var(--accent); }
+
+  footer { border-top: 1px solid var(--line); padding: 40px var(--pad); }
+  .footer-inner { max-width: 1240px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: .82rem; color: var(--muted); }
+  .footer-links { display: flex; gap: 24px; list-style: none; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: .78rem; letter-spacing: .04em; transition: color .2s; }
+  .footer-links a:hover { color: var(--fg); }
+
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-left"><span class="nav-badge">F</span><span class="nav-wordmark">Fredrik Påhlman</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#work">Work</a></li>
+    <li><a href="index.html#personal">Personal</a></li>
+    <li><a href="writing.html">Writing</a></li>
+    <li><a href="resume.html">Resume</a></li>
+  </ul>
+</nav>
+
+<div class="wrap">
+  <header class="intro fade-in visible">
+    <p class="eyebrow">Personal, Craft</p>
+    <h1>Wood carving</h1>
+    <p class="lede">Bowls, kuksas and the odd figure, carved by hand from birch and birch burl. Slow work with a gouge and a knife, and the opposite of a screen.</p>
+  </header>
+
+  <div class="gallery">
+    <div class="piece wide fade-in">
+      <div class="piece-img"><img src="Personal projects/R0005059.JPG" alt="Burl bowl"></div>
+      <div class="piece-body">
+        <div class="piece-title">Burl bowl</div>
+        <div class="piece-desc">Figured birch · Hand-carved</div>
+      </div>
+    </div>
+    <div class="piece fade-in">
+      <div class="piece-img"><img src="Personal projects/R0004837.jpeg" alt="Kuksa with natural hole" loading="lazy"></div>
+      <div class="piece-body">
+        <div class="piece-title">Kuksa</div>
+        <div class="piece-desc">Burl · Organic form</div>
+      </div>
+    </div>
+    <div class="piece fade-in">
+      <div class="piece-img"><img src="Personal projects/R0005065.JPG" alt="Bowl interior" loading="lazy"></div>
+      <div class="piece-body">
+        <div class="piece-title">Interior</div>
+        <div class="piece-desc">Birch burl · Thin walls</div>
+      </div>
+    </div>
+    <div class="piece fade-in">
+      <div class="piece-img"><img src="Personal projects/R0004843.jpeg" alt="Kuksa with coffee" loading="lazy"></div>
+      <div class="piece-body">
+        <div class="piece-title">Morning kuksa</div>
+        <div class="piece-desc">Burl · Natural edge · In use</div>
+      </div>
+    </div>
+    <div class="piece fade-in">
+      <div class="piece-img"><img src="Personal projects/R0004798.jpeg" alt="Figurative sculpture in progress" loading="lazy"></div>
+      <div class="piece-body">
+        <div class="piece-title">Figure</div>
+        <div class="piece-desc">Birch log · In progress</div>
+      </div>
+    </div>
+    <div class="piece fade-in">
+      <div class="piece-img"><img src="Personal projects/Carving.jpeg" alt="Carving in progress" loading="lazy"></div>
+      <div class="piece-body">
+        <div class="piece-title">In the making</div>
+        <div class="piece-desc">Process · Gouge work</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <div class="page-nav-inner">
+      <a href="project-line-lift.html">← Line Lift</a>
+      <a href="index.html#personal">All personal projects</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span>Fredrik Påhlman, Design &amp; Product</span>
+    <ul class="footer-links">
+      <li><a href="https://www.linkedin.com/in/fredrik-p%C3%A5hlman-9219ba21" target="_blank">LinkedIn</a></li>
+      <li><a href="mailto:fredrikande@gmail.com">Email</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.06 });
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+</script>
+<script src="analytics.js"></script>
+</body>
+</html>
