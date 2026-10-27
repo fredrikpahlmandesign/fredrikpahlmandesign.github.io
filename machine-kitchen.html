@@ -170,6 +170,24 @@ header.hdr{display:flex;align-items:center;gap:8px;padding:9px 11px}
   margin-bottom:12px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .cell.helpmark{outline:3px dashed var(--flame);outline-offset:-3px}.helpgrid{width:100%;table-layout:fixed;border-collapse:separate;border-spacing:3px;margin:12px 0}.helpgrid td{background:#10161b;border:1px solid #38495a;height:42px;text-align:center;font-size:18px}.helpgrid th{font-size:11px;color:#93a7b7}.helpgrid small{display:block;color:#ff8a1f;font-size:13px}.helpgrid caption{text-align:left;font-size:12px;margin-bottom:8px;color:#93a7b7}
+
+.cells{touch-action:none;user-select:none;-webkit-user-select:none}
+.cell:focus-visible{outline:2px solid var(--pilot);outline-offset:-2px}
+.workshop-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.workshop-tools .btn{font-size:12px;padding:9px 12px;flex:1}
+.workshop-tools p{margin:0;font-size:11px;color:#98adba;line-height:1.5;width:100%}
+.inspect-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.inspect-title h2{margin:0}.inspect-title .sub{margin:0 0 5px}
+.machine-portrait{margin:16px auto;border:1px solid #42505c;border-radius:16px;background:#151e26;max-width:300px;overflow:hidden}
+.pixel-art{display:block;background-repeat:no-repeat;image-rendering:pixelated;text-align:center;font-size:48px}
+.machine-art{width:100%;aspect-ratio:1;background-size:400% 400%}
+.food-art{width:76px;aspect-ratio:1;background-size:600% 800%;border-radius:10px}
+.art-ready .machine-art{background-image:var(--machine-art);font-size:0}
+.art-ready .food-art{background-image:var(--food-art);font-size:0}
+.art-recipe{display:flex;flex-direction:column;align-items:center;gap:8px;border:1px solid #35444f;border-radius:12px;padding:12px;margin:12px 0;background:#141c23}
+.recipe-inputs{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px}
+.ingredient{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;font-size:11px;max-width:100px;color:#e7e5db}
+.recipe-arrow{color:#72d0c6;font-size:22px}
 </style>
 </head>
 <body>
@@ -751,6 +769,7 @@ function toast(msg){
    interaction
    ============================================================ */
 function onCell(x,y){
+  if(inspecting){const t=at(x,y);if(t)inspectMachine(t.t,x,y);else toast("Välj en maskin eller leveransruta att inspektera.");return;}
   if(running){ toast('Pause the line before rebuilding.'); return; }
   helpMarks.clear();
   const r=placeTile(x,y,tool,dir);
@@ -1010,6 +1029,118 @@ function openHelp(stage=0){
  openSheet(h);$('helpClose').onclick=closeSheet;if(stage<2)$('helpNext').onclick=()=>openHelp(stage+1);
 }
 
+
+/* Pixel-art workshop and touch belt drawing */
+let inspecting=false, beltStroke=null, ignoreBoardClickUntil=0;
+const MACHINE_ART=['belt','slicer','fryer','mill','oven','press','mixer','blender','chiller','source','tray','candy','cooker','baller','masher','tacostation'];
+const FOOD_ART=["potato","sticks","fries","wheat","flour","water","dough","bread","beef","mince","patty","cpatty","bun","burger","tomato","sauce","base","rawpizza","pizza","milk","icecream","berry","puree","sundae","burnt","sugar","cottoncandy","tortilla","tacomeat","tacos","rice","cookedrice","salmon","sushi","rawballs","meatballs","boiledpotato","mash","meatballmeal","loadedtacos","lettuce","shreddedlettuce","corn","cucumber","slicedcucumber","salsa"];
+function artHTML(id,machine=false){
+ const ids=machine?MACHINE_ART:FOOD_ART,i=ids.indexOf(id),cols=machine?4:6,rows=machine?4:8;
+ const data=machine?MODULES[id]:FOOD[id];
+ if(i<0)return '';
+ return '<span role="img" aria-label="'+data.n+'" class="pixel-art '+(machine?'machine-art':'food-art')+'" style="background-position:'+((i%cols)/(cols-1)*100)+'% '+(Math.floor(i/cols)/(rows-1)*100)+'%">'+data.e+'</span>';
+}
+function foodCard(id){return '<div class="ingredient">'+artHTML(id)+'<span>'+FOOD[id].n+'</span></div>';}
+function applyArt(){
+ if(!window.MK_ART)return;
+ document.documentElement.style.setProperty('--machine-art','url("'+window.MK_ART.machines+'")');
+ document.documentElement.style.setProperty('--food-art','url("'+window.MK_ART.foods+'")');
+ document.documentElement.classList.add('art-ready');
+}
+window.addEventListener('mk-art-ready',applyArt);
+function inspectMachine(id,x=null,y=null){
+ if(running)setRun(false);
+ const m=MODULES[id];if(!m)return;
+ const tile=x===null?null:at(x,y);
+ let recipes=[];
+ if(id==='mixer')recipes=Object.entries(PAIRS).map(([a,b])=>[a.split('+'),b]);
+ else if(id==='tacostation')recipes=[[TACO_FILLINGS,'loadedtacos']];
+ else recipes=Object.entries(RECIPES[id]||{}).map(([a,b])=>[[a],transform(id,a)]);
+ let h='<div class="inspect-title"><div><p class="sub">MASKINVERKSTAD</p><h2>'+m.n+'</h2></div><button class="btn" id="inspectClose" aria-label="Stäng">✕</button></div>';
+ h+='<div class="machine-portrait">'+artHTML(id,true)+'</div><p>'+m.d+'</p>';
+ h+='<p class="sub">'+(m.time?'Bearbetning: '+m.time+' taktslag.':'Transport och flöde.')+(tile?' · Kolumn '+(x+1)+', rad '+(y+1)+' · Utgång '+ARROW[tile.d]:'')+'</p>';
+ if(tile&&isAssembler(id))h+='<p class="sub">I maskinen: '+(tile.buf.length?tile.buf.map(f=>FOOD[f].n).join(', '):'Tom')+'</p>';
+ if(id==='source'&&tile){const src=LEVELS[lv].src.find(s=>s.x===x&&s.y===y);if(src)h+=foodCard(src.f);}
+ if(id==='tray')h+='<p>Beställningen vill ha:</p>'+foodCard(LEVELS[lv].goal);
+ if(recipes.length)h+='<h3>Ingredienser & resultat</h3>'+recipes.map(([a,b])=>'<div class="art-recipe"><div class="recipe-inputs">'+a.map(foodCard).join('<b>+</b>')+'</div><span class="recipe-arrow">↓</span>'+foodCard(b)+'</div>').join('');
+ if(id==='belt')h+='<p>Dra över rutorna för att bygga flera band. Sväng med fingret så följer bandens riktning med. Maskiner och leveranser skyddas.</p>';
+ if(!m.hidden)h+='<button class="btn go" id="inspectUse" style="width:100%">'+(S.owned[id]?'Placera '+m.n:'Visa i Parts · '+m.price+' mynt')+'</button>';
+ openSheet(h);applyArt();$('inspectClose').onclick=closeSheet;
+ if($('inspectUse'))$('inspectUse').onclick=()=>{if(!S.owned[id]){openShop();return;}tool=id;inspecting=false;updateInspectButton();renderParts();closeSheet();};
+}
+function updateInspectButton(){
+ $('btnInspect').textContent=inspecting?'✓ Inspektera: välj en ruta':'⌕ Inspektera';
+ $('btnInspect').setAttribute('aria-pressed',String(inspecting));
+}
+function boardPoint(e){
+ const el=document.elementFromPoint(e.clientX,e.clientY),cell=el&&el.closest('.cell');
+ return cell&&$('cells').contains(cell)?{x:+cell.dataset.x,y:+cell.dataset.y}:null;
+}
+function strokeStep(p){
+ const st=beltStroke;if(!st||st.ended)return;
+ const prev=st.last,dx=p.x-prev.x,dy=p.y-prev.y;
+ if(!dx&&!dy)return;
+ const d=dx>0?0:dy>0?1:dx<0?2:3;
+ const target=at(p.x,p.y),from=at(prev.x,prev.y);
+ if(target&&target.t==='source'){st.ended=true;return;}
+ if(from&&from.t==='belt')from.d=d;
+ if(!target||target.t==='belt'){
+   grid[key(p.x,p.y)]={t:'belt',d,x:p.x,y:p.y,buf:[],out:null,timer:0};
+ }else st.ended=true;
+ st.last=p;st.changed=true;
+}
+function extendStroke(p){
+ const st=beltStroke;if(!st||st.ended)return;
+ // Fill skipped pointer samples with a continuous, orthogonal path.
+ while(st.last.x!==p.x&&!st.ended)strokeStep({x:st.last.x+Math.sign(p.x-st.last.x),y:st.last.y});
+ while(st.last.y!==p.y&&!st.ended)strokeStep({x:st.last.x,y:st.last.y+Math.sign(p.y-st.last.y)});
+ renderGrid();
+}
+function setupWorkshop(){
+ applyArt();
+ const row=document.createElement('div');row.className='workshop-tools';
+ row.innerHTML='<button class="btn" id="btnInspect" aria-pressed="false">⌕ Inspektera</button><button class="btn" id="btnPartInfo">Om vald maskin</button><p>Välj Belt och dra för att bygga band · Inspektera för bilder och recept</p>';
+ $('parts').parentElement.appendChild(row);
+ $('btnInspect').onclick=()=>{inspecting=!inspecting;if(inspecting&&running)setRun(false);updateInspectButton();};
+ $('btnPartInfo').onclick=()=>inspectMachine(tool||'belt');
+ const cells=$('cells');
+ for(const cell of cells.children){
+   cell.tabIndex=0;cell.setAttribute('role','button');
+   cell.setAttribute('aria-label','Kolumn '+(+cell.dataset.x+1)+', rad '+(+cell.dataset.y+1));
+   cell.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();onCell(+cell.dataset.x,+cell.dataset.y);}});
+ }
+ cells.addEventListener('click',e=>{if(Date.now()<ignoreBoardClickUntil){e.preventDefault();e.stopImmediatePropagation();}},true);
+ cells.addEventListener('pointerdown',e=>{
+   if(e.button!==0||!e.isPrimary||running||tool!=='belt'||inspecting||beltStroke)return;
+   const p=boardPoint(e);if(!p)return;
+   const t=at(p.x,p.y);if(t&&t.t!=='belt'&&t.t!=='source')return;
+   beltStroke={id:e.pointerId,start:p,last:p,snapshot:JSON.stringify(grid),moved:false,changed:false,ended:false,px:e.clientX,py:e.clientY};
+   cells.setPointerCapture(e.pointerId);e.preventDefault();
+ });
+ cells.addEventListener('pointermove',e=>{
+   const st=beltStroke;if(!st||st.id!==e.pointerId)return;
+   const p=boardPoint(e);if(!p)return;
+   if(!st.moved&&(p.x!==st.start.x||p.y!==st.start.y)){
+     st.moved=true;
+     if(!at(st.start.x,st.start.y))grid[key(st.start.x,st.start.y)]={t:'belt',d:dir,x:st.start.x,y:st.start.y,buf:[],out:null,timer:0};
+   }
+   if(st.moved)extendStroke(p);
+ });
+ function end(e,cancel){
+   const st=beltStroke;if(!st||st.id!==e.pointerId)return;
+   if(!cancel&&st.moved){const p=boardPoint(e);if(p)extendStroke(p);}
+   beltStroke=null;ignoreBoardClickUntil=Date.now()+450;
+   if(cells.hasPointerCapture(e.pointerId))cells.releasePointerCapture(e.pointerId);
+   if(cancel){grid=JSON.parse(st.snapshot);renderGrid();return;}
+   if(!st.moved){onCell(st.start.x,st.start.y);return;}
+   if(st.changed){helpMarks.clear();saveLayout();renderGrid();workshopSound.play('belt');}
+ }
+ cells.addEventListener('pointerup',e=>end(e,false));
+ cells.addEventListener('pointercancel',e=>end(e,true));
+ cells.addEventListener('lostpointercapture',e=>{if(beltStroke)end(e,true);});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
+}
+
 /* ============================================================
    boot
    ============================================================ */
@@ -1017,6 +1148,7 @@ async function init(){
   await load();
   domReady=true;
   buildGrid();
+  setupWorkshop();
   const first=LEVELS.findIndex((L,i)=>!S.done[i]);
   setupLevel(first<0?LEVELS.length-1:first);
   renderGrid(); renderItems(); renderHUD(); renderParts();
@@ -1044,7 +1176,7 @@ async function init(){
   $('scrim').onclick=e=>{ if(e.target===$('scrim')) closeSheet(); };
   document.addEventListener('keydown',e=>{
     if(e.key==='r'||e.key==='R') setDir((dir+1)%4);
-    if(e.key===' '){ e.preventDefault(); setRun(!running); }
+    if(e.key===' '&&!e.target.closest('button,input,select,textarea,[role="button"]')&&!$('scrim').classList.contains('open')){ e.preventDefault(); setRun(!running); }
   });
   $('dirs').querySelectorAll('.dir').forEach(b=>b.onclick=()=>setDir(+b.dataset.d));
   window.addEventListener('resize',()=>{ measure(); renderItems(); });
@@ -1059,6 +1191,7 @@ if(typeof document!=='undefined') document.addEventListener('DOMContentLoaded',i
 globalThis.KM={setupLevel,placeTile,stepSim,state:()=>({items,made,spilled,tick,grid}),LEVELS};
 </script>
 
+<script async src="machine-kitchen-art.js"></script>
 <script src="analytics.js"></script>
 </body>
 </html>
