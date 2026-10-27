@@ -182,12 +182,14 @@ header.hdr{display:flex;align-items:center;gap:8px;padding:9px 11px}
 .pixel-art{display:block;background-repeat:no-repeat;image-rendering:pixelated;text-align:center;font-size:48px}
 .machine-art{width:100%;aspect-ratio:1;background-size:400% 400%}
 .food-art{width:76px;aspect-ratio:1;background-size:600% 800%;border-radius:10px}
-.art-ready .machine-art{background-image:var(--machine-art);font-size:0}
-.art-ready .food-art{background-image:var(--food-art);font-size:0}
+
 .art-recipe{display:flex;flex-direction:column;align-items:center;gap:8px;border:1px solid #35444f;border-radius:12px;padding:12px;margin:12px 0;background:#141c23}
 .recipe-inputs{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px}
 .ingredient{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;font-size:11px;max-width:100px;color:#e7e5db}
 .recipe-arrow{color:#72d0c6;font-size:22px}
+.shop-art{width:76px;flex:0 0 76px;overflow:hidden;border-radius:10px;background:#151e26}
+.inspect-link{border:1px solid #536b78;border-radius:7px;background:#22333e;color:#9de0d6;padding:6px 9px;margin-top:8px;cursor:pointer;font:inherit;font-size:12px;text-align:left}
+@media(max-width:400px){.shop-art{width:54px;flex-basis:54px}}
 </style>
 </head>
 <body>
@@ -878,14 +880,16 @@ function openShop(){
   for(const id of list){
     const M=MODULES[id]; if(M.hidden||M.price===0) continue;
     const owned=!!S.owned[id];
-    h+=`<div class="item"${need.includes(id)?' style="border-color:var(--flame)"':''}><div class="ie">${M.e}</div>
-       <div class="it"><b>${M.n}${need.includes(id)?' <span style="color:var(--flame);font-size:10px">· needed now</span>':''}</b><small>${M.d}</small></div>`+
+    h+=`<div class="item"${need.includes(id)?' style="border-color:var(--flame)"':''}><div class="shop-art">${artHTML(id,true)}</div>
+       <div class="it"><b>${M.n}${need.includes(id)?' <span style="color:var(--flame);font-size:10px">· needed now</span>':''}</b><small>${M.d}</small><button class="inspect-link" data-inspect="${id}">Visa bild & recept →</button></div>`+
        (owned?'<span class="owned">Owned</span>':
         `<button class="buy" data-b="${id}" ${S.coins<M.price?'disabled':''}>⬤ ${M.price}</button>`)+
        '</div>';
   }
   h+='<button class="btn stop" id="close" style="width:100%;margin-top:6px">Back to the line</button>';
   openSheet(h);
+  applyArt();
+  $('sheet').querySelectorAll('[data-inspect]').forEach(b=>b.onclick=()=>inspectMachine(b.dataset.inspect));
   $('sheet').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{
     const id=b.dataset.b, M=MODULES[id];
     if(S.coins<M.price) return;
@@ -1079,8 +1083,13 @@ function artHTML(id,machine=false){
 function foodCard(id){return '<div class="ingredient">'+artHTML(id)+'<span>'+FOOD[id].n+'</span></div>';}
 function applyArt(){
  if(!window.MK_ART)return;
- document.documentElement.style.setProperty('--machine-art','url("'+window.MK_ART.machines+'")');
- document.documentElement.style.setProperty('--food-art','url("'+window.MK_ART.foods+'")');
+ let style=document.getElementById('workshop-art-styles');
+ if(!style){
+  style=document.createElement('style');style.id='workshop-art-styles';
+  // Large data URLs belong in image declarations, not size-limited CSS variables.
+  style.textContent='.art-ready .machine-art{background-image:url("'+window.MK_ART.machines+'");font-size:0}.art-ready .food-art{background-image:url("'+window.MK_ART.foods+'");font-size:0}';
+  document.head.appendChild(style);
+ }
  document.documentElement.classList.add('art-ready');
 }
 window.addEventListener('mk-art-ready',applyArt);
@@ -1229,7 +1238,7 @@ if(typeof document!=='undefined') document.addEventListener('DOMContentLoaded',i
 globalThis.KM={setupLevel,placeTile,stepSim,state:()=>({items,made,spilled,tick,grid}),LEVELS};
 </script>
 
-<script async src="machine-kitchen-art.js"></script>
+<script async src="machine-kitchen-art.js?v=2"></script>
 <script src="analytics.js"></script>
 </body>
 </html>
