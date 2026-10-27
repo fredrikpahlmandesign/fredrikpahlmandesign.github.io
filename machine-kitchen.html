@@ -336,6 +336,34 @@ const LEVELS=[
    tip:'Chill the milk, blend the berries, then bring them together.'}
 ];
 
+
+Object.assign(FOOD,{
+ sugar:{n:'Granulated Sugar',e:'🍚',c:'#f6efdf'},cottoncandy:{n:'Cotton Candy',e:'🍭',c:'#f2b1d5'},
+ tortilla:{n:'Tortilla',e:'🫓',c:'#e8ce8d'},tacomeat:{n:'Cooked Taco Mince',e:'🥘',c:'#9c5735'},tacos:{n:'Tacos',e:'🌮',c:'#e4b43e'},
+ rice:{n:'Rice',e:'🌾',c:'#e5dbbc'},cookedrice:{n:'Cooked Rice',e:'🍚',c:'#f3efe3'},salmon:{n:'Salmon',e:'🐟',c:'#f28b69'},sushi:{n:'Salmon Nigiri',e:'🍣',c:'#ef9475'},
+ rawballs:{n:'Raw Meatballs',e:'🧆',c:'#bb7b71'},meatballs:{n:'Cooked Meatballs',e:'🧆',c:'#875337'},
+ boiledpotato:{n:'Boiled Potato',e:'🥔',c:'#eddba0'},mash:{n:'Mashed Potatoes',e:'🥣',c:'#f2dfaf'},meatballmeal:{n:'Meatballs & Mash',e:'🍽️',c:'#bb8c52'}
+});
+Object.assign(MODULES,{
+ candy:{n:'Candy Floss',e:'🍭',time:3,price:180,d:'Spins granulated sugar into fluffy cotton candy.'},
+ cooker:{n:'Cooker',e:'♨️',time:3,price:220,d:'Cooks rice and boils potatoes. Water is built into the machine.'},
+ baller:{n:'Meatball Former',e:'🧆',time:1,price:200,d:'Rolls ground beef into raw meatballs. Fry them next.'},
+ masher:{n:'Masher',e:'🥣',time:2,price:180,d:'Turns boiled potatoes into mashed potatoes.'}
+});
+RECIPES.candy={sugar:'cottoncandy'};
+RECIPES.cooker={rice:'cookedrice',potato:'boiledpotato'};
+RECIPES.baller={mince:'rawballs'};
+RECIPES.masher={boiledpotato:'mash'};
+Object.assign(RECIPES.fryer,{mince:'tacomeat',tacomeat:'burnt',rawballs:'meatballs',meatballs:'burnt'});
+MODULES.fryer.d='Fries potato sticks, patties, mince and meatballs. Frying cooked food again burns it.';
+Object.assign(PAIRS,{'tacomeat+tortilla':'tacos','cookedrice+salmon':'sushi','mash+meatballs':'meatballmeal'});
+LEVELS.push(
+ {name:'Cotton Candy Clouds',goal:'cottoncandy',need:4,reward:600,src:[{x:0,y:2,f:'sugar',iv:5}],tray:{x:7,y:2},chain:['sugar','candy','cottoncandy'],tip:'Granulated sugar goes straight into the Candy Floss machine, then to the tray.'},
+ {name:'Taco Tuesday',goal:'tacos',need:4,reward:700,src:[{x:0,y:1,f:'beef',iv:6},{x:0,y:4,f:'tortilla',iv:6}],tray:{x:7,y:2},chain:['beef','mill','mince','fryer','tacomeat','mixer','tacos'],tip:'Grind and fry the beef. Combine cooked mince with a tortilla in the mixer.'},
+ {name:'Sushi Bar',goal:'sushi',need:4,reward:800,src:[{x:0,y:1,f:'rice',iv:6},{x:0,y:4,f:'salmon',iv:6}],tray:{x:7,y:2},chain:['rice','cooker','cookedrice','mixer','sushi'],tip:'Cook the rice, then combine it with salmon in the mixer to make nigiri.'},
+ {name:'Meatballs & Mash',goal:'meatballmeal',need:4,reward:1000,src:[{x:0,y:1,f:'beef',iv:7},{x:0,y:4,f:'potato',iv:7}],tray:{x:7,y:2},chain:['beef','mill','mince','baller','rawballs','fryer','meatballs','mixer','meatballmeal'],tip:'Grind, roll and fry the meatballs. Boil and mash potatoes, then combine both branches in the mixer.'}
+);
+
 const PAY=12;           // coins per correct plate
 const REPLAY=0.25;      // share of reward on a repeat clear
 
@@ -789,19 +817,43 @@ const HELP_HINTS=[
  'Det behövs två grenar: Dough → Press och Tomato → Blender. Pizzabotten och tomatsås möts i Mixer, sedan behövs Oven.',
  'Kyl mjölken med Chiller och kör bären genom Blender. Glass och puré möts i Mixer.'
 ];
+
+RECIPE_BRANCHES.push(
+ [['sugar','candy','cottoncandy']],
+ [['beef','mill','mince','fryer','tacomeat'],['tortilla'],['tacomeat','tortilla','mixer','tacos']],
+ [['rice','cooker','cookedrice'],['salmon'],['cookedrice','salmon','mixer','sushi']],
+ [['beef','mill','mince','baller','rawballs','fryer','meatballs'],['potato','cooker','boiledpotato','masher','mash'],['meatballs','mash','mixer','meatballmeal']]
+);
+HELP_HINTS.push(
+ 'Strösocker blir sockervadd i Candy Floss. Led sedan sockervadden direkt till serveringsfatet.',
+ 'Köttet behöver Mill och Fryer. Låt den stekta färsen möta en Tortilla i Mixer. Använd inte Press: den gör hamburgarbiffar.',
+ 'Ris måste först kokas i Cooker. Vatten ingår i maskinen. Låt kokt ris och lax mötas i Mixer för att göra nigiri.',
+ 'Köttgrenen: Mill → Meatball Former → Fryer. Potatisgrenen: Cooker → Masher. De färdiga köttbullarna och moset ska mötas i Mixer.'
+);
 let helpMarks=new Set();
 function requiredParts(){return [...new Set(RECIPE_BRANCHES[lv].flat().filter(x=>MODULES[x]&&!MODULES[x].hidden))];}
 function recipeHTML(){return RECIPE_BRANCHES[lv].map(branch=>'<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;width:100%">'+branch.map((s,i)=>{
  const m=MODULES[s],f=FOOD[s];return (i?'<span class="arw">›</span>':'')+'<span class="m">'+(m?m.e+' '+m.n:f.e+' '+f.n)+'</span>';
 }).join('')+'</div>').join('');}
 function solutionTiles(level=lv){
- const upper=[['slicer'],['slicer','fryer'],['mill','mixer','oven'],['mill','press','fryer','mixer'],['press','mixer','oven'],['chiller','mixer']][level];
- const tiles=[],row=level<2?2:1;
+ const plans=[
+  {upper:['slicer']},{upper:['slicer','fryer']},
+  {upper:['mill','mixer','oven'],lower:[]},
+  {upper:['mill','press','fryer','mixer'],lower:[]},
+  {upper:['press','mixer','oven'],lower:['blender']},
+  {upper:['chiller','mixer'],lower:['blender']},
+  {upper:['candy']},
+  {upper:['mill','fryer','mixer'],lower:[]},
+  {upper:['cooker','mixer'],lower:[]},
+  {upper:['mill','baller','fryer','mixer'],lower:['cooker','masher']}
+ ];
+ const {upper,lower}=plans[level],two=LEVELS[level].src.length>1;
+ const tiles=[],row=two?1:2;
  for(let x=1;x<7;x++)tiles.push({x,y:row,t:upper[x-1]||'belt',d:0});
- if(level>=2){
+ if(two){
   tiles.push({x:7,y:1,t:'belt',d:1});
   const mx=upper.indexOf('mixer')+1;
-  for(let x=1;x<=mx;x++)tiles.push({x,y:4,t:x===1&&level>=4?'blender':'belt',d:x===mx?3:0});
+  for(let x=1;x<=mx;x++)tiles.push({x,y:4,t:lower[x-1]||'belt',d:x===mx?3:0});
   for(let y=3;y>=2;y--)tiles.push({x:mx,y,t:'belt',d:3});
  }
  return tiles;
