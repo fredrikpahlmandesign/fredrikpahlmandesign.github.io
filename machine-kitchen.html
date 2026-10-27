@@ -169,6 +169,7 @@ header.hdr{display:flex;align-items:center;gap:8px;padding:9px 11px}
 .win .stat{text-align:center;font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--steel-300);
   margin-bottom:12px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.cell.helpmark{outline:3px dashed var(--flame);outline-offset:-3px}.helpgrid{width:100%;table-layout:fixed;border-collapse:separate;border-spacing:3px;margin:12px 0}.helpgrid td{background:#10161b;border:1px solid #38495a;height:42px;text-align:center;font-size:18px}.helpgrid th{font-size:11px;color:#93a7b7}.helpgrid small{display:block;color:#ff8a1f;font-size:13px}.helpgrid caption{text-align:left;font-size:12px;margin-bottom:8px;color:#93a7b7}
 </style>
 </head>
 <body>
@@ -222,6 +223,7 @@ header.hdr{display:flex;align-items:center;gap:8px;padding:9px 11px}
     <button class="btn stop" id="btnSpeed">1×</button>
     <button class="btn stop" id="btnClear">Clear</button>
   </div>
+<button class="btn stop" id="btnHelp" style="width:100%">? Jag har kört fast</button>
 </div>
 
 <div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
@@ -451,6 +453,7 @@ function stepSim(){
    level setup
    ============================================================ */
 function setupLevel(i,useSaved=true){
+  helpMarks.clear();
   lv=i; grid={}; items=[]; tick=0; made=0; spilled=0; nextId=1;
   const L=LEVELS[i];
   for(const s of L.src) grid[key(s.x,s.y)]={t:'source',d:0,x:s.x,y:s.y,buf:[],out:null,timer:0};
@@ -551,6 +554,7 @@ function renderGrid(){
     }
     if(t.timer>0 || items.some(i=>i.x===x&&i.y===y&&i.timer>0)) el.classList.add('hot');
     el.innerHTML=inner;
+    if(helpMarks.has(key(x,y)))el.classList.add('helpmark');
   }
 }
 function arrowBadge(d){
@@ -613,6 +617,7 @@ function renderHUD(){
     const label=isM?`${MODULES[s].e} ${MODULES[s].n}`:`${FOOD[s].e} ${FOOD[s].n}`;
     return (i?'<span class="arw">›</span>':'')+`<span class="m"${isM?' style="color:#ff8a1f"':''}>${label}</span>`;
   }).join('');
+  $('chain').innerHTML=recipeHTML();
   $('btnRun').textContent=running?'Pause':'Run';
   $('btnRun').classList.toggle('go',!running);
   $('btnRun').classList.toggle('stop',running);
@@ -648,6 +653,7 @@ function toast(msg){
    ============================================================ */
 function onCell(x,y){
   if(running){ toast('Pause the line before rebuilding.'); return; }
+  helpMarks.clear();
   const r=placeTile(x,y,tool,dir);
   if(r==='locked'){ toast('That part is bolted down.'); return; }
   saveLayout(); renderGrid();
@@ -703,7 +709,7 @@ function go(i){
 function openSheet(html){ $('sheet').innerHTML=html; $('scrim').classList.add('open'); }
 function closeSheet(){ $('scrim').classList.remove('open'); }
 
-function needed(){ return LEVELS[lv].chain.filter(c=>MODULES[c]&&!S.owned[c]); }
+function needed(){ return requiredParts().filter(c=>!S.owned[c]); }
 function openShop(){
   const need=needed();
   const short=need.reduce((a,id)=>a+MODULES[id].price,0)-S.coins;
@@ -766,6 +772,102 @@ function openIntro(){
   $('close').onclick=()=>{ closeSheet(); S.seen=1; save(); };
 }
 
+
+const RECIPE_BRANCHES=[
+ [['potato','slicer','sticks']],
+ [['potato','slicer','sticks','fryer','fries']],
+ [['wheat','mill','flour'],['water'],['flour','water','mixer','dough','oven','bread']],
+ [['beef','mill','mince','press','patty','fryer','cpatty'],['bun'],['cpatty','bun','mixer','burger']],
+ [['dough','press','base'],['tomato','blender','sauce'],['base','sauce','mixer','rawpizza','oven','pizza']],
+ [['milk','chiller','icecream'],['berry','blender','puree'],['icecream','puree','mixer','sundae']]
+];
+const HELP_HINTS=[
+ 'Potatisen behöver passera en Slicer innan den når serveringsfatet.',
+ 'Skär potatisen med Slicer och stek sedan med Fryer. En andra stekning bränner maten.',
+ 'Mjöl och vatten ska mötas i Mixer. Gör mjölet med Mill och baka sedan degen i Oven.',
+ 'Köttet behöver Mill, Press och Fryer innan det möter brödet i Mixer.',
+ 'Det behövs två grenar: Dough → Press och Tomato → Blender. Pizzabotten och tomatsås möts i Mixer, sedan behövs Oven.',
+ 'Kyl mjölken med Chiller och kör bären genom Blender. Glass och puré möts i Mixer.'
+];
+let helpMarks=new Set();
+function requiredParts(){return [...new Set(RECIPE_BRANCHES[lv].flat().filter(x=>MODULES[x]&&!MODULES[x].hidden))];}
+function recipeHTML(){return RECIPE_BRANCHES[lv].map(branch=>'<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;width:100%">'+branch.map((s,i)=>{
+ const m=MODULES[s],f=FOOD[s];return (i?'<span class="arw">›</span>':'')+'<span class="m">'+(m?m.e+' '+m.n:f.e+' '+f.n)+'</span>';
+}).join('')+'</div>').join('');}
+function solutionTiles(level=lv){
+ const upper=[['slicer'],['slicer','fryer'],['mill','mixer','oven'],['mill','press','fryer','mixer'],['press','mixer','oven'],['chiller','mixer']][level];
+ const tiles=[],row=level<2?2:1;
+ for(let x=1;x<7;x++)tiles.push({x,y:row,t:upper[x-1]||'belt',d:0});
+ if(level>=2){
+  tiles.push({x:7,y:1,t:'belt',d:1});
+  const mx=upper.indexOf('mixer')+1;
+  for(let x=1;x<=mx;x++)tiles.push({x,y:4,t:x===1&&level>=4?'blender':'belt',d:x===mx?3:0});
+  for(let y=3;y>=2;y--)tiles.push({x:mx,y,t:'belt',d:3});
+ }
+ return tiles;
+}
+function trialRun(){
+ const old={grid,items,nextId,tick,made,spilled,coins:S.coins,domReady};
+ try{
+  grid=JSON.parse(JSON.stringify(grid));items=JSON.parse(JSON.stringify(items));domReady=false;
+  const before=made,waste=spilled;for(let n=0;n<160;n++)stepSim();
+  return {served:made-before,wasted:spilled-waste};
+ }finally{({grid,items,nextId,tick,made,spilled,domReady}=old);S.coins=old.coins;}
+}
+function diagnose(){
+ const messages=[],marks=new Set(),missing=requiredParts().filter(t=>!Object.values(grid).some(c=>c.t===t));
+ for(const t of missing)messages.push('Saknas i bygget: '+MODULES[t].n+(!S.owned[t]?' (köp under Parts).':'.'));
+ const incoming=new Map();
+ for(const source of LEVELS[lv].src){
+  let x=source.x,y=source.y,food=source.f;const visited=new Set();
+  for(let n=0;n<GW*GH;n++){
+   const cell=at(x,y);if(!cell)break;
+   const k=key(x,y);if(visited.has(k)){marks.add(k);messages.push('Ett transportband går i en slinga vid kolumn '+(x+1)+', rad '+(y+1)+'.');break;}visited.add(k);
+   if(cell.t==='mixer'){
+    const feeds=incoming.get(k)||[];feeds.push(food);incoming.set(k,feeds);break;
+   }
+   if(cell.t==='tray'){if(food!==LEVELS[lv].goal){marks.add(k);messages.push(FOOD[food].n+' når fatet, men beställningen kräver '+FOOD[LEVELS[lv].goal].n+'.');}break;}
+   if(cell.t!=='source')food=transform(cell.t,food);
+   const [dx,dy]=DIRS[cell.d],nx=x+dx,ny=y+dy;
+   if(!inB(nx,ny)||!at(nx,ny)||at(nx,ny).t==='source'){marks.add(k);messages.push('Kontrollera utgången vid kolumn '+(x+1)+', rad '+(y+1)+': maten saknar en väg vidare.');break;}
+   x=nx;y=ny;
+  }
+ }
+ for(const [k,foods] of incoming){if(foods.length!==2||pairOut(foods)==='burnt'){marks.add(k);messages.push('Mixer får '+foods.map(f=>FOOD[f].n).join(' + ')+'. '+(foods.length<2?'Den behöver en andra ingrediensgren.':'Den kombinationen ger ingen rätt. Kontrollera maskinerna före mixern.'));}}
+ for(const start of Object.values(grid).filter(c=>c.t==='mixer')){
+  let cell=start;const visited=new Set();
+  while(cell&&cell.t!=='tray'){
+   const k=key(cell.x,cell.y);
+   if(visited.has(k)){marks.add(k);messages.push('Vägen efter Mixer går i en slinga vid kolumn '+(cell.x+1)+', rad '+(cell.y+1)+'.');break;}
+   visited.add(k);const [dx,dy]=DIRS[cell.d],next=at(cell.x+dx,cell.y+dy);
+   if(!next||next.t==='source'){marks.add(k);messages.push('Vägen efter Mixer tar stopp vid kolumn '+(cell.x+1)+', rad '+(cell.y+1)+'. Vrid utgången eller bygg vidare till fatet.');break;}
+   cell=next;
+  }
+ }
+ const trial=trialRun();
+ if(trial.served>=Math.max(1,LEVELS[lv].need-made))messages.unshift('Bygget kan klara beställningen! Testkörningen gav '+trial.served+' rätta portioner.'+(trial.wasted?' Några felaktiga portioner kom också fram eller tappades.':''));
+ else if(!missing.length&&!messages.length)messages.push('Testkörningen gav bara '+trial.served+' rätta portioner. Kontrollera vägen efter mixern, stopp i flödet och om mixern får två likadana ingredienser i följd. Gamla ingredienser kan finnas kvar i maskinerna.');
+ helpMarks=marks;renderGrid();return [...new Set(messages)];
+}
+function solutionHTML(){
+ const map=new Map(solutionTiles().map(c=>[key(c.x,c.y),c]));
+ for(const s of LEVELS[lv].src)map.set(key(s.x,s.y),{t:'source',f:s.f,d:0});
+ const tray=LEVELS[lv].tray;map.set(key(tray.x,tray.y),{t:'tray'});
+ let h='<table class="helpgrid"><caption>Kolumner 1–8, rader 1–6. Pilar visar utgången.</caption><thead><tr><th></th>';
+ for(let x=1;x<=GW;x++)h+='<th>'+x+'</th>';h+='</tr></thead><tbody>';
+ for(let y=0;y<GH;y++){h+='<tr><th>'+(y+1)+'</th>';for(let x=0;x<GW;x++){const c=map.get(key(x,y));h+='<td>';if(c){const name=c.t==='source'?FOOD[c.f].n:MODULES[c.t].n;h+='<span title="'+name+'" aria-label="'+name+'">'+(c.t==='source'?FOOD[c.f].e:MODULES[c.t].e)+'</span>'+(c.t==='tray'?'':'<small>'+ARROW[c.d]+'</small>');}h+='</td>';}h+='</tr>';}
+ return h+'</tbody></table><p class="sub">Maskiner: '+requiredParts().map(t=>MODULES[t].e+' '+MODULES[t].n).join(' · ')+'</p><p class="sub">Detta är en möjlig lösning. Ditt bygge ändras inte. Om gamla ingredienser ligger kvar kan du använda Clear och bygga enligt bilden.</p>';
+}
+function openHelp(stage=0){
+ if(running)setRun(false);
+ let h='<h2>Jag har kört fast</h2><p class="sub">'+LEVELS[lv].name+' · hjälp '+(stage+1)+' av 3</p>';
+ if(stage===0)h+='<p>'+HELP_HINTS[lv]+'</p><button class="btn go" id="helpNext">Kontrollera mitt bygge</button>';
+ if(stage===1)h+='<ul>'+diagnose().map(m=>'<li style="margin-bottom:10px">'+m+'</li>').join('')+'</ul><p class="sub">Markerade rutor har en streckad orange ram. Stäng hjälpen för att se dem. Spelet är pausat.</p><button class="btn go" id="helpNext">Visa en fungerande lösning</button>';
+ if(stage===2)h+=solutionHTML();
+ h+='<button class="btn stop" id="helpClose" style="width:100%;margin-top:10px">Tillbaka till bygget</button>';
+ openSheet(h);$('helpClose').onclick=closeSheet;if(stage<2)$('helpNext').onclick=()=>openHelp(stage+1);
+}
+
 /* ============================================================
    boot
    ============================================================ */
@@ -790,6 +892,7 @@ async function init(){
     saveLayout(); renderGrid(); renderItems(); renderHUD();
     toast('Board cleared.');
   };
+  $('btnHelp').onclick=()=>openHelp();
   $('btnShop').onclick=openShop;
   $('btnLevels').onclick=openLevels;
   $('scrim').onclick=e=>{ if(e.target===$('scrim')) closeSheet(); };
