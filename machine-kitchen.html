@@ -241,7 +241,7 @@ header.hdr{display:flex;align-items:center;gap:8px;padding:9px 11px}
     <button class="btn stop" id="btnSpeed">1×</button>
     <button class="btn stop" id="btnClear">Clear</button>
   </div>
-<div style="display:flex;gap:7px;align-items:stretch"><button class="btn stop" id="btnHelp">? Jag har kört fast</button><button class="iconbtn" id="btnSound" aria-pressed="true" aria-label="Stäng av spelljud">🔊 Ljud på</button></div>
+<div style="display:flex;gap:7px;align-items:stretch;flex-wrap:wrap"><button class="btn stop" id="btnHelp">? Jag har kört fast</button><button class="iconbtn" id="btnSound" aria-pressed="true" aria-label="Stäng av spelljud">🔊 Ljud på</button><button class="iconbtn" id="btnHaptics" aria-pressed="true">Haptik på</button></div>
 </div>
 
 <div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
@@ -420,6 +420,41 @@ const occupied=(x,y)=>items.some(i=>i.x===x&&i.y===y);
 
 
 /* Small synthesized workshop sounds: no downloads, microphones or autoplay. */
+
+const workshopHaptics=(()=>{
+ const supported=typeof navigator!=='undefined'&&typeof navigator.vibrate==='function';
+ let enabled=true,nextPulse=0;
+ try{enabled=localStorage.getItem('machinekitchen:haptics')!=='off';}catch{}
+ const patterns={coin:[12,35,18],buy:[20,45,35],place:[30,20,12],belt:9,rotate:7};
+ function stop(){if(supported)try{navigator.vibrate(0);}catch{}nextPulse=0;}
+ function play(kind){
+  if(!supported||!enabled||!domReady||typeof document==='undefined'||document.hidden)return;
+  if(navigator.userActivation&&!navigator.userActivation.hasBeenActive)return;
+  const pattern=patterns[kind];if(pattern===undefined)return;
+  const now=Date.now();if(now<nextPulse)return;
+  try{
+   const accepted=navigator.vibrate(pattern);
+   if(accepted!==false)nextPulse=now+(kind==='coin'?250:Array.isArray(pattern)?pattern.reduce((a,b)=>a+b,0)+35:65);
+  }catch{/* Haptics must never interrupt the game. */}
+ }
+ function label(){
+  if(typeof document==='undefined')return;
+  const b=document.getElementById('btnHaptics');if(!b)return;
+  b.disabled=!supported;
+  b.textContent=!supported?'Haptik saknas':enabled?'Haptik på':'Haptik av';
+  b.setAttribute('aria-pressed',String(supported&&enabled));
+  b.setAttribute('aria-label',!supported?'Webbläsaren saknar stöd för vibration':enabled?'Stäng av haptik':'Slå på haptik');
+  b.title=!supported?'Den här webbläsaren erbjuder inte vibration.':'Korta vibrationer vid köp, placering och intjänade pengar.';
+ }
+ function toggle(){
+  if(!supported)return;
+  enabled=!enabled;
+  try{localStorage.setItem('machinekitchen:haptics',enabled?'on':'off');}catch{}
+  stop();label();if(enabled)play('belt');
+ }
+ return {play,stop,label,toggle};
+})();
+
 const workshopSound=(()=>{
  let ctx=null,master=null,motor=null,rollers=[],noise=null,lastCoin=-1,enabled=true;
  try{enabled=localStorage.getItem('machinekitchen:sound')!=='off';}catch{}
@@ -455,6 +490,7 @@ const workshopSound=(()=>{
   n.connect(f);f.connect(g);g.connect(master);n.start(start);n.stop(start+duration+.02);n.onended=()=>{n.disconnect();f.disconnect();g.disconnect();};
  }
  function play(kind){
+  workshopHaptics.play(kind);
   if(!domReady||!enabled||!ctx||ctx.state!=='running'||!visible())return;
   try{const t=ctx.currentTime;
    if(kind==='coin'){if(t-lastCoin<.09)return;lastCoin=t;tone(1318.5,t,.32,.1);tone(1977.8,t+.014,.23,.035);tone(2637,t,.14,.012);}
@@ -1167,9 +1203,11 @@ async function init(){
     toast('Board cleared.');
   };
   workshopSound.label();$('btnSound').onclick=()=>workshopSound.toggle();
+  workshopHaptics.label();$('btnHaptics').onclick=()=>workshopHaptics.toggle();
+  window.addEventListener('pagehide',()=>workshopHaptics.stop());
   document.addEventListener('pointerdown',()=>{void workshopSound.unlock();},{passive:true});
   document.addEventListener('keydown',()=>{void workshopSound.unlock();});
-  document.addEventListener('visibilitychange',()=>workshopSound.visibility());
+  document.addEventListener('visibilitychange',()=>{workshopSound.visibility();if(document.hidden)workshopHaptics.stop();});
   $('btnHelp').onclick=()=>openHelp();
   $('btnShop').onclick=openShop;
   $('btnLevels').onclick=openLevels;
