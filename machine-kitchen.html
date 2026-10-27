@@ -223,7 +223,7 @@ header.hdr{display:flex;align-items:center;gap:8px;padding:9px 11px}
     <button class="btn stop" id="btnSpeed">1×</button>
     <button class="btn stop" id="btnClear">Clear</button>
   </div>
-<button class="btn stop" id="btnHelp" style="width:100%">? Jag har kört fast</button>
+<div style="display:flex;gap:7px;align-items:stretch"><button class="btn stop" id="btnHelp">? Jag har kört fast</button><button class="iconbtn" id="btnSound" aria-pressed="true" aria-label="Stäng av spelljud">🔊 Ljud på</button></div>
 </div>
 
 <div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
@@ -381,6 +381,57 @@ const at=(x,y)=>grid[key(x,y)];
 const isLocked=t=>t&&(t.t==='source'||t.t==='tray');
 const occupied=(x,y)=>items.some(i=>i.x===x&&i.y===y);
 
+
+/* Small synthesized workshop sounds: no downloads, microphones or autoplay. */
+const workshopSound=(()=>{
+ let ctx=null,master=null,motor=null,rollers=[],noise=null,lastCoin=-1,enabled=true;
+ try{enabled=localStorage.getItem('machinekitchen:sound')!=='off';}catch{}
+ const visible=()=>typeof document==='undefined'||!document.hidden;
+ function label(){if(typeof document==='undefined')return;const b=document.getElementById('btnSound');if(b){b.textContent=enabled?'🔊 Ljud på':'🔇 Ljud av';b.setAttribute('aria-pressed',String(enabled));b.setAttribute('aria-label',enabled?'Stäng av spelljud':'Slå på spelljud');}}
+ function motorState(){
+  if(!ctx)return;const t=ctx.currentTime;
+  motor.gain.cancelScheduledValues(t);motor.gain.setTargetAtTime(enabled&&running&&visible()?.023:0,t,.09);
+  rollers.forEach((o,i)=>o.frequency.setTargetAtTime((i?132:66)*(1+(speed-1)*.045),t,.2));
+ }
+ async function unlock(){
+  if(!enabled||!visible())return;
+  try{
+   if(!ctx){
+    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    ctx=new AC();master=ctx.createGain();master.gain.value=.6;master.connect(ctx.destination);
+    motor=ctx.createGain();motor.gain.value=0;motor.connect(master);
+    for(let i=0;i<2;i++){const o=ctx.createOscillator();o.type='sine';o.frequency.value=i?132:66;o.connect(motor);o.start();rollers.push(o);}
+    noise=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate);const data=noise.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1);
+    const n=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();n.buffer=noise;n.loop=true;filter.type='lowpass';filter.frequency.value=420;gain.gain.value=.3;n.connect(filter);filter.connect(gain);gain.connect(motor);n.start();
+   }
+   if(ctx.state==='suspended')await ctx.resume();motorState();
+  }catch{/* Audio must never block play. */}
+ }
+ function tone(freq,start,duration,volume,type='sine'){
+  const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=freq;
+  g.gain.setValueAtTime(.0001,start);g.gain.exponentialRampToValueAtTime(volume,start+.008);g.gain.exponentialRampToValueAtTime(.0001,start+duration);
+  o.connect(g);g.connect(master);o.start(start);o.stop(start+duration+.02);o.onended=()=>{o.disconnect();g.disconnect();};
+ }
+ function knock(start,duration,volume,frequency){
+  const n=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();n.buffer=noise;f.type='bandpass';f.frequency.value=frequency;f.Q.value=1.3;
+  g.gain.setValueAtTime(volume,start);g.gain.exponentialRampToValueAtTime(.0001,start+duration);
+  n.connect(f);f.connect(g);g.connect(master);n.start(start);n.stop(start+duration+.02);n.onended=()=>{n.disconnect();f.disconnect();g.disconnect();};
+ }
+ function play(kind){
+  if(!domReady||!enabled||!ctx||ctx.state!=='running'||!visible())return;
+  try{const t=ctx.currentTime;
+   if(kind==='coin'){if(t-lastCoin<.09)return;lastCoin=t;tone(1318.5,t,.32,.1);tone(1977.8,t+.014,.23,.035);tone(2637,t,.14,.012);}
+   if(kind==='buy'){knock(t,.09,.16,750);knock(t+.075,.08,.12,1300);tone(1046.5,t+.11,.27,.09);tone(1568,t+.16,.38,.08);knock(t+.25,.12,.07,500);}
+   if(kind==='place'){tone(118,t,.12,.13);knock(t,.07,.21,650);knock(t+.045,.11,.12,1800);tone(580,t+.035,.17,.035);tone(890,t+.065,.13,.018);}
+   if(kind==='belt'){knock(t,.055,.09,900);tone(240,t,.055,.035);}
+   if(kind==='rotate'){knock(t,.045,.07,1600);}
+  }catch{}
+ }
+ function toggle(){enabled=!enabled;try{localStorage.setItem('machinekitchen:sound',enabled?'on':'off');}catch{}label();if(master&&ctx)master.gain.setTargetAtTime(enabled?.6:0,ctx.currentTime,.025);motorState();if(enabled)void unlock();}
+ function visibility(){if(!ctx)return;if(!visible()){motorState();void ctx.suspend().catch(()=>{});}else if(enabled)void unlock();}
+ return {unlock,play,toggle,label,motorState,visibility};
+})();
+
 /* ============================================================
    simulation
    ============================================================ */
@@ -394,7 +445,7 @@ function pairOut(buf){
   return PAIRS[k]||'burnt';
 }
 function score(food){
-  if(food===LEVELS[lv].goal){ made++; S.coins+=PAY; return 'good'; }
+  if(food===LEVELS[lv].goal){ made++; S.coins+=PAY; workshopSound.play('coin'); return 'good'; }
   spilled++; return 'bad';
 }
 /* place a food into the cell in front of (x,y). returns true if it left. */
@@ -684,6 +735,8 @@ function onCell(x,y){
   helpMarks.clear();
   const r=placeTile(x,y,tool,dir);
   if(r==='locked'){ toast('That part is bolted down.'); return; }
+  if(r==='placed')workshopSound.play(tool==='belt'?'belt':'place');
+  else if(r==='rotated')workshopSound.play('rotate');
   saveLayout(); renderGrid();
 }
 function loop(){
@@ -694,17 +747,18 @@ function loop(){
 }
 function setRun(on){
   running=on;
+  if(on)void workshopSound.unlock();workshopSound.motorState();
   document.documentElement.style.setProperty('--tick',(520/speed)+'ms');
   clearTimeout(timer);
   if(on) timer=setTimeout(loop,120);
   renderHUD();
 }
 function finish(){
-  clearTimeout(timer); running=false;
+  clearTimeout(timer); running=false; workshopSound.motorState();
   const L=LEVELS[lv];
   const first=!S.done[lv];
   const bonus=Math.round(first?L.reward:L.reward*REPLAY);
-  S.coins+=bonus; S.done[lv]=1; save();
+  S.coins+=bonus; S.done[lv]=1; save(); workshopSound.play('coin');
   renderHUD();
   const next=lv+1<LEVELS.length;
   openSheet(`
@@ -760,7 +814,7 @@ function openShop(){
   $('sheet').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{
     const id=b.dataset.b, M=MODULES[id];
     if(S.coins<M.price) return;
-    S.coins-=M.price; S.owned[id]=1; save();
+    S.coins-=M.price; S.owned[id]=1; save(); workshopSound.play('buy');
     tool=id; renderParts(); renderHUD(); openShop();
     toast(M.n+' added to your parts.');
   });
@@ -934,7 +988,7 @@ async function init(){
   $('btnRun').onclick=()=>{ setRun(!running); };
   $('btnSpeed').onclick=()=>{
     speed = speed===1?2:speed===2?4:1;
-    $('btnSpeed').textContent=speed+'×';
+    $('btnSpeed').textContent=speed+'×';workshopSound.motorState();
     document.documentElement.style.setProperty('--tick',(520/speed)+'ms');
   };
   $('btnClear').onclick=()=>{
@@ -944,6 +998,10 @@ async function init(){
     saveLayout(); renderGrid(); renderItems(); renderHUD();
     toast('Board cleared.');
   };
+  workshopSound.label();$('btnSound').onclick=()=>workshopSound.toggle();
+  document.addEventListener('pointerdown',()=>{void workshopSound.unlock();},{passive:true});
+  document.addEventListener('keydown',()=>{void workshopSound.unlock();});
+  document.addEventListener('visibilitychange',()=>workshopSound.visibility());
   $('btnHelp').onclick=()=>openHelp();
   $('btnShop').onclick=openShop;
   $('btnLevels').onclick=openLevels;
