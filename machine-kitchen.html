@@ -364,6 +364,25 @@ LEVELS.push(
  {name:'Meatballs & Mash',goal:'meatballmeal',need:4,reward:1000,src:[{x:0,y:1,f:'beef',iv:7},{x:0,y:4,f:'potato',iv:7}],tray:{x:7,y:2},chain:['beef','mill','mince','baller','rawballs','fryer','meatballs','mixer','meatballmeal'],tip:'Grind, roll and fry the meatballs. Boil and mash potatoes, then combine both branches in the mixer.'}
 );
 
+
+Object.assign(FOOD,{
+ loadedtacos:{n:'Loaded Taco',e:'🌮',c:'#e4b43e'},
+ lettuce:{n:'Lettuce',e:'🥬',c:'#6eb45a'},shreddedlettuce:{n:'Shredded Lettuce',e:'🥬',c:'#93ca71'},
+ corn:{n:'Corn',e:'🌽',c:'#f3cd43'},cucumber:{n:'Cucumber',e:'🥒',c:'#4d9b58'},slicedcucumber:{n:'Sliced Cucumber',e:'🥒',c:'#a2c77b'},
+ salsa:{n:'Salsa',e:'🥫',c:'#ce5137'}
+});
+MODULES.tacostation={n:'Taco Station',e:'🌮',time:2,price:180,d:'Assembles cooked taco mince, tortilla, shredded lettuce, corn, sliced cucumber and salsa. Holds one of each; extra portions wait on the belts.'};
+Object.assign(RECIPES.slicer,{lettuce:'shreddedlettuce',cucumber:'slicedcucumber'});
+MODULES.slicer.d='Cuts potatoes, shreds lettuce and slices cucumber.';
+const TACO_FILLINGS=['tacomeat','tortilla','shreddedlettuce','corn','slicedcucumber','salsa'];
+function isAssembler(t){return t==='mixer'||t==='tacostation';}
+function accepts(t,food){return t.out===null&&(t.t==='tacostation'?TACO_FILLINGS.includes(food)&&!t.buf.includes(food):t.buf.length<2);}
+function full(t){return t.buf.length===(t.t==='tacostation'?6:2);}
+LEVELS[7]={name:'Loaded Taco Tuesday',goal:'loadedtacos',need:4,reward:850,
+ src:[{x:0,y:1,f:'beef',iv:9},{x:7,y:2,f:'tortilla',iv:9,d:2},{x:0,y:3,f:'lettuce',iv:9},{x:4,y:0,f:'corn',iv:9,d:1},{x:7,y:4,f:'cucumber',iv:9,d:2},{x:0,y:5,f:'tomato',iv:9}],
+ tray:{x:7,y:5},chain:['beef','mill','mince','fryer','tacomeat','tacostation','loadedtacos'],
+ tip:'This order now needs six ingredients and Taco Station. Rebuild the old two-ingredient line; help shows a working layout. Shred lettuce, slice cucumber and blend tomatoes into salsa. Extra ingredients wait until the station needs them.'};
+
 const PAY=12;           // coins per correct plate
 const REPLAY=0.25;      // share of reward on a repeat clear
 
@@ -436,6 +455,7 @@ const workshopSound=(()=>{
    simulation
    ============================================================ */
 function transform(type,food){
+  if(lv===7&&type==='blender'&&food==='tomato')return 'salsa';
   const r=RECIPES[type];
   if(!r) return food;
   return r[food]!==undefined ? r[food] : food;
@@ -456,10 +476,10 @@ function tryOutput(x,y,d,food){
   if(!nt) return false;
   if(nt.t==='tray'){ const r=score(food); flash(nx,ny,r,food); return true; }
   if(nt.t==='source') return false;
-  if(nt.t==='mixer'){
-    if(nt.buf.length<2 && nt.out===null){
+  if(isAssembler(nt.t)){
+    if(accepts(nt,food)){
       nt.buf.push(food);
-      if(nt.buf.length===2) nt.timer=MODULES.mixer.time;
+      if(full(nt)) nt.timer=MODULES[nt.t].time;
       return true;
     }
     return false;
@@ -496,10 +516,10 @@ function stepSim(){
       if(!nt){ items.splice(i,1); spilled++; changed=true; continue; }   // falls off the end
       if(nt.t==='source') continue;                                      // blocked
       if(nt.t==='tray'){ const r=score(it.food); flash(nx,ny,r,it.food); items.splice(i,1); changed=true; continue; }
-      if(nt.t==='mixer'){
-        if(nt.buf.length<2 && nt.out===null){
+      if(isAssembler(nt.t)){
+        if(accepts(nt,it.food)){
           nt.buf.push(it.food);
-          if(nt.buf.length===2) nt.timer=MODULES.mixer.time;
+          if(full(nt)) nt.timer=MODULES[nt.t].time;
           items.splice(i,1); changed=true;
         }
         continue;
@@ -511,12 +531,12 @@ function stepSim(){
   // 3 — mixers combine and push out
   for(const k in grid){
     const t=grid[k];
-    if(t.t!=='mixer') continue;
+    if(!isAssembler(t.t)) continue;
     if(t.out!==null){
       if(tryOutput(t.x,t.y,t.d,t.out)) t.out=null;
-    } else if(t.buf.length===2 && t.timer>0){
+    } else if(full(t) && t.timer>0){
       t.timer--;
-      if(t.timer===0){ t.out=pairOut(t.buf); t.buf=[]; }
+      if(t.timer===0){ t.out=t.t==='tacostation'?'loadedtacos':pairOut(t.buf); t.buf=[]; }
     }
   }
   // 4 — supplies feed in
@@ -535,7 +555,7 @@ function setupLevel(i,useSaved=true){
   helpMarks.clear();
   lv=i; grid={}; items=[]; tick=0; made=0; spilled=0; nextId=1;
   const L=LEVELS[i];
-  for(const s of L.src) grid[key(s.x,s.y)]={t:'source',d:0,x:s.x,y:s.y,buf:[],out:null,timer:0};
+  for(const s of L.src) grid[key(s.x,s.y)]={t:'source',d:s.d??0,x:s.x,y:s.y,buf:[],out:null,timer:0};
   grid[key(L.tray.x,L.tray.y)]={t:'tray',d:0,x:L.tray.x,y:L.tray.y,buf:[],out:null,timer:0};
   const saved=useSaved?S.layouts[i]:null;
   if(saved) for(const c of saved){
@@ -628,8 +648,8 @@ function renderGrid(){
       const f=LEVELS[lv].src.find(s=>s.x===x&&s.y===y);
       if(f) inner=`<span class="glyph">${FOOD[f.f].e}</span>`+arrowBadge(t.d);
     }
-    if(t.t==='mixer'&&(t.buf.length||t.out)){
-      inner+=`<span class="buf">${'<i></i>'.repeat(t.out?2:t.buf.length)}</span>`;
+    if(isAssembler(t.t)&&(t.buf.length||t.out)){
+      inner+=`<span class="buf">${'<i></i>'.repeat(t.out?(t.t==='tacostation'?6:2):t.buf.length)}</span>`;
     }
     if(t.timer>0 || items.some(i=>i.x===x&&i.y===y&&i.timer>0)) el.classList.add('hot');
     el.innerHTML=inner;
@@ -884,12 +904,26 @@ HELP_HINTS.push(
  'Ris måste först kokas i Cooker. Vatten ingår i maskinen. Låt kokt ris och lax mötas i Mixer för att göra nigiri.',
  'Köttgrenen: Mill → Meatball Former → Fryer. Potatisgrenen: Cooker → Masher. De färdiga köttbullarna och moset ska mötas i Mixer.'
 );
+
+RECIPE_BRANCHES[7]=[
+ ['beef','mill','mince','fryer','tacomeat'],['lettuce','slicer','shreddedlettuce'],
+ ['cucumber','slicer','slicedcucumber'],['tomato','blender','salsa'],['corn'],['tortilla'],
+ ['tacomeat','tortilla','shreddedlettuce','corn','slicedcucumber','salsa','tacostation','tacos']];
+HELP_HINTS[7]='Taco Station behöver sex olika ingredienser: stekt färs, tortilla, strimlad sallad, majs, skivad gurka och salsa. Använd Slicer för sallad och gurka, och Blender för tomaten. Stationen tar en av varje; resten väntar på banden.';
 let helpMarks=new Set();
 function requiredParts(){return [...new Set(RECIPE_BRANCHES[lv].flat().filter(x=>MODULES[x]&&!MODULES[x].hidden))];}
-function recipeHTML(){return RECIPE_BRANCHES[lv].map(branch=>'<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;width:100%">'+branch.map((s,i)=>{
+function recipeHTML(){const html=RECIPE_BRANCHES[lv].map(branch=>'<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;width:100%">'+branch.map((s,i)=>{
  const m=MODULES[s],f=FOOD[s];return (i?'<span class="arw">›</span>':'')+'<span class="m">'+(m?m.e+' '+m.n:f.e+' '+f.n)+'</span>';
-}).join('')+'</div>').join('');}
+}).join('')+'</div>').join('');return lv===7?'<details style="width:100%"><summary style="cursor:pointer;color:var(--cream);padding:6px 0">Recept · 6 ingredienser ▾</summary>'+html+'</details>':html;}
 function solutionTiles(level=lv){
+ if(level===7)return [
+ [1,1,'mill',0],[2,1,'fryer',0],[3,1,'belt',1],[3,2,'belt',0],[4,2,'tacostation',1],
+ [1,3,'slicer',0],[2,3,'belt',0],[3,3,'belt',3],[4,1,'belt',1],
+ [6,2,'belt',2],[5,2,'belt',2],[6,4,'slicer',3],[6,3,'belt',3],
+ [1,5,'blender',3],[1,4,'belt',3],
+ [4,3,'belt',1],[4,4,'belt',1],[4,5,'belt',0],[5,5,'belt',0],[6,5,'belt',0]
+ ].map(([x,y,t,d])=>({x,y,t,d}));
+
  const plans=[
   {upper:['slicer']},{upper:['slicer','fryer']},
   {upper:['mill','mixer','oven'],lower:[]},
@@ -929,7 +963,7 @@ function diagnose(){
   for(let n=0;n<GW*GH;n++){
    const cell=at(x,y);if(!cell)break;
    const k=key(x,y);if(visited.has(k)){marks.add(k);messages.push('Ett transportband går i en slinga vid kolumn '+(x+1)+', rad '+(y+1)+'.');break;}visited.add(k);
-   if(cell.t==='mixer'){
+   if(isAssembler(cell.t)){
     const feeds=incoming.get(k)||[];feeds.push(food);incoming.set(k,feeds);break;
    }
    if(cell.t==='tray'){if(food!==LEVELS[lv].goal){marks.add(k);messages.push(FOOD[food].n+' når fatet, men beställningen kräver '+FOOD[LEVELS[lv].goal].n+'.');}break;}
@@ -939,8 +973,10 @@ function diagnose(){
    x=nx;y=ny;
   }
  }
- for(const [k,foods] of incoming){if(foods.length!==2||pairOut(foods)==='burnt'){marks.add(k);messages.push('Mixer får '+foods.map(f=>FOOD[f].n).join(' + ')+'. '+(foods.length<2?'Den behöver en andra ingrediensgren.':'Den kombinationen ger ingen rätt. Kontrollera maskinerna före mixern.'));}}
- for(const start of Object.values(grid).filter(c=>c.t==='mixer')){
+ for(const [k,foods] of incoming){
+ if(grid[k].t==='tacostation'){const missing=TACO_FILLINGS.filter(f=>!foods.includes(f));if(missing.length){marks.add(k);messages.push('Taco Station saknar en väg för: '+missing.map(f=>FOOD[f].n).join(', ')+'.');}continue;}
+ if(foods.length!==2||pairOut(foods)==='burnt'){marks.add(k);messages.push('Mixer får '+foods.map(f=>FOOD[f].n).join(' + ')+'. '+(foods.length<2?'Den behöver en andra ingrediensgren.':'Den kombinationen ger ingen rätt. Kontrollera maskinerna före mixern.'));}}
+ for(const start of Object.values(grid).filter(c=>isAssembler(c.t))){
   let cell=start;const visited=new Set();
   while(cell&&cell.t!=='tray'){
    const k=key(cell.x,cell.y);
@@ -957,7 +993,7 @@ function diagnose(){
 }
 function solutionHTML(){
  const map=new Map(solutionTiles().map(c=>[key(c.x,c.y),c]));
- for(const s of LEVELS[lv].src)map.set(key(s.x,s.y),{t:'source',f:s.f,d:0});
+ for(const s of LEVELS[lv].src)map.set(key(s.x,s.y),{t:'source',f:s.f,d:s.d??0});
  const tray=LEVELS[lv].tray;map.set(key(tray.x,tray.y),{t:'tray'});
  let h='<table class="helpgrid"><caption>Kolumner 1–8, rader 1–6. Pilar visar utgången.</caption><thead><tr><th></th>';
  for(let x=1;x<=GW;x++)h+='<th>'+x+'</th>';h+='</tr></thead><tbody>';
