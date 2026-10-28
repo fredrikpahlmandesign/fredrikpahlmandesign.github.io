@@ -51,7 +51,7 @@ const PROJECTS = [
     id: "machine-kitchen",
     title: "Machine Kitchen",
     meta: "Personal Projects · Browser game, factory builder",
-    href: "machine-kitchen.html",
+    href: "spela.html?game=machine-kitchen",
     visible: true,
     featured: false,
     category: "personal",
