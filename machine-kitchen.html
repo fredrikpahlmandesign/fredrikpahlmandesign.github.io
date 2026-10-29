@@ -177,9 +177,24 @@ header.hdr{display:flex;align-items:center;gap:8px;padding:9px 11px}
 .workshop-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .workshop-tools .btn{font-size:12px;padding:9px 12px;flex:1}
 .workshop-tools p{margin:0;font-size:11px;color:#98adba;line-height:1.5;width:100%}
-.inspect-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.inspect-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.inspect-title>div{min-width:0;padding-top:2px}
+.inspect-close{flex:0 0 40px;width:40px;height:40px;display:grid;place-items:center;padding:0;border-radius:50%;border:1px solid var(--steel-600);background:var(--steel-700);color:var(--cream);font-family:inherit;font-size:22px;line-height:1;cursor:pointer}
+.inspect-close:hover{background:var(--steel-600);border-color:var(--steel-300)}
+.inspect-close:active{transform:scale(.95)}
 .inspect-title h2{margin:0}.inspect-title .sub{margin:0 0 5px}
 .machine-portrait{margin:16px auto;border:1px solid #42505c;border-radius:16px;background:#151e26;max-width:300px;overflow:hidden}
+.machine-portrait.animated{position:relative;isolation:isolate}
+.machine-portrait.animated>.machine-art{animation:machine-idle 1.8s steps(2,end) infinite;transform-origin:50% 88%}
+.machine-portrait.thermal::after{content:'';position:absolute;inset:45% 12% 12%;pointer-events:none;background:radial-gradient(ellipse,#ff9a3422,transparent 70%);mix-blend-mode:screen;animation:heat-shimmer 2.8s ease-in-out infinite}
+.machine-steam{position:absolute;inset:0;pointer-events:none;z-index:1}
+.machine-steam i{position:absolute;left:38%;top:37%;width:5%;height:12%;background:linear-gradient(0deg,transparent,#dcecf299,transparent);filter:blur(3px);opacity:0;animation:machine-steam 3.6s ease-out infinite}
+.machine-steam i:nth-child(2){left:52%;top:35%;animation-delay:1.2s}
+.machine-steam i:nth-child(3){left:63%;top:38%;animation-delay:2.4s}
+@keyframes machine-idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-1px)}}
+@keyframes heat-shimmer{0%,100%{opacity:.25}50%{opacity:.9}}
+@keyframes machine-steam{0%{opacity:0;transform:translate(0,0) scale(.8)}20%{opacity:.45}100%{opacity:0;transform:translate(8px,-56px) scale(1.7)}}
+@media(prefers-reduced-motion:reduce){.machine-steam{display:none}.machine-portrait.thermal::after{opacity:.25}}
 .pixel-art{display:block;background-repeat:no-repeat;image-rendering:pixelated;text-align:center;font-size:48px}
 .machine-art{width:100%;aspect-ratio:1;background-size:400% 400%}
 .food-art{width:76px;aspect-ratio:1;background-size:600% 800%;border-radius:10px}
@@ -1137,8 +1152,9 @@ function inspectMachine(id,x=null,y=null){
  if(id==='mixer')recipes=Object.entries(PAIRS).map(([a,b])=>[a.split('+'),b]);
  else if(id==='tacostation')recipes=[[TACO_FILLINGS,'loadedtacos']];
  else recipes=Object.entries(RECIPES[id]||{}).map(([a,b])=>[[a],transform(id,a)]);
- let h='<div class="inspect-title"><div><p class="sub">MASKINVERKSTAD</p><h2>'+m.n+'</h2></div><button class="btn" id="inspectClose" aria-label="Stäng">✕</button></div>';
- h+='<div class="machine-portrait">'+artHTML(id,true)+'</div><p>'+m.d+'</p>';
+ let h='<div class="inspect-title"><div><p class="sub">MASKINVERKSTAD</p><h2>'+m.n+'</h2></div><button class="inspect-close" id="inspectClose" aria-label="Stäng">✕</button></div>';
+ const thermal=['fryer','oven','cooker'].includes(id),animated=!['source','tray','belt'].includes(id);
+ h+='<div class="machine-portrait'+(animated?' animated':'')+(thermal?' thermal':'')+'">'+artHTML(id,true)+(thermal?'<span class="machine-steam" aria-hidden="true"><i></i><i></i><i></i></span>':'')+'</div><p>'+m.d+'</p>';
  h+='<p class="sub">'+(m.time?'Bearbetning: '+m.time+' taktslag.':'Transport och flöde.')+(tile?' · Kolumn '+(x+1)+', rad '+(y+1)+' · Utgång '+ARROW[tile.d]:'')+'</p>';
  if(tile&&isAssembler(id))h+='<p class="sub">I maskinen: '+(tile.buf.length?tile.buf.map(f=>FOOD[f].n).join(', '):'Tom')+'</p>';
  if(id==='source'&&tile){const src=LEVELS[lv].src.find(s=>s.x===x&&s.y===y);if(src)h+=foodCard(src.f);}
