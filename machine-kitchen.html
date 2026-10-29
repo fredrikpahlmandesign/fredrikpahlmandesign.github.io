@@ -171,6 +171,7 @@ header.hdr{display:flex;align-items:center;gap:8px;padding:9px 11px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .cell.helpmark{outline:3px dashed var(--flame);outline-offset:-3px}.helpgrid{width:100%;table-layout:fixed;border-collapse:separate;border-spacing:3px;margin:12px 0}.helpgrid td{background:#10161b;border:1px solid #38495a;height:42px;text-align:center;font-size:18px}.helpgrid th{font-size:11px;color:#93a7b7}.helpgrid small{display:block;color:#ff8a1f;font-size:13px}.helpgrid caption{text-align:left;font-size:12px;margin-bottom:8px;color:#93a7b7}
 
+.cells .pixel-art{pointer-events:none}
 .cells{touch-action:none;user-select:none;-webkit-user-select:none}
 .cell:focus-visible{outline:2px solid var(--pilot);outline-offset:-2px}
 .workshop-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
@@ -190,6 +191,41 @@ header.hdr{display:flex;align-items:center;gap:8px;padding:9px 11px}
 .shop-art{width:76px;flex:0 0 76px;overflow:hidden;border-radius:10px;background:#151e26}
 .inspect-link{border:1px solid #536b78;border-radius:7px;background:#22333e;color:#9de0d6;padding:6px 9px;margin-top:8px;cursor:pointer;font:inherit;font-size:12px;text-align:left}
 @media(max-width:400px){.shop-art{width:54px;flex-basis:54px}}
+
+/* Pixel-art on the production floor */
+.app{max-width:680px}
+header.hdr{flex-wrap:wrap;padding:12px 14px;gap:10px}
+.brand{flex:1;min-width:140px}
+.pixel-logo{display:block;width:168px;height:auto;overflow:visible}
+.logo-light{animation:pilot-glow 4s steps(2,end) infinite}
+.logo-belt{animation:belt-hum 3s steps(2,end) infinite;transform-origin:center}
+@keyframes pilot-glow{0%,80%,100%{opacity:1}85%,95%{opacity:.4}}
+@keyframes belt-hum{0%,100%{transform:translateY(0)}50%{transform:translateY(.3px)}}
+.cell .machine-art{width:100%;height:100%;border-radius:6px;clip-path:inset(4% 2%)}
+.cell .food-art{width:82%;height:82%;border-radius:4px}
+.cell .arw{z-index:3;background:#0e1216;border:1px solid #6b562e;border-radius:3px;padding:1px;font-size:11px;opacity:1}
+.cell .buf{z-index:4;background:#10161be6;border-radius:4px;padding:2px;bottom:2px}
+.food .food-art{width:100%;height:100%;border-radius:4px}
+.art-ready .food{background:transparent!important;border:0;box-shadow:0 2px 4px #0008;border-radius:4px}
+.chip{width:58px;height:58px;overflow:hidden;border-radius:8px}
+.chip .food-art{width:100%;height:100%}
+.part{width:76px;padding:4px 4px 7px}
+.part .pe{width:64px;height:64px;display:grid;place-items:center;margin:auto}
+.part .machine-art{width:64px;height:64px;border-radius:5px}
+.part .pn{font-size:10px;min-height:23px;display:grid;place-items:center;color:var(--cream)}
+.part.lockd{opacity:.62}
+.part .pp{font-size:10px}
+.chain .m{display:inline-flex;align-items:center;gap:4px;padding:3px 5px}
+.chain .pixel-art{width:27px;height:27px;flex:0 0 27px;border-radius:3px;font-size:18px}
+.item .ie .food-art{width:48px;height:48px}
+.lvitem .ie{width:48px;flex:0 0 48px}
+@media(max-width:420px){
+ header.hdr{gap:8px;padding:10px}.brand{flex-basis:calc(100% - 90px)}
+ .pixel-logo{width:150px}.hdr .spacer{display:none}.hdr .iconbtn{flex:1}
+ .part{width:70px}.part .pe,.part .machine-art{width:58px;height:58px}
+ .chip{width:48px;height:48px}.lvname{font-size:16px}
+}
+
 </style>
 </head>
 <body>
@@ -198,7 +234,7 @@ header.hdr{display:flex;align-items:center;gap:8px;padding:9px 11px}
   <a class="backlink" href="index.html">← Fredrik Påhlman</a>
 
   <header class="panel hdr">
-    <div class="brand">Machine<span>·</span>Kitchen</div>
+    <div class="brand"><svg class="pixel-logo" viewBox="0 0 48 25" role="img" aria-label="Machine Kitchen" shape-rendering="crispEdges"><g fill="#f2efe6"><rect x="4" y="3" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="5" y="4" width="1" height="1"/><rect x="7" y="4" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="6" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="4" y="6" width="1" height="1"/><rect x="8" y="6" width="1" height="1"/><rect x="4" y="7" width="1" height="1"/><rect x="8" y="7" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="8" y="8" width="1" height="1"/><rect x="4" y="9" width="1" height="1"/><rect x="8" y="9" width="1" height="1"/><rect x="11" y="3" width="1" height="1"/><rect x="12" y="3" width="1" height="1"/><rect x="13" y="3" width="1" height="1"/><rect x="10" y="4" width="1" height="1"/><rect x="14" y="4" width="1" height="1"/><rect x="10" y="5" width="1" height="1"/><rect x="14" y="5" width="1" height="1"/><rect x="10" y="6" width="1" height="1"/><rect x="11" y="6" width="1" height="1"/><rect x="12" y="6" width="1" height="1"/><rect x="13" y="6" width="1" height="1"/><rect x="14" y="6" width="1" height="1"/><rect x="10" y="7" width="1" height="1"/><rect x="14" y="7" width="1" height="1"/><rect x="10" y="8" width="1" height="1"/><rect x="14" y="8" width="1" height="1"/><rect x="10" y="9" width="1" height="1"/><rect x="14" y="9" width="1" height="1"/><rect x="17" y="3" width="1" height="1"/><rect x="18" y="3" width="1" height="1"/><rect x="19" y="3" width="1" height="1"/><rect x="20" y="3" width="1" height="1"/><rect x="16" y="4" width="1" height="1"/><rect x="16" y="5" width="1" height="1"/><rect x="16" y="6" width="1" height="1"/><rect x="16" y="7" width="1" height="1"/><rect x="16" y="8" width="1" height="1"/><rect x="17" y="9" width="1" height="1"/><rect x="18" y="9" width="1" height="1"/><rect x="19" y="9" width="1" height="1"/><rect x="20" y="9" width="1" height="1"/><rect x="22" y="3" width="1" height="1"/><rect x="26" y="3" width="1" height="1"/><rect x="22" y="4" width="1" height="1"/><rect x="26" y="4" width="1" height="1"/><rect x="22" y="5" width="1" height="1"/><rect x="26" y="5" width="1" height="1"/><rect x="22" y="6" width="1" height="1"/><rect x="23" y="6" width="1" height="1"/><rect x="24" y="6" width="1" height="1"/><rect x="25" y="6" width="1" height="1"/><rect x="26" y="6" width="1" height="1"/><rect x="22" y="7" width="1" height="1"/><rect x="26" y="7" width="1" height="1"/><rect x="22" y="8" width="1" height="1"/><rect x="26" y="8" width="1" height="1"/><rect x="22" y="9" width="1" height="1"/><rect x="26" y="9" width="1" height="1"/><rect x="28" y="3" width="1" height="1"/><rect x="29" y="3" width="1" height="1"/><rect x="30" y="3" width="1" height="1"/><rect x="31" y="3" width="1" height="1"/><rect x="32" y="3" width="1" height="1"/><rect x="30" y="4" width="1" height="1"/><rect x="30" y="5" width="1" height="1"/><rect x="30" y="6" width="1" height="1"/><rect x="30" y="7" width="1" height="1"/><rect x="30" y="8" width="1" height="1"/><rect x="28" y="9" width="1" height="1"/><rect x="29" y="9" width="1" height="1"/><rect x="30" y="9" width="1" height="1"/><rect x="31" y="9" width="1" height="1"/><rect x="32" y="9" width="1" height="1"/><rect x="34" y="3" width="1" height="1"/><rect x="38" y="3" width="1" height="1"/><rect x="34" y="4" width="1" height="1"/><rect x="35" y="4" width="1" height="1"/><rect x="38" y="4" width="1" height="1"/><rect x="34" y="5" width="1" height="1"/><rect x="35" y="5" width="1" height="1"/><rect x="38" y="5" width="1" height="1"/><rect x="34" y="6" width="1" height="1"/><rect x="36" y="6" width="1" height="1"/><rect x="38" y="6" width="1" height="1"/><rect x="34" y="7" width="1" height="1"/><rect x="37" y="7" width="1" height="1"/><rect x="38" y="7" width="1" height="1"/><rect x="34" y="8" width="1" height="1"/><rect x="37" y="8" width="1" height="1"/><rect x="38" y="8" width="1" height="1"/><rect x="34" y="9" width="1" height="1"/><rect x="38" y="9" width="1" height="1"/><rect x="40" y="3" width="1" height="1"/><rect x="41" y="3" width="1" height="1"/><rect x="42" y="3" width="1" height="1"/><rect x="43" y="3" width="1" height="1"/><rect x="44" y="3" width="1" height="1"/><rect x="40" y="4" width="1" height="1"/><rect x="40" y="5" width="1" height="1"/><rect x="40" y="6" width="1" height="1"/><rect x="41" y="6" width="1" height="1"/><rect x="42" y="6" width="1" height="1"/><rect x="43" y="6" width="1" height="1"/><rect x="40" y="7" width="1" height="1"/><rect x="40" y="8" width="1" height="1"/><rect x="40" y="9" width="1" height="1"/><rect x="41" y="9" width="1" height="1"/><rect x="42" y="9" width="1" height="1"/><rect x="43" y="9" width="1" height="1"/><rect x="44" y="9" width="1" height="1"/></g><g fill="#ff9a34"><rect x="4" y="12" width="1" height="1"/><rect x="8" y="12" width="1" height="1"/><rect x="4" y="13" width="1" height="1"/><rect x="7" y="13" width="1" height="1"/><rect x="4" y="14" width="1" height="1"/><rect x="6" y="14" width="1" height="1"/><rect x="4" y="15" width="1" height="1"/><rect x="5" y="15" width="1" height="1"/><rect x="4" y="16" width="1" height="1"/><rect x="6" y="16" width="1" height="1"/><rect x="4" y="17" width="1" height="1"/><rect x="7" y="17" width="1" height="1"/><rect x="4" y="18" width="1" height="1"/><rect x="8" y="18" width="1" height="1"/><rect x="10" y="12" width="1" height="1"/><rect x="11" y="12" width="1" height="1"/><rect x="12" y="12" width="1" height="1"/><rect x="13" y="12" width="1" height="1"/><rect x="14" y="12" width="1" height="1"/><rect x="12" y="13" width="1" height="1"/><rect x="12" y="14" width="1" height="1"/><rect x="12" y="15" width="1" height="1"/><rect x="12" y="16" width="1" height="1"/><rect x="12" y="17" width="1" height="1"/><rect x="10" y="18" width="1" height="1"/><rect x="11" y="18" width="1" height="1"/><rect x="12" y="18" width="1" height="1"/><rect x="13" y="18" width="1" height="1"/><rect x="14" y="18" width="1" height="1"/><rect x="16" y="12" width="1" height="1"/><rect x="17" y="12" width="1" height="1"/><rect x="18" y="12" width="1" height="1"/><rect x="19" y="12" width="1" height="1"/><rect x="20" y="12" width="1" height="1"/><rect x="18" y="13" width="1" height="1"/><rect x="18" y="14" width="1" height="1"/><rect x="18" y="15" width="1" height="1"/><rect x="18" y="16" width="1" height="1"/><rect x="18" y="17" width="1" height="1"/><rect x="18" y="18" width="1" height="1"/><rect x="23" y="12" width="1" height="1"/><rect x="24" y="12" width="1" height="1"/><rect x="25" y="12" width="1" height="1"/><rect x="26" y="12" width="1" height="1"/><rect x="22" y="13" width="1" height="1"/><rect x="22" y="14" width="1" height="1"/><rect x="22" y="15" width="1" height="1"/><rect x="22" y="16" width="1" height="1"/><rect x="22" y="17" width="1" height="1"/><rect x="23" y="18" width="1" height="1"/><rect x="24" y="18" width="1" height="1"/><rect x="25" y="18" width="1" height="1"/><rect x="26" y="18" width="1" height="1"/><rect x="28" y="12" width="1" height="1"/><rect x="32" y="12" width="1" height="1"/><rect x="28" y="13" width="1" height="1"/><rect x="32" y="13" width="1" height="1"/><rect x="28" y="14" width="1" height="1"/><rect x="32" y="14" width="1" height="1"/><rect x="28" y="15" width="1" height="1"/><rect x="29" y="15" width="1" height="1"/><rect x="30" y="15" width="1" height="1"/><rect x="31" y="15" width="1" height="1"/><rect x="32" y="15" width="1" height="1"/><rect x="28" y="16" width="1" height="1"/><rect x="32" y="16" width="1" height="1"/><rect x="28" y="17" width="1" height="1"/><rect x="32" y="17" width="1" height="1"/><rect x="28" y="18" width="1" height="1"/><rect x="32" y="18" width="1" height="1"/><rect x="34" y="12" width="1" height="1"/><rect x="35" y="12" width="1" height="1"/><rect x="36" y="12" width="1" height="1"/><rect x="37" y="12" width="1" height="1"/><rect x="38" y="12" width="1" height="1"/><rect x="34" y="13" width="1" height="1"/><rect x="34" y="14" width="1" height="1"/><rect x="34" y="15" width="1" height="1"/><rect x="35" y="15" width="1" height="1"/><rect x="36" y="15" width="1" height="1"/><rect x="37" y="15" width="1" height="1"/><rect x="34" y="16" width="1" height="1"/><rect x="34" y="17" width="1" height="1"/><rect x="34" y="18" width="1" height="1"/><rect x="35" y="18" width="1" height="1"/><rect x="36" y="18" width="1" height="1"/><rect x="37" y="18" width="1" height="1"/><rect x="38" y="18" width="1" height="1"/><rect x="40" y="12" width="1" height="1"/><rect x="44" y="12" width="1" height="1"/><rect x="40" y="13" width="1" height="1"/><rect x="41" y="13" width="1" height="1"/><rect x="44" y="13" width="1" height="1"/><rect x="40" y="14" width="1" height="1"/><rect x="41" y="14" width="1" height="1"/><rect x="44" y="14" width="1" height="1"/><rect x="40" y="15" width="1" height="1"/><rect x="42" y="15" width="1" height="1"/><rect x="44" y="15" width="1" height="1"/><rect x="40" y="16" width="1" height="1"/><rect x="43" y="16" width="1" height="1"/><rect x="44" y="16" width="1" height="1"/><rect x="40" y="17" width="1" height="1"/><rect x="43" y="17" width="1" height="1"/><rect x="44" y="17" width="1" height="1"/><rect x="40" y="18" width="1" height="1"/><rect x="44" y="18" width="1" height="1"/></g><g class="logo-belt"><path d="M3 22h42v3H3z" fill="#425563"/><path d="M5 22h3v1H5zm8 0h3v1h-3zm8 0h3v1h-3zm8 0h3v1h-3zm8 0h3v1h-3z" fill="#93a7b7"/></g><g class="logo-light" fill="#3ec9c0"><rect x="45" y="3" width="2" height="2"/></g></svg></div>
     <div class="spacer"></div>
     <div class="readout" id="coins">⬤ 0</div>
     <button class="iconbtn" id="btnShop">Parts</button>
@@ -697,12 +733,12 @@ function renderGrid(){
     if(t.t==='belt'){
       inner=`<span class="glyph" style="color:#7d93a6;transform:rotate(${t.d*90}deg)">➤</span>`;
     } else {
-      inner=`<span class="glyph">${M.e}</span>`;
+      inner=artHTML(t.t,true);
       if(t.t!=='tray') inner+=arrowBadge(t.d);
     }
     if(t.t==='source'){
       const f=LEVELS[lv].src.find(s=>s.x===x&&s.y===y);
-      if(f) inner=`<span class="glyph">${FOOD[f.f].e}</span>`+arrowBadge(t.d);
+      if(f) inner=artHTML(f.f)+arrowBadge(t.d);
     }
     if(isAssembler(t.t)&&(t.buf.length||t.out)){
       inner+=`<span class="buf">${'<i></i>'.repeat(t.out?(t.t==='tacostation'?6:2):t.buf.length)}</span>`;
@@ -737,7 +773,7 @@ function renderItems(){
     }
     el.style.background=FOOD[it.food].c;
     el.style.color='#1a1206';
-    el.innerHTML=FOOD[it.food].e;
+    if(el.dataset.food!==it.food){el.innerHTML=artHTML(it.food);el.dataset.food=it.food;}
     el.style.transform=`translate(${p.x}px,${p.y}px)`;
     el.classList.toggle('busy',it.timer>0);
   }
@@ -761,7 +797,7 @@ function renderHUD(){
   $('coins').textContent='⬤ '+S.coins;
   $('lvNum').textContent='Order '+String(lv+1).padStart(2,'0');
   $('lvName').textContent=L.name;
-  $('goalChip').textContent=FOOD[L.goal].e;
+  if($('goalChip').dataset.food!==L.goal){$('goalChip').innerHTML=artHTML(L.goal);$('goalChip').dataset.food=L.goal;}
   $('goalChip').style.background=FOOD[L.goal].c;
   $('made').textContent=made;
   $('need').textContent=L.need;
@@ -784,7 +820,7 @@ function renderParts(){
     const owned=!!S.owned[id];
     const b=document.createElement('button');
     b.className='part'+(tool===id?' on':'')+(owned?'':' lockd');
-    b.innerHTML=`<div class="pe">${M.e}</div><div class="pn">${M.n}</div>`+
+    b.innerHTML=`<div class="pe">${artHTML(id,true)}</div><div class="pn">${M.n}</div>`+
       (owned?'':`<div class="pp">⬤${M.price}</div>`);
     b.addEventListener('click',()=>{
       if(!owned){ openShop(); return; }
@@ -904,7 +940,7 @@ function openLevels(){
   LEVELS.forEach((L,i)=>{
     const unlocked = i===0 || S.done[i-1];
     h+=`<div class="item lvitem ${unlocked?'':'lock'}" data-l="${unlocked?i:''}">
-      <div class="ie">${FOOD[L.goal].e}</div>
+      <div class="ie">${artHTML(L.goal)}</div>
       <div class="it"><b>${String(i+1).padStart(2,'0')} · ${L.name}</b>
       <small>${unlocked?`Serve ${L.need} × ${FOOD[L.goal].n}`:'Locked, finish the order above'}</small></div>
       ${S.done[i]?'<span class="owned">✓</span>':`<span class="owned" style="color:var(--flame)">⬤${L.reward}</span>`}
@@ -972,7 +1008,7 @@ HELP_HINTS[7]='Taco Station behöver sex olika ingredienser: stekt färs, tortil
 let helpMarks=new Set();
 function requiredParts(){return [...new Set(RECIPE_BRANCHES[lv].flat().filter(x=>MODULES[x]&&!MODULES[x].hidden))];}
 function recipeHTML(){const html=RECIPE_BRANCHES[lv].map(branch=>'<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;width:100%">'+branch.map((s,i)=>{
- const m=MODULES[s],f=FOOD[s];return (i?'<span class="arw">›</span>':'')+'<span class="m">'+(m?m.e+' '+m.n:f.e+' '+f.n)+'</span>';
+ const m=MODULES[s],f=FOOD[s];return (i?'<span class="arw">›</span>':'')+'<span class="m">'+(artHTML(s,!!m)+' '+(m?m.n:f.n))+'</span>';
 }).join('')+'</div>').join('');return lv===7?'<details style="width:100%"><summary style="cursor:pointer;color:var(--cream);padding:6px 0">Recept · 6 ingredienser ▾</summary>'+html+'</details>':html;}
 function solutionTiles(level=lv){
  if(level===7)return [
