@@ -1,11 +1,58 @@
 <!doctype html>
-<html lang="sv"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer"><title>Panorama · 360°</title>
+<html lang="sv"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer"><title>Panorama · 360°</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#18271f;color:#f5f3e9;font:15px system-ui}header{min-height:90px;padding:16px 25px;display:flex;gap:14px;align-items:center;justify-content:space-between;background:#f4f1e9;color:#27392e}h1{font:28px Georgia;margin:0}small.eyebrow{font:11px system-ui;letter-spacing:2px}button,.upload{border:1px solid #afbcaf;border-radius:9px;padding:11px 14px;background:#f5f3e9;color:#27392e;font:14px system-ui;cursor:pointer}button:hover,.upload:hover{background:#e1e9dc}button:disabled{opacity:.45;cursor:default}button:focus-visible,input:focus-visible,.upload:focus-within{outline:3px solid #bd9b5c;outline-offset:2px}.header-actions{display:flex;align-items:center;gap:10px}.upload.drag-over{background:#d2e6c7;outline:3px solid #7a9b66;outline-offset:3px}.upload{position:relative;overflow:hidden;display:inline-block}.upload input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}main{display:grid;grid-template-columns:minmax(0,1fr) 300px;min-height:calc(100dvh - 90px)}#stage{position:relative;height:calc(100dvh - 90px);min-height:360px}canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}#empty{position:absolute;top:30%;left:8%;width:84%;text-align:center;pointer-events:none}h2{font:clamp(25px,4vw,44px) Georgia;margin:0 0 16px}p{line-height:1.65;color:#c6d0c5}#filename{position:absolute;top:20px;left:24px;right:20px;font-size:13px;overflow-wrap:anywhere;text-shadow:0 1px 5px black}.tools{position:absolute;bottom:90px;right:22px;display:flex;flex-wrap:wrap;gap:7px}#status{position:absolute;bottom:10px;left:24px;right:24px;font-size:12px;max-width:740px}aside{padding:23px 18px;background:#eaece3;color:#27392e;max-height:calc(100dvh - 90px);overflow:auto}aside h2{font:23px Georgia;margin:0 0 7px}aside p{color:#607064;font-size:12px;margin:0 0 16px}.library-title{display:flex;justify-content:space-between;align-items:center}#count{font-size:12px;color:#607064}#clear{width:100%;margin-top:16px;background:transparent}#library{display:grid;gap:12px}.card{border:1px solid #bfc9b9;border-radius:10px;overflow:hidden;background:#f5f3e9}.card.current{border:2px solid #42654e}.select-image{display:block;width:100%;padding:0;border:0;border-radius:0;text-align:left;background:transparent}.select-image img{display:block;width:100%;height:85px;object-fit:cover}.card-name{display:block;padding:10px 11px 2px;overflow-wrap:anywhere}.card-details{display:block;font-size:11px;color:#607064;padding:4px 11px}.card-actions{padding:7px 10px 10px;display:flex;gap:7px;flex-wrap:wrap}.card-actions button{font-size:11px;padding:6px 9px}.tag{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:#42654e}.empty-library{font-size:13px;color:#607064;padding:20px 0}dialog{border:0;border-radius:16px;background:#f5f3e9;color:#27392e;max-width:520px;width:calc(100% - 32px);padding:25px}dialog::backdrop{background:#13251dd9}dialog h2{font:27px Georgia;padding-right:35px}dialog .modal-close{position:absolute;top:10px;right:10px;display:grid;place-items:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:transparent;color:#27392e;font:30px/1 system-ui}dialog .modal-close:hover{background:#e1e9dc}dialog p{color:#536458;font-size:14px}dialog input{width:100%;padding:12px;border:1px solid #b6c3b3;border-radius:7px;color:#27392e;background:white;font:14px system-ui}.dialog-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:18px}.primary{background:#355540;color:white}.primary:hover{background:#284230}.danger{color:#883f31}#share-error{color:#883f31;font-size:13px}#share-note{font-size:12px}#share-preview{width:100%;max-height:160px;object-fit:cover;border-radius:9px}#share-result[hidden],#share-consent[hidden]{display:none}
 @media(max-width:800px){main{grid-template-columns:1fr}#stage{height:60dvh;min-height:360px}aside{max-height:none}#library{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}header{padding:15px;flex-wrap:wrap;min-height:110px}h1{font-size:25px}.header-actions{gap:6px}.header-actions button,.upload{font-size:12px;padding:10px}.tools{left:15px;right:auto;bottom:105px}.tools button{padding:9px;font-size:12px}#status{left:15px;right:15px}#filename{left:15px}.select-image img{height:95px}#clear{width:auto}}
+
+/* The panorama and its controls occupy separate layout rows in every orientation. */
+body{min-height:100dvh;overflow-x:hidden}
+main{min-height:calc(100dvh - var(--header-height,90px));align-items:start}
+#viewer{display:flex;flex-direction:column;height:calc(100dvh - var(--header-height,90px));min-height:300px;min-width:0;background:#18271f}
+#stage{height:auto;min-height:0;flex:1;overflow:hidden}
+#view{width:100%;height:100%}
+#empty{inset:0;top:0;left:0;width:auto;display:flex;flex-direction:column;justify-content:center;padding:20px;overflow:auto}
+#empty[hidden]{display:none}
+#empty h2{font-size:clamp(23px,4vw,40px)}
+#empty p{font-size:13px;margin:6px 0}
+.viewer-caption{flex:none;padding:8px 16px 0;min-height:0}
+.viewer-caption:has(#filename:empty){display:none}
+#filename{position:static;display:block;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:none;color:#d4ddd0}
+.tools{position:static;flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 16px;background:#20352a}
+.tools button{min-height:44px;touch-action:manipulation}
+#status{position:static;flex:none;max-width:none;max-height:5.5em;overflow:auto;margin:0;padding:8px 16px 12px;font-size:12px;line-height:1.5;background:#20352a}
+aside{max-height:calc(100dvh - var(--header-height,90px))}
+dialog{max-height:calc(100dvh - 24px);overflow:auto}
+#viewer.is-fullscreen{position:fixed;inset:0;z-index:1000;width:100%;height:100dvh;min-height:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+#viewer:fullscreen{position:fixed;inset:0;z-index:1000;width:100%;height:100dvh;min-height:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+#viewer:-webkit-full-screen{position:fixed;inset:0;z-index:1000;width:100%;height:100dvh;min-height:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+body.fullscreen-open{overflow:hidden}
+@media(max-width:800px){
+ header{min-height:0;padding:12px max(12px,env(safe-area-inset-right)) 12px max(12px,env(safe-area-inset-left));gap:10px}
+ h1{font-size:23px}.eyebrow{font-size:10px}
+ main{grid-template-columns:minmax(0,1fr)}
+ #viewer{height:calc(100dvh - var(--header-height,100px));min-height:300px}
+ aside{max-height:none}
+ .tools{padding:8px 12px;gap:6px}
+ .tools button{padding:9px 12px;font-size:13px}
+ #status{padding:6px 12px 10px}
+ .viewer-caption{padding:7px 12px 0}
+ #library{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+ .header-actions{flex-wrap:wrap}
+}
+@media(orientation:landscape) and (max-height:600px){
+ main{grid-template-columns:minmax(0,1fr)}aside{max-height:none}
+ header{min-height:0;padding:7px 12px;gap:8px}
+ header .eyebrow{display:none}h1{font-size:20px}
+ .header-actions button,.upload{padding:8px 11px}
+ #viewer{min-height:180px}
+ .tools{padding:5px 12px;gap:6px}
+ .tools button{min-height:40px;padding:7px 12px}
+ #status{padding:4px 12px 6px;max-height:3.7em;font-size:11px}
+ .viewer-caption{padding-top:4px}
+}
 </style>
 <header><div><small class="eyebrow">UTFORSKA ALLA VINKLAR</small><h1>Panorama 360°</h1></div><div class="header-actions"><label class="upload" id="drop-zone" title="Klicka för att välja bilder eller dra och släpp dem här">+ Välj bilder eller släpp här<input id="file" aria-label="Välj panoramabilder" type="file" accept="image/png,image/jpeg,image/webp" multiple disabled></label><button id="share" class="primary" disabled>Dela bild</button></div></header>
-<main><section id="stage"><canvas id="view" tabindex="0" aria-label="Panoramavy. Dra med mus eller finger, piltangenter för att vrida, plus och minus för zoom."></canvas><div id="empty"><h2>Din bild. Hela vyn.</h2><p>Välj ett equirektangulärt panorama i formatet 2:1.<br>PNG, JPEG eller WebP · exempelvis 4096 × 2048 pixlar.</p><p>Bilder sparas på den här enheten.<br>Endast bilder du väljer att dela skickas till servern.</p></div><span id="filename"></span><div class="tools"><button id="minus" aria-label="Zooma ut">−</button><button id="plus" aria-label="Zooma in">+</button><button id="home">Återställ vy</button><button id="full">Helskärm</button></div><p id="status" role="status" aria-live="polite">Öppnar ditt bildbibliotek…</p></section><aside><div class="library-title"><h2>Senaste bilder</h2><span id="count">0 / 20</span></div><p id="storage-note">Sparas lokalt i den här webbläsaren, även när sidan stängs. Max 20 bilder och 100 MB. Inga bilder laddas upp automatiskt.</p><div id="library"></div><button id="clear" class="danger" disabled>Töm bildminnet</button></aside></main>
+<main><section id="viewer" aria-label="Panoramavisare"><div id="stage"><canvas id="view" tabindex="0" aria-label="Panoramavy. Dra med mus eller finger, piltangenter för att vrida, plus och minus för zoom."></canvas><div id="empty"><h2>Din bild. Hela vyn.</h2><p>Välj ett equirektangulärt panorama i formatet 2:1.<br>PNG, JPEG eller WebP · exempelvis 4096 × 2048 pixlar.</p><p>Bilder sparas på den här enheten.<br>Endast bilder du väljer att dela skickas till servern.</p></div></div><div class="viewer-caption"><span id="filename"></span></div><div class="tools" role="toolbar" aria-label="Panoramakontroller"><button id="minus" aria-label="Zooma ut">−</button><button id="plus" aria-label="Zooma in">+</button><button id="home">Återställ vy</button><button id="full">Helskärm</button></div><p id="status" role="status" aria-live="polite">Öppnar ditt bildbibliotek…</p></section><aside><div class="library-title"><h2>Senaste bilder</h2><span id="count">0 / 20</span></div><p id="storage-note">Sparas lokalt i den här webbläsaren, även när sidan stängs. Max 20 bilder och 100 MB. Inga bilder laddas upp automatiskt.</p><div id="library"></div><button id="clear" class="danger" disabled>Töm bildminnet</button></aside></main>
 <dialog id="share-dialog" aria-labelledby="share-title"><button id="share-close" class="modal-close" aria-label="Stäng delningsvyn" title="Stäng" type="button">×</button><h2 id="share-title">Dela visad bild</h2><img id="share-preview" alt="Panoramat som ska delas"><div id="share-consent"><p>Just den här bilden laddas upp till Supabase som en komprimerad JPEG (högst 2048 × 1024). Filnamn och originalets metadata skickas inte med.</p><p><b>Alla som får länken kan se bilden.</b> Välj giltighetstid nedan. Återkalla den från bildlistan på den här enheten. Om webbläsarens data rensas utanför appen försvinner möjligheten att återkalla länken här.</p><label for="share-days">Giltighetstid (dagar)</label><input id="share-days" type="number" min="1" max="365" step="1" value="30" required aria-describedby="duration-hint"><p id="duration-hint">1–365 dagar. Standard: 30 dagar.</p></div><div id="share-result" hidden><p id="share-expiry"></p><label for="share-url">Länk till bilden och aktuell vy</label><input id="share-url" readonly><p id="share-note">Den som öppnar länken ser den delade bilden. Nedladdade kopior kan inte återkallas.</p></div><p id="share-error" role="status" aria-live="polite"></p><div class="dialog-actions"><button id="copy-link" hidden>Kopiera länk</button><button id="send-link" hidden>Dela länk…</button><button id="share-upload" class="primary">Ladda upp & skapa länk</button></div></dialog>
 <dialog id="confirm-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title"></h2><p id="confirm-text"></p><div class="dialog-actions"><button id="confirm-no">Avbryt</button><button id="confirm-yes" class="danger">Ta bort</button></div></dialog>
 <script>
@@ -71,7 +118,41 @@ const touches=new Map();let lastDist=0;
 canvas.onpointerdown=e=>{canvas.setPointerCapture(e.pointerId);touches.set(e.pointerId,{x:e.clientX,y:e.clientY});lastDist=0;};
 canvas.onpointermove=e=>{if(!touches.has(e.pointerId))return;const old=touches.get(e.pointerId);touches.set(e.pointerId,{x:e.clientX,y:e.clientY});if(touches.size===2){const [a,b]=[...touches.values()],dist=Math.hypot(a.x-b.x,a.y-b.y);if(lastDist&&dist)fov=Math.max(35,Math.min(110,fov*lastDist/dist));lastDist=dist;}else{yaw-=(e.clientX-old.x)*.005;pitch=Math.max(-1.5,Math.min(1.5,pitch+(e.clientY-old.y)*.005));}draw();};
 canvas.onpointerup=canvas.onpointercancel=e=>{touches.delete(e.pointerId);lastDist=0;};canvas.onlostpointercapture=e=>{touches.delete(e.pointerId);lastDist=0;};
-function zoom(v){fov=Math.max(35,Math.min(110,fov+v));draw();}canvas.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY*.04);},{passive:false});$('plus').onclick=()=>zoom(-8);$('minus').onclick=()=>zoom(8);$('home').onclick=()=>{yaw=0;pitch=0;fov=78;draw();};canvas.onkeydown=e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','-'].includes(e.key))e.preventDefault();if(e.key==='ArrowLeft')yaw-=.1;if(e.key==='ArrowRight')yaw+=.1;if(e.key==='ArrowUp')pitch=Math.min(1.5,pitch+.1);if(e.key==='ArrowDown')pitch=Math.max(-1.5,pitch-.1);if(e.key==='+')zoom(-5);if(e.key==='-')zoom(5);draw();};$('full').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('stage').requestFullscreen();}catch{status('Helskärm stöds inte här.');}};
+function zoom(v){fov=Math.max(35,Math.min(110,fov+v));draw();}canvas.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY*.04);},{passive:false});$('plus').onclick=()=>zoom(-8);$('minus').onclick=()=>zoom(8);$('home').onclick=()=>{yaw=0;pitch=0;fov=78;draw();};canvas.onkeydown=e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','-'].includes(e.key))e.preventDefault();if(e.key==='ArrowLeft')yaw-=.1;if(e.key==='ArrowRight')yaw+=.1;if(e.key==='ArrowUp')pitch=Math.min(1.5,pitch+.1);if(e.key==='ArrowDown')pitch=Math.max(-1.5,pitch-.1);if(e.key==='+')zoom(-5);if(e.key==='-')zoom(5);draw();};const viewer=$('viewer');let immersive=false,savedScroll=0,savedStatus="",changingFullscreen=false;
+const nativeFullscreen=()=>document.fullscreenElement||document.webkitFullscreenElement;
+function setImmersive(value){
+ const wasImmersive=immersive;
+ if(value&&!immersive){savedScroll=window.scrollY;savedStatus=$('status').textContent;}
+ if(!value&&wasImmersive)status(savedStatus);
+ document.querySelector('header').inert=value;document.querySelector('aside').inert=value;
+ immersive=value;viewer.classList.toggle('is-fullscreen',value);document.body.classList.toggle('fullscreen-open',value);
+ $('full').textContent=value?'Avsluta helskärm':'Helskärm';
+ $('full').setAttribute('aria-label',value?'Avsluta helskärm':'Visa panorama i helskärm');
+ $('full').setAttribute('aria-pressed',String(value));
+ requestAnimationFrame(()=>{draw();if(!value)window.scrollTo(0,savedScroll);});
+}
+$('full').onclick=async()=>{
+ if(changingFullscreen)return;changingFullscreen=true;
+ try{
+  if(immersive){
+   const exit=document.exitFullscreen||document.webkitExitFullscreen;
+   if(nativeFullscreen()&&exit){try{await exit.call(document);}catch{}if(nativeFullscreen()){status('Avsluta helskärm med webbläsarens kontroll eller Escape.');return;}}
+   setImmersive(false);
+  }else{
+   setImmersive(true);
+   const enter=viewer.requestFullscreen||viewer.webkitRequestFullscreen;
+   if(enter){try{await enter.call(viewer);return;}catch{}}
+   status('Utökad bildvy. Den här webbläsaren behåller sina egna adressfält. Vrid skärmen för stående eller liggande vy.');
+  }
+ }finally{changingFullscreen=false;}
+};
+function fullscreenChanged(){setImmersive(nativeFullscreen()===viewer);}
+document.addEventListener('fullscreenchange',fullscreenChanged);
+document.addEventListener('webkitfullscreenchange',fullscreenChanged);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&immersive&&!nativeFullscreen()){setImmersive(false);}});
+new ResizeObserver(()=>{document.documentElement.style.setProperty('--header-height',document.querySelector('header').getBoundingClientRect().height+'px');}).observe(document.querySelector('header'));
+window.addEventListener('resize',draw);
+window.visualViewport?.addEventListener('resize',draw);
 new ResizeObserver(draw).observe(canvas);
 async function init(){let storageMessage='';try{if(!db)db=await openDB();records=(await allDB()).sort((a,b)=>b.createdAt-a.createdAt);}catch{db=null;storageMessage=' Lokal lagring är inte tillgänglig. Bilderna finns bara kvar tills sidan laddas om.';$('storage-note').textContent=storageMessage;}
  const params=new URLSearchParams(location.hash.slice(1)),sharedId=params.get('share');
@@ -85,3 +166,4 @@ window.addEventListener('hashchange',()=>{clearTimeout(hashTimer);const load=()=
 init();
 
 </script></html>
+
